@@ -68,9 +68,14 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
                 return Promise.resolve(childs)
             }
         } else {
-            return Promise.resolve(Object.keys(this.tree).map(envName => ({
-                env: envName
-            })));
+            // TODO
+            // why would it will try to check tree if not initialized
+            if (this.tree)
+                return Promise.resolve(Object.keys(this.tree).map(envName => ({
+                    env: envName
+                })));
+            else
+                return Promise.resolve([]);
         }
     }
 
