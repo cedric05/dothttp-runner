@@ -28,6 +28,6 @@ at present you will need python3.9.
 * `dothttp.conf.curl`
 
 ## Known Issues
-
+- [ ] only file names without - are working
 
 ## Release Notes
