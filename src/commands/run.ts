@@ -1,11 +1,8 @@
-import * as vscode from 'vscode';
-import { TextEditor } from "vscode";
-import { DothttpRunOptions } from "../models/dotoptions";
-import fs = require("fs");
-import DotHttpEditorView from '../views/editor';
-import { isPythonConfigured } from '../models/config';
-import { FileState } from '../models/state';
 import { encode as encodeQueryString } from 'querystring';
+import * as vscode from 'vscode';
+import { isPythonConfigured } from '../models/config';
+import { DothttpRunOptions } from "../models/dotoptions";
+import DotHttpEditorView from '../views/editor';
 
 
 export function commandGenerator(options: DothttpRunOptions) {
@@ -47,18 +44,20 @@ export function commandGenerator(options: DothttpRunOptions) {
 
 
 
-export async function runHttpFileWithOptions(editor: TextEditor, ...args: any[]) {
+export async function runHttpFileWithOptions(options: { curl: boolean }) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
     if (!DotHttpEditorView.isHttpFile(filename) && isPythonConfigured()) {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
     const query = encodeQueryString({
-        "mtime": fs.statSync(filename).mtime.getTime(),
-        env: Array.from(FileState.getState()?.envs ?? []),
+        time: new Date().getTime(),
+        curl: options.curl
     })
 
     const uri = vscode.Uri.parse(`dothttp:${filename}?${query}`);
     vscode.workspace.openTextDocument(uri)
-        .then(doc => vscode.window.showTextDocument(doc, editor.viewColumn! + 1));
+        .then(doc => {
+            vscode.window.showTextDocument(doc, 2)
+        });
 }

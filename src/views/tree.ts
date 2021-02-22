@@ -1,9 +1,10 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
+import { FileState } from '../models/state';
 import DotHttpEditorView from './editor';
 import path = require('path');
-import { FileState } from '../models/state';
+
 
 export interface Position {
     env: string;
@@ -78,7 +79,13 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             const item = new vscode.TreeItem(
                 pos.envProperty ? `${pos.envProperty}: ${this.tree[pos.env][pos.envProperty]}` : pos.env, pos.envProperty ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
             );
-            item.resourceUri = this.filename;
+            // TODO on click should open dothttp.json file
+            item.command = {
+                command: 'vscode.open',
+                title: 'open',
+                arguments: [this.filename]
+            };
+            // item.resourceUri = this.filename;
             if (!pos.envProperty) {
                 if (this.enableEnvs.has(pos.env)) {
                     item.contextValue = viewState.enabled;
@@ -106,13 +113,18 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             this.enableEnvs = FileState.getState()?.envs ?? new Set();
         } else {
             const dirname = path.dirname(this.editor.document.fileName);
+            // TODO check if file exists
             vscode.workspace.fs.readFile(vscode.Uri.parse(
-                `${this.editor.document.uri.scheme}:${dirname}\\.dothttp.json`)).then(bindata => {
-                    this.enableEnvs = FileState.getState()?.envs ?? new Set();
-                    this.filename = this.editor.document.uri;
-                    this.tree = json.parse(bindata.toString());
-                    this._onDidChangeTreeData.fire(null);
-                })
+                path.join(`${this.editor.document.uri.scheme}:${dirname}`, '.dothttp.json')
+            )).then(bindata => {
+                this.enableEnvs = FileState.getState()?.envs ?? new Set();
+                this.filename = this.editor.document.uri;
+                this.tree = json.parse(bindata.toString());
+                this._onDidChangeTreeData.fire(null);
+            }, error => {
+                vscode.commands.executeCommand('setContext', 'dothttpEnvViewEnabled', false);
+
+            })
         }
     }
 

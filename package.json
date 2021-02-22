@@ -14,9 +14,10 @@
 		"Programming Languages"
 	],
 	"activationEvents": [
+		"onLanguage:dothttp-vscode",
+		"workspaceContains:**/*.http",
 		"onView:dothttpEnvView",
-		"onCommand:dothttp.command.run",
-		"onLanguage:dothttp-vscode"
+		"onCommand:dothttp.command.run"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -27,9 +28,22 @@
 					"dothttp-vscode"
 				],
 				"extensions": [
-					".http"
+					".http",
+					".dhttp"
 				],
 				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": "jsonc",
+				"extensions": [
+					".dothttp.json"
+				],
+				"filenames": [
+					".dothttp.json"
+				],
+				"filenamePatterns": [
+					"*.dothttp.json"
+				]
 			}
 		],
 		"grammars": [
@@ -46,11 +60,12 @@
 				"category": "Dothttp"
 			},
 			{
-				"command": "dothttpEnvView.refresh",
-				"title": "Refresh"
+				"command": "dothttp.command.gencurl",
+				"title": "generate curl file",
+				"category": "Dothttp"
 			},
 			{
-				"command": "dothttpEnvView.refreshNode",
+				"command": "dothttpEnvView.refresh",
 				"title": "Refresh"
 			},
 			{
@@ -70,6 +85,11 @@
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
+					"group": "navigation",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+				},
+				{
+					"command": "dothttp.command.gencurl",
 					"group": "navigation",
 					"when": "resourceExtname == .http || resourceExtname == .dhttp"
 				}
