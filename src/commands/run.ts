@@ -21,8 +21,8 @@ export function commandGenerator(options: DothttpRunOptions) {
     if (options.propertyFile) {
         propertyFile = `--property-file ${options.propertyFile}`;
     }
-    if (options.env && options.env.size > 0) {
-        const envList = Array.from(options.env).map(a => a.trim()).join(" ");
+    if (options.env && options.env.length > 0) {
+        const envList = options.env.map(a => a.trim()).join(" ");
         if (envList) {
             env = `--env ${envList}`;
         }

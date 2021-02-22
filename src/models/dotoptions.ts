@@ -3,10 +3,10 @@ export interface DothttpRunOptions {
     path: string;
     noCookie?: boolean,
     experimental?: boolean,
-    env?: Set<String>,
+    env?: string[],
     propertyFile?: String,
     curl: boolean
     file: string,
-    target?: string ,
+    target?: string,
     properties?: Array<string>,
 }

@@ -1,8 +1,8 @@
 import { LocalStorageService } from './storage';
 
 export interface FileInfo {
-    envs: Set<string>;
-    properties: Map<string, string>;
+    envs: string[];
+    properties: { [prop: string]: string };
 }
 
 export interface IFileState {
@@ -12,6 +12,7 @@ export interface IFileState {
     addProperty(filename: string, key: string, value: string): void
     removeProperty(filename: string, key: string): void
     removeEnv(filename: string, env: string): void
+    hasEnv(fileName: string, env: string): boolean;
 }
 
 
@@ -24,13 +25,20 @@ export class FileState implements IFileState {
     constructor(storage: LocalStorageService) {
         this.storage = storage;
     }
+    hasEnv(fileName: string, env: string): boolean {
+        const envs = this.getFileInfo(fileName).envs;
+        if (envs.indexOf(env) > -1) {
+            return true;
+        } return false;
+    }
+
 
     getFileInfo(filename: string): FileInfo {
         if (this.state.has(filename)) {
             return this.state.get(filename)!
         } else {
             return this.storage.getValue(
-                FileState.getFileKey(filename), { envs: new Set(), properties: new Map() })
+                FileState.getFileKey(filename), { envs: [], properties: {} })
         }
     }
 
@@ -38,37 +46,44 @@ export class FileState implements IFileState {
         return `${FileState.section}.${filename}`;
     }
 
-    getEnv(filename: string): Set<string> {
+    getEnv(filename: string): FileInfo['envs'] {
         const fileinfo = this.getFileInfo(filename);
         return fileinfo.envs
     }
-    getProperties(filename: string): Map<string, string> {
+    getProperties(filename: string): FileInfo['properties'] {
         const fileinfo = this.getFileInfo(filename);
         return fileinfo.properties
     }
     getProperty(filename: string, key: string) {
-        return this.getProperties(filename).get(key);
+        return this.getProperties(filename)[key];
     }
     addEnv(filename: string, env: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.envs.add(env);
+        const index = fileinfo.envs.indexOf(env);
+        if (index > -1) {
+            return;
+        }
+        fileinfo.envs.push(env);
         this.updateFileinfo(filename, fileinfo);
     }
     addProperty(filename: string, key: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties.set(key, value);
+        fileinfo.properties[key] = value;
         this.updateFileinfo(filename, fileinfo);
     }
 
     removeProperty(filename: string, key: string) {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties.delete(key);
+        delete fileinfo.properties[key];
         this.updateFileinfo(filename, fileinfo);
     }
 
     removeEnv(filename: string, env: string) {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.envs.delete(env);
+        const index = fileinfo.envs.indexOf(env);
+        if (index > -1) {
+            fileinfo.envs.splice(index);
+        }
         this.updateFileinfo(filename, fileinfo);
     }
 

@@ -41,7 +41,6 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     private editor!: vscode.TextEditor;
     private autoRefresh = true;
     private filename!: vscode.Uri;
-    private enableEnvs: Set<String> = new Set();
     private filestate: IFileState | undefined;
 
 
@@ -94,7 +93,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             };
             // item.resourceUri = this.filename;
             if (!pos.envProperty) {
-                if (this.enableEnvs.has(pos.env)) {
+                if (this.hasEnv(pos.env)) {
                     item.contextValue = viewState.enabled;
                 }
                 else {
@@ -119,14 +118,12 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         if (this.editor && this.editor.document && basename(this.editor.document.fileName) === ".dothttp.json") {
             this.filename = this.editor.document.uri;
             this.tree = json.parse(this.editor.document.getText()) as DothttpJson;
-            this.enableEnvs = this.getEnvForCurrentFile() ?? new Set();
         } else {
             const dirname = path.dirname(this.editor.document.fileName);
             // TODO check if file exists
             vscode.workspace.fs.readFile(vscode.Uri.parse(
                 path.join(`${this.editor.document.uri.scheme}:${dirname}`, '.dothttp.json')
             )).then(bindata => {
-                this.enableEnvs = this.getEnvForCurrentFile() ?? new Set();
                 this.filename = this.editor.document.uri;
                 this.tree = json.parse(bindata.toString());
                 this._onDidChangeTreeData.fire(null);
@@ -137,9 +134,12 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         }
     }
 
+    private hasEnv(env: string) {
+        return this.filestate!.hasEnv(vscode.window.activeTextEditor?.document.fileName!, env);
+    }
 
-    private getEnvForCurrentFile(): Set<String> {
-        return this.filestate.getEnv(vscode.window.activeTextEditor?.document.fileName!);
+    private getEnvForCurrentFile(): string[] {
+        return this.filestate!.getEnv(vscode.window.activeTextEditor?.document.fileName!);
     }
 
     private onActiveEditorChanged(): void {

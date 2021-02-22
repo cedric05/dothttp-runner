@@ -124,16 +124,10 @@ export class ClientHandler {
 
     // TODO, add env, propertys, target ...
     async execute(options: DothttpRunOptions) {
-        const properties: Map<string, string> = new Map();
-        for (const prop of options.properties ?? []) {
-            const sp = prop.split('')
-            properties.set(sp[0], sp[1]);
-        }
-        const env = Array.from(options.env as Set<String>);
         return await this.cli.request(ClientHandler.executecommand, {
             file: options.file,
-            env,
-            properties: properties,
+            env: options.env,
+            properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,
         })
