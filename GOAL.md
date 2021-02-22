@@ -17,7 +17,7 @@ High level goals are
   - [ ] close and open same *httpfile*. it should set same enabled properties
 
 
-Installation/configuration plan:
+Complete Installation/configuration plan:
   - extension will only have core functionality.
   - post installation
     - options
@@ -26,10 +26,15 @@ Installation/configuration plan:
     - we will pick option *[2]* initally 😤 (may pick up where we left of and go on with option *[1]*!!)
 
 Configuration:
-  - set python3.9 path
-  - enable experimental features
+  - set python3.9 path 
+    - dothttp.conf.pythonpath (string)
+    - dothttp.conf.path (string)
+  - enable experimental features (conf.)
+    - dothttp.conf.experimental (true/false)
   - disable cookie
+    - dothttp.conf.nocookie (true/false)
   - disable history ?? (not developed in upstream, may not)
+    - dothttp.conf.savehistory (true/false)
 
 WorkFlow:
   - User opens `.http` file, wants to run.
