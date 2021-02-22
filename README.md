@@ -4,10 +4,10 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 ## Features
 
 - [x] Run http file in editor itself
+- [x] load .dothttp.json into editor
+- [x] set environements from editor
 - [ ] set properties from editor
-- [ ] set environements from editor
 - [ ] change environments priority
-- [ ] load .dothttp.json into editor
 - [ ] save history for requests
 
 for more information visit [GOAL](./GOAL.md)

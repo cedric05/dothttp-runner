@@ -2,7 +2,10 @@ import * as vscode from 'vscode';
 import { TextEditor } from "vscode";
 import { DothttpRunOptions } from "../models/dotoptions";
 import fs = require("fs");
-import DotHttpProvider from '../provider';
+import DotHttpEditorView from '../views/editor';
+import { isPythonConfigured } from '../models/config';
+import { FileState } from '../models/state';
+import { encode as encodeQueryString } from 'querystring';
 
 
 export function commandGenerator(options: DothttpRunOptions) {
@@ -21,8 +24,8 @@ export function commandGenerator(options: DothttpRunOptions) {
     if (options.propertyFile) {
         propertyFile = `--property-file ${options.propertyFile}`;
     }
-    if (options.env && options.env.length > 0) {
-        const envList = options.env.map(a => a.trim()).join(" ");
+    if (options.env && options.env.size > 0) {
+        const envList = Array.from(options.env).map(a => a.trim()).join(" ");
         if (envList) {
             env = `--env ${envList}`;
         }
@@ -36,7 +39,7 @@ export function commandGenerator(options: DothttpRunOptions) {
     if (options.curl) {
         curl = "--curl";
     }
-    const command = `${options.path} -m dothttp ${noCookies} ${experimental} ${env} ${properties} ${propertyFile} ${options.file} ${curl}`.trim();
+    const command = `${options.path} -m dothttp  ${options.file} ${noCookies} ${experimental} ${env} ${properties} ${propertyFile} ${curl}`.trim();
     console.log(command);
     return command;
 }
@@ -46,13 +49,16 @@ export function commandGenerator(options: DothttpRunOptions) {
 
 export async function runHttpFileWithOptions(editor: TextEditor, ...args: any[]) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    if (!DotHttpProvider.isHttpFile(filename)) {
+    if (!DotHttpEditorView.isHttpFile(filename) && isPythonConfigured()) {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
-    const { mtime } = fs.statSync(filename);
+    const query = encodeQueryString({
+        "mtime": fs.statSync(filename).mtime.getTime(),
+        env: Array.from(FileState.getState()?.envs ?? []),
+    })
 
-    const uri = vscode.Uri.parse(`dothttp:${filename}?mtime=${mtime.getTime()}`);
+    const uri = vscode.Uri.parse(`dothttp:${filename}?${query}`);
     vscode.workspace.openTextDocument(uri)
         .then(doc => vscode.window.showTextDocument(doc, editor.viewColumn! + 1));
 }

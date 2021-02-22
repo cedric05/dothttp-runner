@@ -10,7 +10,9 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:dothttp.command.run"
+		"onView:dothttpEnvView",
+		"onCommand:dothttp.command.run",
+		"onLanguage:dothttp-vscode"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -19,6 +21,26 @@
 				"command": "dothttp.command.run",
 				"title": "run http file",
 				"category": "Dothttp"
+			},
+			{
+				"command": "dothttpEnvView.refresh",
+				"title": "Refresh"
+			},
+			{
+				"command": "dothttpEnvView.refreshNode",
+				"title": "Refresh"
+			},
+			{
+				"command": "dothttpEnvView.renameNode",
+				"title": "Rename"
+			},
+			{
+				"command": "dothttp.file.enableenv",
+				"title": "enable env"
+			},
+			{
+				"command": "dothttp.file.disableenv",
+				"title": "disable env"
 			}
 		],
 		"menus": {
@@ -33,6 +55,25 @@
 				{
 					"command": "dothttp.command.run",
 					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+				}
+			],
+			"view/title": [
+				{
+					"command": "dothttpEnvView.refresh",
+					"when": "view == dothttpEnvView",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "dothttp.file.enableenv",
+					"when": "view == dothttpEnvView && viewItem == environment",
+					"group": "inline"
+				},
+				{
+					"command": "dothttp.file.disableenv",
+					"when": "view == dothttpEnvView && viewItem == enabledEnvironment",
+					"group": "inline"
 				}
 			]
 		},
@@ -72,7 +113,16 @@
 					}
 				}
 			}
-		]
+		],
+		"views": {
+			"explorer": [
+				{
+					"id": "dothttpEnvView",
+					"name": "Dothttp env view",
+					"when": "dothttpEnvViewEnabled"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
@@ -100,5 +150,8 @@
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.19.0",
 		"webpack-cli": "^4.4.0"
+	},
+	"dependencies": {
+		"jsonc-parser": "^3.0.0"
 	}
 }
