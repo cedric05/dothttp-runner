@@ -11,11 +11,11 @@ export function activate(context: vscode.ExtensionContext) {
 			// this is bad, find out better signature
 			runHttpFileWithOptions(arr[2]);
 		} else {
-			runHttpFileWithOptions({ curl: false });
+			runHttpFileWithOptions({ curl: false, target: '1' });
 		}
 	});
 	let disposable2 = vscode.commands.registerTextEditorCommand('dothttp.command.gencurl', function () {
-		runHttpFileWithOptions({ curl: true });
+		runHttpFileWithOptions({ curl: true, target: '1' });
 	});
 	const provider = new DotHttpEditorView();
 	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, provider);
