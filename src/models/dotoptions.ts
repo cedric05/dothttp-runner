@@ -6,6 +6,7 @@ export interface DothttpRunOptions {
     env?: Set<String>,
     propertyFile?: String,
     curl: boolean
-    file: string
+    file: string,
+    target?: string ,
     properties?: Array<string>,
 }

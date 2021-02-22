@@ -3,6 +3,7 @@ import * as child_process from 'child_process';
 import { once } from 'events';
 import { createInterface, Interface } from 'readline';
 import { URL } from 'url';
+import { DothttpRunOptions } from '../models/dotoptions';
 import EventEmitter = require('events');
 
 interface ICommandClient {
@@ -28,16 +29,17 @@ class CmdClientError extends Error {
 
 
 abstract class BaseSpanClient implements ICommandClient {
-    readonly proc: child_process.ChildProcessWithoutNullStreams;
+    readonly proc: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
 
-    constructor(options: { pythonpath: string, stdargs: string[] }){
+    constructor(options: { pythonpath: string, stdargs: string[] }) {
         this.proc = child_process.spawn(options.pythonpath,
             options.stdargs,
+            { stdio: ["pipe", "pipe", "inherit"] }
         );
     }
 
-    async request(method: string, params: {}): Promise<{}> {
+    async request(method: string, params: {}): Promise<any> {
         const id = BaseSpanClient.count++;
         const result = await this.call({ method, params, id });
         if (result.id !== id) {
@@ -60,7 +62,7 @@ export class StdoutClient extends BaseSpanClient {
     constructor(options: { pythonpath: string, stdargs: string[] }) {
         super(options);
         this.rl = createInterface({
-            input: this.proc.stdout,
+            input: this.proc.stdout!,
             terminal: false
         });
         // start readline to listen
@@ -99,21 +101,45 @@ export class HttpClient extends BaseSpanClient {
     }
 }
 
+interface nameresult {
+    name: string,
+    start: number,
+    end: number
 
-class ClientHandler {
+}
+
+
+
+export class ClientHandler {
     cli: BaseSpanClient;
     static executecommand = "/file/execute";
-    constructor(options: { std: boolean, pythonpath: string, stdargs: string[] }) {
+    static namescommand = "/file/names";
+    constructor(options: { std: boolean, pythonpath: string }) {
         if (options.std) {
-            this.cli = new StdoutClient({ pythonpath: options.pythonpath!, stdargs: options.stdargs! });
+            this.cli = new StdoutClient({ pythonpath: options.pythonpath!, stdargs: ['-m', 'dotextensions.server'] });
         } else {
-            this.cli = new HttpClient({ pythonpath: options.pythonpath!, stdargs: options.stdargs! });
+            this.cli = new HttpClient({ pythonpath: options.pythonpath!, stdargs: ['-m', 'dotextensions.server', 'http'] });
         }
     }
 
-    async execute(filename: string, options: {} = {}) {
-        const result = await this.cli.request(ClientHandler.executecommand, { file: filename })
-        console.log(result)
+    // TODO, add env, propertys, target ...
+    async execute(options: DothttpRunOptions) {
+        const properties: Map<string, string> = new Map();
+        for (const prop of options.properties ?? []) {
+            const sp = prop.split('')
+            properties.set(sp[0], sp[1]);
+        }
+        return await this.cli.request(ClientHandler.executecommand, {
+            file: options.file,
+            env: options.env,
+            properties: properties,
+            nocookie: options.noCookie,
+            target: options.target,
+        })
+    }
+
+    async getNames(filename: string): Promise<{ names: nameresult[] }> {
+        return await this.cli.request(ClientHandler.namescommand, { file: filename })
     }
 
     close() {

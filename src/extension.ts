@@ -1,14 +1,20 @@
 import * as vscode from 'vscode';
+import { CodelensProvider } from './codelensprovider';
 import { disableCommand, enableCommand } from './commands/enable';
 import { runHttpFileWithOptions } from './commands/run';
 import DotHttpEditorView from './views/editor';
 import { EnvTree } from './views/tree';
 
 export function activate(context: vscode.ExtensionContext) {
-	let disposable = vscode.commands.registerTextEditorCommand('dothttp.command.run', () => {
-		runHttpFileWithOptions({ curl: false });
+	let disposable = vscode.commands.registerTextEditorCommand('dothttp.command.run', function (...arr) {
+		if (arr) {
+			// this is bad, find out better signature
+			runHttpFileWithOptions(arr[2]);
+		} else {
+			runHttpFileWithOptions({ curl: false });
+		}
 	});
-	let disposable2 = vscode.commands.registerTextEditorCommand('dothttp.command.gencurl', () => {
+	let disposable2 = vscode.commands.registerTextEditorCommand('dothttp.command.gencurl', function () {
 		runHttpFileWithOptions({ curl: true });
 	});
 	const provider = new DotHttpEditorView();
@@ -21,6 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('dothttpEnvView.refresh', () => envProvider.refresh());
 	vscode.commands.registerCommand('dothttp.file.enableenv', enableCommand);
 	vscode.commands.registerCommand('dothttp.file.disableenv', disableCommand);
+
+	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
+
 
 
 }
