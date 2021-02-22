@@ -3,6 +3,7 @@
 	"displayName": "dothttp-runner",
 	"description": "run dothttp files in vscode natively",
 	"version": "0.0.1",
+	"publisher": "shivaprasanth",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
