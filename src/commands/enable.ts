@@ -1,14 +1,17 @@
-import { FileState } from "../models/state";
-import { EnvTree, Position } from '../views/tree';
+import { window } from 'vscode';
+import { ApplicationServices } from "../services/global";
+import { Position } from '../views/tree';
 
 
 
 export function enableCommand(node: Position) {
-    FileState.getState()?.enableEnv(node.env);
-    EnvTree._tree.refresh();
+    ApplicationServices.get().getFileStateService().addEnv(
+        window.activeTextEditor?.document.fileName!, node.env);
+    ApplicationServices.get().getEnvProvder().refresh();
 }
 
 export function disableCommand(node: Position) {
-    FileState.getState()?.disableEnv(node.env);
-    EnvTree._tree.refresh();
+    ApplicationServices.get().getFileStateService().removeEnv(
+        window.activeTextEditor?.document.fileName!, node.env);
+    ApplicationServices.get().getEnvProvder().refresh();
 }

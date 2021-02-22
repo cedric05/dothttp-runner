@@ -2,10 +2,11 @@ import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
 import { disableCommand, enableCommand } from './commands/enable';
 import { runHttpFileWithOptions } from './commands/run';
+import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
-import { EnvTree } from './views/tree';
 
 export function activate(context: vscode.ExtensionContext) {
+	ApplicationServices.initialize(context);
 	let disposable = vscode.commands.registerTextEditorCommand('dothttp.command.run', function (...arr) {
 		if (arr) {
 			// this is bad, find out better signature
@@ -22,15 +23,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(disposable2);
 
-	const envProvider = EnvTree._tree;
+	const envProvider = ApplicationServices.get().getEnvProvder();
 	vscode.window.registerTreeDataProvider('dothttpEnvView', envProvider);
 	vscode.commands.registerCommand('dothttpEnvView.refresh', () => envProvider.refresh());
 	vscode.commands.registerCommand('dothttp.file.enableenv', enableCommand);
 	vscode.commands.registerCommand('dothttp.file.disableenv', disableCommand);
 
 	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
-
-
 
 }
 

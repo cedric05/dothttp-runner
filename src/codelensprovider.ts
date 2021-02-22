@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 import { Range } from 'vscode';
-import { GlobalState } from './global';
+import { ApplicationServices } from './services/global';
 import * as loadsh from 'lodash';
+import { ClientHandler } from './lib/client';
 
 
 class DothttpPositions extends vscode.CodeLens {
@@ -17,22 +18,23 @@ class DothttpPositions extends vscode.CodeLens {
 
 export class CodelensProvider implements vscode.CodeLensProvider<DothttpPositions> {
 
-    private state: GlobalState = GlobalState.getState();
 
     private codeLenses: DothttpPositions[] = [];
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
+    private clientHandler: ClientHandler;
 
     constructor() {
         vscode.window.onDidChangeActiveTextEditor(loadsh.debounce(() => {
             this._onDidChangeCodeLenses.fire()
         }, 10000));
+        this.clientHandler = ApplicationServices.get().getClientHandler();
     }
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
         return new Promise(async (resolve) => {
             this.codeLenses = [];
-            this.state.clientHanler.getNames(document.fileName).then((names) => {
+            this.clientHandler.getNames(document.fileName).then((names) => {
                 names.names.forEach(name => {
                     const runCommand = new DothttpPositions(new Range(
                         document.positionAt(name.start),

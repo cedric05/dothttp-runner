@@ -1,16 +1,7 @@
 import * as vscode from 'vscode';
 import fs = require('fs');
 import child_process = require('child_process');
-
-export enum ConfigVars {
-    pythonPath = "dothttp.conf.pythonpath",
-    dothttpPath = "dothttp.conf.path",
-    experimental = "dothttp.conf.experimental",
-    nocookie = "dothttp.conf.nocookie",
-    history = "dothttp.conf.history",
-    curl = "dothttp.conf.curl",
-}
-
+import { Constants } from './constants';
 
 function getPythonVersion(path: string): boolean {
     const sysout = child_process.execSync(`${path} --version`);
@@ -31,9 +22,9 @@ export function isPythonConfigured() {
         if (correctPath) { return true; }
         const version = getPythonVersion('python3');
         if (version) {
-            vscode.workspace.getConfiguration().update(ConfigVars.pythonPath, "python3", vscode.ConfigurationTarget.Global);
-            vscode.workspace.getConfiguration().update(ConfigVars.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
-            vscode.workspace.getConfiguration().update(ConfigVars.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
+            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Global);
+            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
+            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
         }
         return version;
     }
@@ -57,27 +48,27 @@ export class Configuration {
 
     // isConfiguredPathCorrect?
     static getPath(): string {
-        return Configuration.getConfiguredValue(ConfigVars.pythonPath) as unknown as string;
+        return Configuration.getConfiguredValue(Constants.pythonPath) as unknown as string;
     }
 
     static getDothttpPath(): string {
-        return Configuration.getConfiguredValue(ConfigVars.dothttpPath) as unknown as string;
+        return Configuration.getConfiguredValue(Constants.dothttpPath) as unknown as string;
     }
 
     static isExperimental(): boolean {
-        return Configuration.getConfiguredValue(ConfigVars.experimental) as unknown as boolean;
+        return Configuration.getConfiguredValue(Constants.experimental) as unknown as boolean;
     }
 
     static isCookiesNotEnabled(): boolean {
-        return Configuration.getConfiguredValue(ConfigVars.nocookie) as unknown as boolean;
+        return Configuration.getConfiguredValue(Constants.nocookie) as unknown as boolean;
     }
 
     static isHistoryEnabled(): boolean {
-        return Configuration.getConfiguredValue(ConfigVars.history) as unknown as boolean;
+        return Configuration.getConfiguredValue(Constants.history) as unknown as boolean;
     }
 
     static isCurlEnabled(): boolean {
-        return Configuration.getConfiguredValue(ConfigVars.curl) as unknown as boolean;
+        return Configuration.getConfiguredValue(Constants.curl) as unknown as boolean;
     }
 
 }

@@ -1,9 +1,11 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
-import { FileState } from '../models/state';
+import { FileState, IFileState } from '../services/state';
 import DotHttpEditorView from './editor';
 import path = require('path');
+import { ApplicationServices } from '../services/global';
+import { stat } from 'fs';
 
 
 export interface Position {
@@ -32,8 +34,6 @@ enum viewState {
 export class EnvTree implements vscode.TreeDataProvider<Position> {
 
 
-    static _tree = new EnvTree();
-
     private _onDidChangeTreeData: vscode.EventEmitter<Position | null> = new vscode.EventEmitter<Position | null>();
     readonly onDidChangeTreeData: vscode.Event<Position | null> = this._onDidChangeTreeData.event;
 
@@ -42,6 +42,8 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     private autoRefresh = true;
     private filename!: vscode.Uri;
     private enableEnvs: Set<String> = new Set();
+    private filestate: IFileState | undefined;
+
 
 
     public refresh(offset?: Position): void {
@@ -107,7 +109,9 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     constructor() {
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
-
+    }
+    setFileSstatService(state: ApplicationServices) {
+        this.filestate = state.getFileStateService();
     }
 
     private parseTree(): void {
@@ -115,14 +119,14 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         if (this.editor && this.editor.document && basename(this.editor.document.fileName) === ".dothttp.json") {
             this.filename = this.editor.document.uri;
             this.tree = json.parse(this.editor.document.getText()) as DothttpJson;
-            this.enableEnvs = FileState.getState()?.envs ?? new Set();
+            this.enableEnvs = this.getEnvForCurrentFile() ?? new Set();
         } else {
             const dirname = path.dirname(this.editor.document.fileName);
             // TODO check if file exists
             vscode.workspace.fs.readFile(vscode.Uri.parse(
                 path.join(`${this.editor.document.uri.scheme}:${dirname}`, '.dothttp.json')
             )).then(bindata => {
-                this.enableEnvs = FileState.getState()?.envs ?? new Set();
+                this.enableEnvs = this.getEnvForCurrentFile() ?? new Set();
                 this.filename = this.editor.document.uri;
                 this.tree = json.parse(bindata.toString());
                 this._onDidChangeTreeData.fire(null);
@@ -133,6 +137,10 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         }
     }
 
+
+    private getEnvForCurrentFile(): Set<String> {
+        return this.filestate.getEnv(vscode.window.activeTextEditor?.document.fileName!);
+    }
 
     private onActiveEditorChanged(): void {
         if (vscode.window.activeTextEditor) {

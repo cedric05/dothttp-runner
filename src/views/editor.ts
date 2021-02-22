@@ -1,17 +1,23 @@
 import { existsSync } from 'fs';
 import { extname } from 'path';
 import * as vscode from 'vscode';
-import { GlobalState } from '../global';
+import { ClientHandler } from '../lib/client';
 import { Configuration, isPythonConfigured } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
-import { FileState } from '../models/state';
+import { ApplicationServices } from '../services/global';
+import { IFileState } from '../services/state';
 import querystring = require('querystring');
 
 export default class DotHttpEditorView implements vscode.TextDocumentContentProvider {
-
-
-    static state: GlobalState = GlobalState.getState();
+    clientHandler: ClientHandler;
     static scheme = 'dothttp';
+    filestateService: IFileState;
+
+    constructor() {
+        this.clientHandler = ApplicationServices.get().getClientHandler();
+        this.filestateService = ApplicationServices.get().getFileStateService();
+    }
+
     provideTextDocumentContent(uri: vscode.Uri, _token: vscode.CancellationToken): vscode.ProviderResult<string> {
         const filename = uri.path;
         const queryOptions = querystring.decode(uri.query);
@@ -23,12 +29,12 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 file: filename,
                 curl: (queryOptions.curl ?? 'false') == 'true' ? true : false,
                 target: (queryOptions.target as string) ?? '1',
-                env: FileState.getState()!.envs ?? [],
+                env: this.filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
 
             };
 
-            return new Promise(async function (resolve) {
-                const output = await DotHttpEditorView.state.clientHanler.execute(options);
+            return new Promise(async (resolve) => {
+                const output = await this.clientHandler.execute(options);
                 if (!output.error) {
                     resolve(output.body);
                 }
