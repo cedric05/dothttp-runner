@@ -1,0 +1,196 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "dothttp-vscode",
+    "scopeName": "source.dothttp-vscode",
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#string"
+        },
+        {
+            "include": "#number"
+        },
+        {
+            "include": "#language_keyword"
+        },
+        {
+            "include": "#language_operation"
+        },
+        {
+            "include": "#regular_expression"
+        },
+        {
+            "include": "#variables"
+        }
+    ],
+    "repository": {
+        "variables": {
+            "patterns": [
+                {
+                    "begin": "{{",
+                    "end": "}}",
+                    "name": "variable.parameter"
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "match": "#.*$",
+                    "name": "comment.line"
+                },
+                {
+                    "match": "//.*$",
+                    "name": "comment.line"
+                },
+                {
+                    "name": "comment.block",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                }
+            ]
+        },
+        "string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single",
+                    "begin": "'",
+                    "end": "'"
+                },
+                {
+                    "name": "string.quoted.double",
+                    "begin": "\"",
+                    "end": "\""
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "\\b[0-9]+\\b\\.{0,1}",
+                    "name": "constant.numeric"
+                }
+            ]
+        },
+        "language_keyword": {
+            "patterns": [
+                {
+                    "match": "header",
+                    "name": "support.class"
+                },
+                {
+                    "match": "\\(",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\,",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\)",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\:",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "basicauth",
+                    "name": "support.class"
+                },
+                {
+                    "match": "GET",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "POST",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "OPTIONS",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "DELETE",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "CONNECT",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "PUT",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "HEAD",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "TRACE",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "query",
+                    "name": "variable.other.enummember"
+                },
+                {
+                    "match": "\\?",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\=",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "data",
+                    "name": "support.class"
+                },
+                {
+                    "match": "fileinput",
+                    "name": "support.class"
+                },
+                {
+                    "match": "json",
+                    "name": "support.class"
+                },
+                {
+                    "match": "files",
+                    "name": "support.class"
+                },
+                {
+                    "match": "output",
+                    "name": "support.class"
+                },
+                {
+                    "match": "\\[",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\]",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "null",
+                    "name": "support.class"
+                },
+                {
+                    "match": "\\{",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "\\}",
+                    "name": "constant.language"
+                }
+            ]
+        },
+        "language_operation": {
+            "patterns": []
+        },
+        "regular_expression": {
+            "patterns": []
+        }
+    }
+}

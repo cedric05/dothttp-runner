@@ -1,14 +1,17 @@
 {
-	"name": "dothttp-runner",
-	"displayName": "dothttp-runner",
+	"name": "dothttp-code",
+	"displayName": "dothttp-code",
 	"description": "run dothttp files in vscode natively",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "shivaprasanth",
+	"repository": {
+		"url": "https://github.com/cedric05/dothttp-runner"
+	},
 	"engines": {
 		"vscode": "^1.53.0"
 	},
 	"categories": [
-		"Other"
+		"Programming Languages"
 	],
 	"activationEvents": [
 		"onView:dothttpEnvView",
@@ -17,6 +20,25 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"languages": [
+			{
+				"id": "dothttp-vscode",
+				"aliases": [
+					"dothttp-vscode"
+				],
+				"extensions": [
+					".http"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "dothttp-vscode",
+				"scopeName": "source.dothttp-vscode",
+				"path": "./syntaxes/grammer.json"
+			}
+		],
 		"commands": [
 			{
 				"command": "dothttp.command.run",
