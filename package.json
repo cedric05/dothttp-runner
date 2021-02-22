@@ -195,6 +195,7 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
+		"axios": "^0.21.1",
 		"jsonc-parser": "^3.0.0"
 	}
 }
