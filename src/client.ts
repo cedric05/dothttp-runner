@@ -5,96 +5,89 @@ import { createInterface, Interface } from 'readline';
 import { URL } from 'url';
 import EventEmitter = require('events');
 
-interface cmdServer {
+interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
     stop(): void;
 }
 
-interface cmdRequest {
+interface ICommand {
     method: string,
     id?: Number,
     params: {}
 }
 
 
-interface cmdResult {
+interface IResult {
     id: Number,
     result: {},
 }
 
-class CmdServerError extends Error {
+class CmdClientError extends Error {
 
 }
 
 
-abstract class BaseClient implements cmdServer {
-    abstract stop(): void;
+abstract class BaseSpanClient implements ICommandClient {
+    readonly proc: child_process.ChildProcessWithoutNullStreams;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
+
+    constructor(options: { pythonpath: string, stdargs: string[] }){
+        this.proc = child_process.spawn(options.pythonpath,
+            options.stdargs,
+        );
+    }
+
     async request(method: string, params: {}): Promise<{}> {
-        const id = BaseClient.count++;
+        const id = BaseSpanClient.count++;
         const result = await this.call({ method, params, id });
         if (result.id !== id) {
-            throw new CmdServerError("id's are not same");
+            throw new CmdClientError("id's are not same");
         }
         return result.result;
     }
-    abstract call(command: cmdRequest): Promise<cmdResult>;
+    abstract call(command: ICommand): Promise<IResult>;
+
+    stop(): void {
+        this.proc.kill();
+    }
+
 }
 
-export class StdoutClient extends BaseClient {
-    proc: child_process.ChildProcess;
+export class StdoutClient extends BaseSpanClient {
     rl: Interface;
     eventS: EventEmitter = new EventEmitter();
 
-
-    stop(): void {
-        this.proc?.kill();
-    }
-
     constructor(options: { pythonpath: string, stdargs: string[] }) {
-        super();
-        this.proc = child_process.spawn(options.pythonpath,
-            options.stdargs,
-            // { stdio: "inherit" }
-        );
+        super(options);
         this.rl = createInterface({
-            input: this.proc.stdout!,
+            input: this.proc.stdout,
             terminal: false
         });
+        // start readline to listen
         this.rl.on("line", (line) => {
-            const result: cmdResult = JSON.parse(line);
+            const result: IResult = JSON.parse(line);
             this.eventS.emit(result.id + '', result);
         })
     }
-    async call(command: cmdRequest): Promise<cmdResult> {
+    async call(command: ICommand): Promise<IResult> {
         const commandInString = JSON.stringify(command) + '\n';
         this.proc.stdin!.write(commandInString);
-        console.log('prev');
-        const result = await once(this.eventS, command.id + '');
-        console.log('after');
-
-        return result as unknown as cmdResult;
+        const results = await once(this.eventS, command.id + '');
+        // once retruns multiple at a time.
+        // technically you should recive only one.
+        if (results.length > 1) throw new CmdClientError("inconsistant state");
+        return results[0] as unknown as IResult;
     }
 }
 
 
-export class HttpClient extends BaseClient {
-    stop(): void {
-        this.proc?.kill();
-    }
-    proc?: child_process.ChildProcess;
+export class HttpClient extends BaseSpanClient {
     constructor(options: { pythonpath: string, stdargs: string[] }) {
-        super();
-        this.proc = child_process.spawn(options.pythonpath,
-            options.stdargs,
-            {
-                stdio: "inherit"
-            }
-        );
+        super(options);
     }
-    async call(command: cmdRequest): Promise<cmdResult> {
+    async call(command: ICommand): Promise<IResult> {
         const id = command.id;
-        const axiosResponse: AxiosResponse<cmdResult> = await axios({
+        const axiosResponse: AxiosResponse<IResult> = await axios({
             url: new URL(command.method, 'http://localhost:5000/').href,
             method: "POST",
             params: {
@@ -108,7 +101,7 @@ export class HttpClient extends BaseClient {
 
 
 class ClientHandler {
-    cli: BaseClient;
+    cli: BaseSpanClient;
     static executecommand = "/file/execute";
     constructor(options: { std: boolean, pythonpath: string, stdargs: string[] }) {
         if (options.std) {
