@@ -129,9 +129,10 @@ export class ClientHandler {
             const sp = prop.split('')
             properties.set(sp[0], sp[1]);
         }
+        const env = Array.from(options.env as Set<String>);
         return await this.cli.request(ClientHandler.executecommand, {
             file: options.file,
-            env: options.env,
+            env,
             properties: properties,
             nocookie: options.noCookie,
             target: options.target,
