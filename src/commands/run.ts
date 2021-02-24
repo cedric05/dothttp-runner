@@ -50,13 +50,12 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
-    const now = new Date().getTime();
     try {
         const out = await DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
         const query = encodeQueryString({ out: JSON.stringify(out) })
-        const extension = out.filenameExtension;
+        const fileNameWithInfo = contructFileName(filename, options, out);
 
-        const uri = vscode.Uri.parse(`dothttp:${filename}-${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}-${now}.${extension}?${query}`);
+        const uri = vscode.Uri.parse(`${DotHttpEditorView.scheme}:${fileNameWithInfo}?${query}`);
         vscode.workspace.openTextDocument(uri)
             .then(doc => {
                 vscode.window.showTextDocument(doc, 2)
@@ -65,4 +64,13 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         // ignored
     }
 
+}
+
+function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any) {
+    const now = new Date().getTime();
+    var middlepart = 'error';
+    if (!out.error_message) {
+        middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}`
+    }
+    return `${filename}-${middlepart}-${now}.${out.filenameExtension}`;
 }
