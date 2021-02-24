@@ -19,7 +19,6 @@ class DothttpPositions extends vscode.CodeLens {
 export class CodelensProvider implements vscode.CodeLensProvider<DothttpPositions> {
 
 
-    private codeLenses: DothttpPositions[] = [];
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
     private clientHandler: ClientHandler;
@@ -33,22 +32,26 @@ export class CodelensProvider implements vscode.CodeLensProvider<DothttpPosition
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
         return new Promise(async (resolve) => {
-            this.codeLenses = [];
+            const codeLenses: DothttpPositions[] = [];
             this.clientHandler.getNames(document.fileName).then((names) => {
-                names.names.forEach(name => {
-                    const runCommand = new DothttpPositions(new Range(
-                        document.positionAt(name.start),
-                        document.positionAt(name.end)),
-                        name.name,
-                        false
-                    );
-                    const curlCommand = new DothttpPositions(runCommand.range,
-                        name.name,
-                        true);
-                    this.codeLenses.push(runCommand);
-                    this.codeLenses.push(curlCommand);
-                    resolve(this.codeLenses);
-                })
+                if (names.names)
+                    names.names.forEach(name => {
+                        const runCommand = new DothttpPositions(new Range(
+                            document.positionAt(name.start),
+                            document.positionAt(name.end)),
+                            name.name,
+                            false
+                        );
+                        const curlCommand = new DothttpPositions(runCommand.range,
+                            name.name,
+                            true);
+                        codeLenses.push(runCommand);
+                        codeLenses.push(curlCommand);
+                        resolve(codeLenses);
+                    })
+                else {
+                    resolve(codeLenses);
+                }
             });
         })
     }
