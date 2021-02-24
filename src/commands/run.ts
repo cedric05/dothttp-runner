@@ -54,16 +54,34 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         const out = await DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
         const query = encodeQueryString({ out: JSON.stringify(out) })
         const fileNameWithInfo = contructFileName(filename, options, out);
-
-        const uri = vscode.Uri.parse(`${DotHttpEditorView.scheme}:${fileNameWithInfo}?${query}`);
-        vscode.workspace.openTextDocument(uri)
-            .then(doc => {
-                vscode.window.showTextDocument(doc, 2)
-            });
+        showInUntitledView(fileNameWithInfo, out);
+        // const uri = vscode.Uri.parse(`${DotHttpEditorView.scheme}:${fileNameWithInfo}?${query}`);
+        // vscode.workspace.openTextDocument(uri)
+        //     .then(doc => {
+        //         vscode.window.showTextDocument(doc, 2)
+        //     });
     } catch (error) {
         // ignored
     }
 
+}
+
+function showInUntitledView(scriptFileName: string, out: { error?: boolean, error_message?: string, body?: string }) {
+    /**
+     * with textdocumentcontentprovider, content is not editable and formattable.
+     * currently i'm skepticall among both options, 
+     * i will keep showinUntitedView default, and other one as configrable, 
+     * after some feedback one of both will be removed
+     */
+    var setting = vscode.Uri.parse("untitled:" + scriptFileName);
+    vscode.workspace.openTextDocument(setting).then((a) => {
+        vscode.window.showTextDocument(a, 2 /** new group */, true /**preserveFocus */).then(e => {
+            e.edit(edit => {
+                const scriptContent = out.error ? out.error_message! : out.body!;
+                edit.insert(new vscode.Position(0, 0), scriptContent);
+            });
+        });
+    });
 }
 
 function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any) {
