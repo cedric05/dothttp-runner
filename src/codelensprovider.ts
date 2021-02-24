@@ -57,7 +57,7 @@ export class CodelensProvider implements vscode.CodeLensProvider<DothttpPosition
         codeLens.command = {
             title: !codeLens.curl ? "Run http" : "generate curl",
             tooltip: !codeLens.curl ? "Run http targets this definition" : "Generate curl targeting this def",
-            command: "dothttp.command.run",
+            command: !codeLens.curl ? "dothttp.command.run" : "dothttp.command.gencurl",
             arguments: [{ "target": codeLens.target, "curl": codeLens.curl }]
         };
         return codeLens;

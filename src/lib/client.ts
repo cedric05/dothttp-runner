@@ -129,6 +129,7 @@ export class ClientHandler {
             env: options.env,
             properties: options.properties,
             nocookie: options.noCookie,
+            curl: options.curl,
             target: options.target,
         })
     }
