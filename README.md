@@ -14,7 +14,7 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 - [ ] save history for requests
 - [ ] open executed file in seperate tab with content-type
 
-<img src="./dothttp-runner-demo-0.0.1.gif" >
+<img src="./demo.gif" >
 
 ### future
 current repository will be moved into this [dothttp-code](https://github.com/cedric05/dothttp-code)
