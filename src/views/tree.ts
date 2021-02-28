@@ -25,6 +25,7 @@ interface DothttpJson {
 enum viewState {
     environment = "environment", // which can be enabled
     enabled = "enabledEnvironment", // which can be enabled
+    property = 'property',
 
 }
 
@@ -40,7 +41,19 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     private tree!: DothttpJson;
     private editor!: vscode.TextEditor;
     private autoRefresh = true;
-    private filename!: vscode.Uri;
+    private _filename!: vscode.Uri;
+
+
+
+    public get filename(): vscode.Uri {
+        return this._filename;
+    }
+
+    public set filename(name: vscode.Uri) {
+        this._filename = name;
+    }
+
+
     private filestate: IFileState | undefined;
 
 
@@ -51,6 +64,14 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             this._onDidChangeTreeData.fire(offset);
         } else {
             this._onDidChangeTreeData.fire(null);
+        }
+    }
+
+
+
+    public getProperty(node: Position) {
+        if (node.env && node.envProperty) {
+            return this.tree[node.env][node.envProperty]
         }
     }
 
@@ -100,6 +121,9 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
                     item.contextValue = viewState.environment;
                 }
             }
+            else {
+                item.contextValue = viewState.property;
+            }
             return item;
         }
         return new vscode.TreeItem('dothttp');
@@ -120,12 +144,12 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             this.tree = json.parse(this.editor.document.getText()) as DothttpJson;
         } else {
             const dirname = path.dirname(this.editor.document.fileName);
+            const filename = vscode.Uri.parse(path.join(`${this.editor.document.uri.scheme}:${dirname}`, '.dothttp.json'));
             // TODO check if file exists
-            vscode.workspace.fs.readFile(vscode.Uri.parse(
-                path.join(`${this.editor.document.uri.scheme}:${dirname}`, '.dothttp.json')
-            )).then(bindata => {
+            vscode.workspace.fs.readFile(filename).then(bindata => {
                 this.filename = this.editor.document.uri;
                 this.tree = json.parse(bindata.toString());
+                this.filename = filename
                 this._onDidChangeTreeData.fire(null);
             }, error => {
                 vscode.commands.executeCommand('setContext', 'dothttpEnvViewEnabled', false);

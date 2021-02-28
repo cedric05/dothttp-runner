@@ -87,6 +87,14 @@
 			{
 				"command": "dothttp.file.disableenv",
 				"title": "disable env"
+			},
+			{
+				"command": "dothttpEnvView.opendothttpjson",
+				"title": "open"
+			},
+			{
+				"command": "dothttpEnvView.copyPropertyValue",
+				"title": "copy env property"
 			}
 		],
 		"menus": {
@@ -113,6 +121,11 @@
 					"command": "dothttpEnvView.refresh",
 					"when": "view == dothttpEnvView",
 					"group": "navigation"
+				},
+				{
+					"command": "dothttpEnvView.opendothttpjson",
+					"when": "view == dothttpEnvView",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -124,6 +137,11 @@
 				{
 					"command": "dothttp.file.disableenv",
 					"when": "view == dothttpEnvView && viewItem == enabledEnvironment",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpEnvView.copyPropertyValue",
+					"when": "view == dothttpEnvView && viewItem == property",
 					"group": "inline"
 				}
 			]

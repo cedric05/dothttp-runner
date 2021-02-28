@@ -74,8 +74,8 @@ function showInUntitledView(scriptFileName: string, out: { error?: boolean, erro
      * after some feedback one of both will be removed
      */
     var setting = vscode.Uri.parse("untitled:" + scriptFileName);
-    vscode.workspace.openTextDocument(setting).then((a) => {
-        vscode.window.showTextDocument(a, 2 /** new group */, true /**preserveFocus */).then(e => {
+    vscode.workspace.openTextDocument(setting).then((textDoc) => {
+        vscode.window.showTextDocument(textDoc, 2 /** new group */, false /**preserveFocus */).then(e => {
             e.edit(edit => {
                 const scriptContent = out.error ? out.error_message! : out.body!;
                 edit.insert(new vscode.Position(0, 0), scriptContent);
