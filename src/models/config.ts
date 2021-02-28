@@ -8,7 +8,7 @@ function getPythonVersion(path: string): boolean {
     if (sysout) {
         const versionArr = new String(sysout).trim().split(" ");
         if (versionArr.length === 2) {
-            return parseFloat(versionArr[1]) >= 3.9;
+            return parseFloat(versionArr[1]) >= 3.8;
         }
     }
     return false;
