@@ -1,8 +1,10 @@
-import { encode as encodeQueryString } from 'querystring';
 import * as vscode from 'vscode';
 import { isPythonConfigured } from '../models/config';
+import { Constants } from '../models/constants';
 import { DothttpRunOptions } from "../models/dotoptions";
 import DotHttpEditorView from '../views/editor';
+import dateFormat = require('dateformat');
+
 
 
 export function commandGenerator(options: DothttpRunOptions) {
@@ -50,45 +52,63 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
-    try {
-        const out = await DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
-        const query = encodeQueryString({ out: JSON.stringify(out) })
-        const fileNameWithInfo = contructFileName(filename, options, out);
-        showInUntitledView(fileNameWithInfo, out);
-        // const uri = vscode.Uri.parse(`${DotHttpEditorView.scheme}:${fileNameWithInfo}?${query}`);
-        // vscode.workspace.openTextDocument(uri)
-        //     .then(doc => {
-        //         vscode.window.showTextDocument(doc, 2)
-        //     });
-    } catch (error) {
-        // ignored
-    }
-
+    const date = new Date();
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: `running ${filename}
+        target: ${options.target}
+        time: ${date}`,
+        cancellable: false,
+    }, (progress, token) => {
+        return new Promise(async (resolve) => {
+            const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            progress.report({ increment: 50, message: 'api called' });
+            const out = await prom;
+            const fileNameWithInfo = contructFileName(filename, options, out, date);
+            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
+            progress.report({ increment: 50, message: 'completed' });
+            resolve(true);
+        });
+    })
 }
 
-function showInUntitledView(scriptFileName: string, out: { error?: boolean, error_message?: string, body?: string }) {
+function showInUntitledView(scriptFileName: string, headerURI: string, out: { error?: boolean, error_message?: string, body?: string, headers: {} }) {
     /**
      * with textdocumentcontentprovider, content is not editable and formattable.
      * currently i'm skepticall among both options, 
      * i will keep showinUntitedView default, and other one as configrable, 
      * after some feedback one of both will be removed
      */
-    var setting = vscode.Uri.parse("untitled:" + scriptFileName);
-    vscode.workspace.openTextDocument(setting).then((textDoc) => {
+    const outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
         vscode.window.showTextDocument(textDoc, 2 /** new group */, false /**preserveFocus */).then(e => {
             e.edit(edit => {
                 const scriptContent = out.error ? out.error_message! : out.body!;
                 edit.insert(new vscode.Position(0, 0), scriptContent);
             });
         });
+        if (vscode.workspace.getConfiguration(Constants.showheaders) && !out.error) {
+            const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
+            vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
+                vscode.window.showTextDocument(textDoc, -2 /** new group */, true /**preserveFocus */).then(e => {
+                    e.edit(edit => {
+                        const scriptContent = JSON.stringify(out.headers);
+                        edit.insert(new vscode.Position(0, 0), scriptContent);
+                    });
+                });
+            });
+        }
     });
 }
 
-function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any) {
-    const now = new Date().getTime();
+function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, date: Date) {
+    const now = dateFormat(date, 'h:MM:ss');
     var middlepart = 'error';
     if (!out.error_message) {
         middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}`
     }
-    return `${filename}-${middlepart}-${now}.${out.filenameExtension}`;
+    return {
+        filename: `${filename}-${middlepart}-${now}.${out.filenameExtension}`,
+        header: `${filename}-${middlepart}-headers-${now}.json`,
+    };
 }

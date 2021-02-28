@@ -56,7 +56,7 @@
 		"commands": [
 			{
 				"command": "dothttp.command.run",
-				"title": "run http file",
+				"title": "run first target",
 				"category": "Dothttp",
 				"icon": {
 					"dark": "media/a.png",
@@ -65,7 +65,7 @@
 			},
 			{
 				"command": "dothttp.command.gencurl",
-				"title": "generate curl file",
+				"title": "generate curl for first target",
 				"category": "Dothttp",
 				"icon": {
 					"dark": "media/c.png",
@@ -179,6 +179,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "genererate curl command only!"
+					},
+					"dothttp.conf.showheaders": {
+						"type": "boolean",
+						"default": false,
+						"description": "show headers in seperate view"
 					}
 				}
 			}
@@ -187,7 +192,7 @@
 			"explorer": [
 				{
 					"id": "dothttpEnvView",
-					"name": "Dothttp env view",
+					"name": "Dothttp env",
 					"when": "dothttpEnvViewEnabled"
 				}
 			]
@@ -205,6 +210,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@types/dateformat": "^3.0.1",
 		"@types/glob": "^7.1.3",
 		"@types/lodash": "^4.14.168",
 		"@types/mime-types": "^2.1.0",
@@ -224,6 +230,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.21.1",
+		"dateformat": "^4.5.1",
 		"jsonc-parser": "^3.0.0",
 		"lodash": "^4.17.20",
 		"mime-types": "^2.1.29"

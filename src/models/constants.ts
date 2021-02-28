@@ -7,7 +7,8 @@ export enum Constants {
     experimental = "dothttp.conf.experimental",
     nocookie = "dothttp.conf.nocookie",
     history = "dothttp.conf.history",
-    curl = "dothttp.conf.curl"
+    curl = "dothttp.conf.curl",
+    showheaders = "dothttp.conf.showheaders"
 
     //
 }

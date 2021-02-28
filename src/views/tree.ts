@@ -104,7 +104,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     getTreeItem(pos: Position): vscode.TreeItem {
         if (pos.env) {
             const item = new vscode.TreeItem(
-                pos.envProperty ? `${pos.envProperty}: ${this.tree[pos.env][pos.envProperty]}` : pos.env, pos.envProperty ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
+                this.getLabel(pos), pos.envProperty ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
             );
             // TODO on click should open dothttp.json file
             item.command = {
@@ -133,6 +133,19 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
     }
+    private getLabel(pos: Position): string | vscode.TreeItemLabel {
+        if (pos.envProperty) {
+            return `${pos.envProperty}: ${this.tree[pos.env][pos.envProperty]}`
+        } else {
+            if (pos.env === '*') {
+                return "default env";
+            } else if (pos.env === 'headers') {
+                return 'default headers';
+            }
+            return pos.env
+        }
+    }
+
     setFileSstatService(state: ApplicationServices) {
         this.filestate = state.getFileStateService();
     }

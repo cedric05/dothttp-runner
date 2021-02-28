@@ -6,13 +6,13 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 - [x] Run http file in editor itself
 - [x] load .dothttp.json into editor
 - [x] set environements from editor
-  - [ ] copy env
-  - [ ] open `.dothttp.json` from env view for easy edit
+  - [x] copy env
+  - [x] open `.dothttp.json` from env view for easy edit
 - [ ] set properties from editor
   - [ ] copy property
 - [ ] change environments priority
 - [ ] save history for requests
-- [ ] open executed file in seperate tab with content-type
+- [x] open executed file in seperate tab with content-type
 
 <img src="./demo.gif" >
 

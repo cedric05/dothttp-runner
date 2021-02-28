@@ -3,15 +3,15 @@
 High level goals are
 - [x] Run http file from dothttp
   - [x] show response in right pane
-    - [ ] set filetype (like json/html/xml) for lang support
-  - [ ] show debug output in debug console of vscode
+    - [x] set filetype (like json/html/xml) for lang support
+  - [x] show debug output in debug console of vscode
 - [x] parse `.dothttp.json` from http file dir and list environments (tree view)
-  - [ ] `*` env properties should show with name `default` and bold
-  - [ ] `headers` section with bold (as its applied for all)
-  - [ ] rest environments list
+  - [x] `*` env properties should show with name `default` and bold
+  - [x] `headers` section with bold (as its applied for all)
+  - [x] rest environments list
     - [x] checkbox to enable environments
   - [x] expand of any above section should show display properties
-  - [ ] on double click it should open file (to currect position) ??????
+  - [x] on double click it should open file (to currect position) ??????
 - [ ] should be able to set properties from side left pane
 - [x] remember last run environments , properties for each file.
   - [x] close and open same *httpfile*. it should set same enabled properties
@@ -29,6 +29,7 @@ Configuration:
   - set python3.9 path 
     - dothttp.conf.pythonpath (string)
     - dothttp.conf.path (string)
+    - dothttp.conf.showheaders (bool)
   - enable experimental features (conf.)
     - dothttp.conf.experimental (true/false)
   - disable cookie
