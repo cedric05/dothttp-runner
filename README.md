@@ -1,18 +1,30 @@
 # dothttp-runner README
 
 visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
+
+
+⚠️ for using dothttp-runner, you will need to install python3.8 and have to install `dothttp-req, flask`
+
+flask is one of requirement for now, and will be removed in future releases.
+
+
+install via
+
+`python3 -m pip install dothttp-req==0.0.5 flask`
+
+once installed set vscode pythonpath to `dothttp.conf.pythonpath` in vscode `settings.json`
 ## Features
 
 - [x] Run http file in editor itself
 - [x] load .dothttp.json into editor
 - [x] set environements from editor
-  - [ ] copy env
-  - [ ] open `.dothttp.json` from env view for easy edit
-- [ ] set properties from editor
-  - [ ] copy property
-- [ ] change environments priority
+  - [x] copy env
+  - [x] open `.dothttp.json` from env view for easy edit
+- [x] set properties from editor
+  - [x] copy property
+- [x] change environments priority
 - [ ] save history for requests
-- [ ] open executed file in seperate tab with content-type
+- [x] open executed file in seperate tab with content-type
 
 <img src="./demo.gif" >
 

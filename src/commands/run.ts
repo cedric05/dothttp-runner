@@ -1,8 +1,10 @@
-import { encode as encodeQueryString } from 'querystring';
 import * as vscode from 'vscode';
-import { isPythonConfigured } from '../models/config';
+import { Configuration, isPythonConfigured } from '../models/config';
+import { Constants } from '../models/constants';
 import { DothttpRunOptions } from "../models/dotoptions";
 import DotHttpEditorView from '../views/editor';
+import dateFormat = require('dateformat');
+
 
 
 export function commandGenerator(options: DothttpRunOptions) {
@@ -27,10 +29,12 @@ export function commandGenerator(options: DothttpRunOptions) {
             env = `--env ${envList}`;
         }
     }
-    if (options.properties && options.properties.length > 0) {
-        const propList = options.properties.map(a => a.trim()).join(" ");
-        if (propList) {
-            properties = `--env ${propList}`;
+    if (options.properties) {
+        var properties = Object.entries(options.properties)
+            .map(a => ` ${a[0]}=${a[1]} `)
+            .reduce((a, b) => `${a} ${b}`)
+        if (properties) {
+            properties = `--properties ${properties}`;
         }
     }
     if (options.curl) {
@@ -50,45 +54,61 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
-    try {
-        const out = await DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
-        const query = encodeQueryString({ out: JSON.stringify(out) })
-        const fileNameWithInfo = contructFileName(filename, options, out);
-        showInUntitledView(fileNameWithInfo, out);
-        // const uri = vscode.Uri.parse(`${DotHttpEditorView.scheme}:${fileNameWithInfo}?${query}`);
-        // vscode.workspace.openTextDocument(uri)
-        //     .then(doc => {
-        //         vscode.window.showTextDocument(doc, 2)
-        //     });
-    } catch (error) {
-        // ignored
-    }
-
+    const date = new Date();
+    const now = dateFormat(date, 'h:MM:ss');
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: `running ${filename} target: ${options.target} time: ${now}`,
+        cancellable: false,
+    }, (progress, token) => {
+        return new Promise(async (resolve) => {
+            const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            progress.report({ increment: 50, message: 'api called' });
+            const out = await prom;
+            const fileNameWithInfo = contructFileName(filename, options, out, now);
+            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
+            progress.report({ increment: 50, message: 'completed' });
+            resolve(true);
+        });
+    })
 }
 
-function showInUntitledView(scriptFileName: string, out: { error?: boolean, error_message?: string, body?: string }) {
+function showInUntitledView(scriptFileName: string, headerURI: string, out: { error?: boolean, error_message?: string, body?: string, headers: {} }) {
     /**
      * with textdocumentcontentprovider, content is not editable and formattable.
      * currently i'm skepticall among both options, 
      * i will keep showinUntitedView default, and other one as configrable, 
      * after some feedback one of both will be removed
      */
-    var setting = vscode.Uri.parse("untitled:" + scriptFileName);
-    vscode.workspace.openTextDocument(setting).then((a) => {
-        vscode.window.showTextDocument(a, 2 /** new group */, true /**preserveFocus */).then(e => {
+    const outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
+        vscode.window.showTextDocument(textDoc, 2 /** new group */, false /**preserveFocus */).then(e => {
             e.edit(edit => {
                 const scriptContent = out.error ? out.error_message! : out.body!;
                 edit.insert(new vscode.Position(0, 0), scriptContent);
             });
         });
+        if (Configuration.isHistoryEnabled() && !out.error) {
+            const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
+            vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
+                vscode.window.showTextDocument(textDoc, -2 /** new group */, true /**preserveFocus */).then(e => {
+                    e.edit(edit => {
+                        const scriptContent = JSON.stringify(out.headers);
+                        edit.insert(new vscode.Position(0, 0), scriptContent);
+                    });
+                });
+            });
+        }
     });
 }
 
-function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any) {
-    const now = new Date().getTime();
+function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, now: string) {
     var middlepart = 'error';
     if (!out.error_message) {
         middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}`
     }
-    return `${filename}-${middlepart}-${now}.${out.filenameExtension}`;
+    return {
+        filename: `${filename}-${middlepart}-${now}.${out.filenameExtension}`,
+        header: `${filename}-${middlepart}-headers-${now}.json`,
+    };
 }
