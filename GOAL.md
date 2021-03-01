@@ -15,6 +15,7 @@ High level goals are
 - [x] should be able to set properties from side left pane
 - [x] remember last run environments , properties for each file.
   - [x] close and open same *httpfile*. it should set same enabled properties
+- [ ] easy installable
 
 
 Complete Installation/configuration plan:

@@ -29,10 +29,12 @@ export function commandGenerator(options: DothttpRunOptions) {
             env = `--env ${envList}`;
         }
     }
-    if (options.properties && options.properties.length > 0) {
-        const propList = options.properties.map(a => a.trim()).join(" ");
-        if (propList) {
-            properties = `--env ${propList}`;
+    if (options.properties) {
+        var properties = Object.entries(options.properties)
+            .map(a => ` ${a[0]}=${a[1]} `)
+            .reduce((a, b) => `${a} ${b}`)
+        if (properties) {
+            properties = `--properties ${properties}`;
         }
     }
     if (options.curl) {
