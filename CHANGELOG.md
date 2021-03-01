@@ -4,6 +4,7 @@ All notable changes to the "dothttp-runner" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [0.0.4]
 
-- Initial release
+- add property, update property, enable disable property for http file
+- support python3
