@@ -87,7 +87,7 @@ export class FileState implements IFileState {
     addProperty(filename: string, key: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
         // paying pricing for old interface design
-        if (fileinfo.properties instanceof Object) {
+        if (!(fileinfo.properties instanceof Array)) {
             fileinfo.properties = [];
         }
         fileinfo.properties.push({
