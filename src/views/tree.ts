@@ -69,7 +69,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             vscode.commands.executeCommand('setContext', Constants.propViewEnabled, false);
         }
     }
-    refresh() {
+    async refresh() {
         if (this.filename!) {
             this.properties = this.fileStateService!.getProperties(this.filename!.toString());
             this._onDidChangeTreeData.fire(null);
@@ -86,7 +86,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
     getChildren(element?: PropertyTreeItem): vscode.ProviderResult<PropertyTreeItem[]> {
         if (element) {
-            return
+            return []
         } else {
             return this.properties;
         }
