@@ -12,7 +12,7 @@ High level goals are
     - [x] checkbox to enable environments
   - [x] expand of any above section should show display properties
   - [x] on double click it should open file (to currect position) ??????
-- [ ] should be able to set properties from side left pane
+- [x] should be able to set properties from side left pane
 - [x] remember last run environments , properties for each file.
   - [x] close and open same *httpfile*. it should set same enabled properties
 

@@ -8,8 +8,8 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 - [x] set environements from editor
   - [x] copy env
   - [x] open `.dothttp.json` from env view for easy edit
-- [ ] set properties from editor
-  - [ ] copy property
+- [x] set properties from editor
+  - [x] copy property
 - [ ] change environments priority
 - [ ] save history for requests
 - [x] open executed file in seperate tab with content-type

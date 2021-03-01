@@ -1,18 +1,27 @@
 import { LocalStorageService } from './storage';
 
+interface Iproperties {
+    key: string,
+    value: string,
+    enabled: boolean
+}
 export interface FileInfo {
     envs: string[];
-    properties: { [prop: string]: string };
+    properties: Iproperties[];
 }
 
 export interface IFileState {
     getEnv(filename: string): FileInfo["envs"]
-    getProperties(filename: string): FileInfo["properties"]
     addEnv(filename: string, env: string): void
-    addProperty(filename: string, key: string, value: string): void
-    removeProperty(filename: string, key: string): void
     removeEnv(filename: string, env: string): void
     hasEnv(fileName: string, env: string): boolean;
+
+    getProperties(filename: string): FileInfo["properties"]
+    addProperty(filename: string, key: string, value: string): void
+    disableProperty(filename: string, key: string): void
+    enableProperty(filename: string, key: string): void
+    updateProperty(filename: string, key: string, value: string): void
+
 }
 
 
@@ -25,6 +34,7 @@ export class FileState implements IFileState {
     constructor(storage: LocalStorageService) {
         this.storage = storage;
     }
+
     hasEnv(fileName: string, env: string): boolean {
         const envs = this.getFileInfo(fileName).envs;
         if (envs.indexOf(env) > -1) {
@@ -37,8 +47,12 @@ export class FileState implements IFileState {
         if (this.state.has(filename)) {
             return this.state.get(filename)!
         } else {
-            return this.storage.getValue(
-                FileState.getFileKey(filename), { envs: [], properties: {} })
+            const value = this.storage.getValue(
+                FileState.getFileKey(filename), {
+                envs: [], properties: []
+            });
+            this.state.set(filename, value);
+            return value
         }
     }
 
@@ -55,7 +69,11 @@ export class FileState implements IFileState {
         return fileinfo.properties
     }
     getProperty(filename: string, key: string) {
-        return this.getProperties(filename)[key];
+        const filtered = this.getProperties(filename).filter(prop => prop.key === key)
+        if (filtered.length === 1) {
+            return filtered[0];
+        }
+        return null;
     }
     addEnv(filename: string, env: string): void {
         const fileinfo = this.getFileInfo(filename);
@@ -68,13 +86,35 @@ export class FileState implements IFileState {
     }
     addProperty(filename: string, key: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties[key] = value;
+        fileinfo.properties.push({
+            key,
+            value,
+            enabled: true
+        });
         this.updateFileinfo(filename, fileinfo);
     }
 
-    removeProperty(filename: string, key: string) {
+    disableProperty(filename: string, key: string) {
         const fileinfo = this.getFileInfo(filename);
-        delete fileinfo.properties[key];
+        fileinfo.properties.filter(prop => prop.key === key).forEach(prop => {
+            prop.enabled = false;
+        })
+        this.updateFileinfo(filename, fileinfo);
+    }
+
+    updateProperty(filename: string, key: string, value: string): void {
+        const fileinfo = this.getFileInfo(filename);
+        fileinfo.properties.filter(prop => prop.key === key).forEach(prop => {
+            prop.value = value
+        })
+        this.updateFileinfo(filename, fileinfo);
+    }
+
+    enableProperty(filename: string, key: string): void {
+        const fileinfo = this.getFileInfo(filename);
+        fileinfo.properties.filter(prop => prop.key === key).forEach(prop => {
+            prop.enabled = true;
+        })
         this.updateFileinfo(filename, fileinfo);
     }
 
@@ -89,5 +129,6 @@ export class FileState implements IFileState {
 
     private updateFileinfo(filename: string, fileinfo: FileInfo) {
         this.storage.setValue(FileState.getFileKey(filename), fileinfo);
+        this.state.set(filename, fileinfo)
     }
 }

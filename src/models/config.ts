@@ -40,6 +40,11 @@ export function isDotHttpCorrect() {
     return false;
 }
 
+
+// TODO
+// instead of check configuration everytime, 
+// keep a private copy and listener when ever property changes, update
+
 export class Configuration {
 
     static getConfiguredValue(key: string) {
@@ -69,6 +74,10 @@ export class Configuration {
 
     static isCurlEnabled(): boolean {
         return Configuration.getConfiguredValue(Constants.curl) as unknown as boolean;
+    }
+
+    static isHeadersEnabled(): boolean {
+        return Configuration.getConfiguredValue(Constants.history) as unknown as boolean;
     }
 
 }

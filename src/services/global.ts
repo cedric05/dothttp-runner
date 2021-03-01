@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
 import { LocalStorageService } from "../services/storage";
-import { EnvTree } from "../views/tree";
+import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState } from "./state";
 
 export class ApplicationServices {
@@ -12,6 +12,7 @@ export class ApplicationServices {
     private storageService: LocalStorageService;
     private fileStateService: IFileState;
     private envTree: EnvTree
+    private propTree: PropertyTree;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -21,6 +22,7 @@ export class ApplicationServices {
         });
         this.fileStateService = new FileState(this.storageService);
         this.envTree = new EnvTree();
+        this.propTree = new PropertyTree();
     }
 
     static get() {
@@ -39,7 +41,8 @@ export class ApplicationServices {
     }
 
     postInitialize() {
-        this.envTree.setFileSstatService(this);
+        this.envTree.setFileStateService(this);
+        this.propTree.fileStateService = this.fileStateService;
     }
 
     getClientHandler(): ClientHandler {
@@ -56,6 +59,10 @@ export class ApplicationServices {
 
     getEnvProvder() {
         return this.envTree;
+    }
+
+    getPropTreeProvider(): PropertyTree {
+        return this.propTree;
     }
 
 }

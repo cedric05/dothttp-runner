@@ -43,6 +43,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 file: kwargs.filename,
                 curl: kwargs.curl,
                 target: kwargs.target ?? '1',
+                properties: DotHttpEditorView.getEnabledProperties(kwargs.filename),
                 env: filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
             }
             const out = await clientHandler.execute(options);
@@ -52,5 +53,14 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
             throw new Error();
         }
+    }
+
+    static getEnabledProperties(filename: string) {
+        const fileservice = ApplicationServices.get().getFileStateService();
+        const properties: any = {};
+        fileservice.getProperties(filename).filter(prop => prop.enabled).forEach(prop => {
+            properties[prop.key] = prop.value;
+        })
+        return properties;
     }
 }

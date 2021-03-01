@@ -81,12 +81,32 @@
 				"title": "Rename"
 			},
 			{
-				"command": "dothttp.file.enableenv",
+				"command": "dothttpEnvView.enableenv",
 				"title": "enable env"
 			},
 			{
-				"command": "dothttp.file.disableenv",
+				"command": "dothttpEnvView.disableenv",
 				"title": "disable env"
+			},
+			{
+				"command": "dothttpPropView.add",
+				"title": "add property"
+			},
+			{
+				"command": "dothttpPropView.enableproperty",
+				"title": "e"
+			},
+			{
+				"command": "dothttpPropView.disableproperty",
+				"title": "d"
+			},
+			{
+				"command": "dothttpPropView.copyPropertyValue",
+				"title": "c"
+			},
+			{
+				"command": "dothttpPropView.updateproperty",
+				"title": "u"
 			},
 			{
 				"command": "dothttpEnvView.opendothttpjson",
@@ -126,22 +146,47 @@
 					"command": "dothttpEnvView.opendothttpjson",
 					"when": "view == dothttpEnvView",
 					"group": "navigation"
+				},
+				{
+					"command": "dothttpPropView.add",
+					"when": "view == dothttpPropView",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "dothttp.file.enableenv",
+					"command": "dothttpEnvView.enableenv",
 					"when": "view == dothttpEnvView && viewItem == environment",
 					"group": "inline"
 				},
 				{
-					"command": "dothttp.file.disableenv",
+					"command": "dothttpEnvView.disableenv",
 					"when": "view == dothttpEnvView && viewItem == enabledEnvironment",
 					"group": "inline"
 				},
 				{
 					"command": "dothttpEnvView.copyPropertyValue",
 					"when": "view == dothttpEnvView && viewItem == property",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpPropView.enableproperty",
+					"when": "view == dothttpPropView && viewItem == disabled",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpPropView.disableproperty",
+					"when": "view == dothttpPropView && viewItem == enabled",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpPropView.copyPropertyValue",
+					"when": "view == dothttpPropView",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpPropView.updateproperty",
+					"when": "view == dothttpPropView",
 					"group": "inline"
 				}
 			]
@@ -193,6 +238,11 @@
 				{
 					"id": "dothttpEnvView",
 					"name": "Dothttp env",
+					"when": "dothttpEnvViewEnabled"
+				},
+				{
+					"id": "dothttpPropView",
+					"name": "Dothttp prop",
 					"when": "dothttpEnvViewEnabled"
 				}
 			]
