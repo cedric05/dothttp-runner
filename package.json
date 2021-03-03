@@ -59,8 +59,8 @@
 				"title": "run first target",
 				"category": "Dothttp",
 				"icon": {
-					"dark": "media/a.png",
-					"light": "media/a.png"
+					"dark": "./media/rocket.svg",
+					"light": "./media/rocket.svg"
 				}
 			},
 			{
@@ -68,53 +68,89 @@
 				"title": "generate curl for first target",
 				"category": "Dothttp",
 				"icon": {
-					"dark": "media/c.png",
-					"light": "media/c.png"
+					"dark": "media/mirror.svg",
+					"light": "media/mirror.svg"
 				}
 			},
 			{
 				"command": "dothttpEnvView.refresh",
-				"title": "Refresh"
-			},
-			{
-				"command": "dothttpEnvView.renameNode",
-				"title": "Rename"
+				"title": "Refresh",
+				"icon": {
+					"dark": "media/refresh.svg",
+					"light": "media/refresh.svg"
+				}
 			},
 			{
 				"command": "dothttpEnvView.enableenv",
-				"title": "enable env"
+				"title": "enable env",
+				"icon": {
+					"dark": "./media/add.svg",
+					"light": "./media/add.svg"
+				}
 			},
 			{
 				"command": "dothttpEnvView.disableenv",
-				"title": "disable env"
+				"title": "disable env",
+				"icon": {
+					"dark": "media/remove.svg",
+					"light": "media/remove.svg"
+				}
 			},
 			{
 				"command": "dothttpPropView.add",
-				"title": "add property"
+				"title": "add property",
+				"icon": {
+					"dark": "media/new-file.svg",
+					"light": "media/new-file.svg"
+				}
 			},
 			{
 				"command": "dothttpPropView.enableproperty",
-				"title": "e"
+				"title": "enable property",
+				"icon": {
+					"dark": "./media/add.svg",
+					"light": "./media/add.svg"
+				}
 			},
 			{
 				"command": "dothttpPropView.disableproperty",
-				"title": "d"
+				"title": "disable property",
+				"icon": {
+					"dark": "media/remove.svg",
+					"light": "media/remove.svg"
+				}
 			},
 			{
 				"command": "dothttpPropView.copyPropertyValue",
-				"title": "c"
+				"title": "copy property value",
+				"icon": {
+					"dark": "./media/chrome-restore.svg",
+					"light": "./media/chrome-restore.svg"
+				}
 			},
 			{
 				"command": "dothttpPropView.updateproperty",
-				"title": "u"
+				"title": "update property",
+				"icon": {
+					"dark": "./media/edit.svg",
+					"light": "./media/edit.svg"
+				}
 			},
 			{
 				"command": "dothttpEnvView.opendothttpjson",
-				"title": "open"
+				"title": "open",
+				"icon": {
+					"dark": "./media/edit.svg",
+					"light": "./media/edit.svg"
+				}
 			},
 			{
 				"command": "dothttpEnvView.copyPropertyValue",
-				"title": "copy env property"
+				"title": "copy env property",
+				"icon": {
+					"dark": "./media/chrome-restore.svg",
+					"light": "./media/chrome-restore.svg"
+				}
 			}
 		],
 		"menus": {
