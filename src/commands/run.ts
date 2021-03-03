@@ -59,15 +59,17 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: `running ${filename} target: ${options.target} time: ${now}`,
-        cancellable: false,
+        cancellable: true,
     }, (progress, token) => {
         return new Promise(async (resolve) => {
             const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
             progress.report({ increment: 50, message: 'api called' });
             const out = await prom;
-            const fileNameWithInfo = contructFileName(filename, options, out, now);
-            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
-            progress.report({ increment: 50, message: 'completed' });
+            if (!token.isCancellationRequested) {
+                const fileNameWithInfo = contructFileName(filename, options, out, now);
+                showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
+                progress.report({ increment: 50, message: 'completed' });
+            }
             resolve(true);
         });
     })
