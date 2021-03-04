@@ -29,7 +29,7 @@ export function copyProperty(node: Position) {
 }
 
 
-export function toggleExperimentalFlag(options: { flag: "experimental" | "history" | "nocookie" }) {
+export function toggleExperimentalFlag(options: { flag: "experimental" | "history" | "nocookie" | "headers" }) {
     var confKey = null
     switch (options.flag) {
         case "experimental":
@@ -41,6 +41,8 @@ export function toggleExperimentalFlag(options: { flag: "experimental" | "histor
         case "nocookie":
             confKey = Constants.nocookie;
             break;
+        case "headers": 
+            confKey = Constants.toggleHeadersCommand;
     }
     vscode.workspace.getConfiguration().update(confKey, !vscode.workspace.getConfiguration().get(confKey), vscode.ConfigurationTarget.Workspace);
 }

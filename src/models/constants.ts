@@ -17,6 +17,7 @@ export enum Constants {
     toggleExperimentalCommand = "dothttp.command.toggle.experimental",
     toggleHistoryCommand = "dothttp.command.toggle.history",
     toggleNocookieCommand = "dothttp.command.toggle.nocookie",
+    toggleHeadersCommand = "dothttp.command.toggle.showheaders",
     
     //    env tree
     envTreeView = 'dothttpEnvView',

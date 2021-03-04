@@ -80,6 +80,15 @@
 				}
 			},
 			{
+				"command": "dothttp.command.toggle.showheaders",
+				"title": "toggles experimental setting",
+				"category": "Dothttp",
+				"icon": {
+					"dark": "./media/gear.svg",
+					"light": "./media/gear.svg"
+				}
+			},
+			{
 				"command": "dothttp.command.toggle.history",
 				"title": "toggles history setting",
 				"category": "Dothttp",

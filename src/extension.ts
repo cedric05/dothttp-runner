@@ -37,6 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
 		() => toggleExperimentalFlag({ 'flag': "history" }));
 	vscode.commands.registerCommand(Constants.toggleNocookieCommand,
 		() => toggleExperimentalFlag({ 'flag': "nocookie" }));
+	vscode.commands.registerCommand(Constants.toggleHeadersCommand,
+		() => toggleExperimentalFlag({ 'flag': "headers" }));
 
 
 
