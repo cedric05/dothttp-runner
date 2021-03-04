@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
-import { copyProperty, disableCommand, enableCommand } from './commands/enable';
+import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { runHttpFileWithOptions } from './commands/run';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
@@ -31,6 +31,13 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
+	vscode.commands.registerCommand(Constants.toggleExperimentalCommand,
+		() => toggleExperimentalFlag({ 'flag': "experimental" }));
+	vscode.commands.registerCommand(Constants.toggleHistoryCommand,
+		() => toggleExperimentalFlag({ 'flag': "history" }));
+	vscode.commands.registerCommand(Constants.toggleNocookieCommand,
+		() => toggleExperimentalFlag({ 'flag': "nocookie" }));
+
 
 
 	const provider = new DotHttpEditorView();
@@ -49,11 +56,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const propProvider = ApplicationServices.get().getPropTreeProvider();
 	vscode.window.registerTreeDataProvider(Constants.propTreeView, propProvider);
+
 	vscode.commands.registerCommand(Constants.addPropCommand, () => { propProvider.addProperty() });
+	vscode.commands.registerCommand(Constants.disableAllPropCommand, () => { propProvider.disableAllProperies() });
+
 	vscode.commands.registerCommand(Constants.enablePropCommand, (node) => { propProvider.enableProperty(node) });
 	vscode.commands.registerCommand(Constants.disablePropCommand, (node) => { propProvider.disableProperty(node) });
 	vscode.commands.registerCommand(Constants.copyEnvPropCommand, (node) => { propProvider.copyProperty(node) });
 	vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propProvider.updateProperty(node) });
+	vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propProvider.removeProperty(node) });
 
 	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
 

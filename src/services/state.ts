@@ -20,6 +20,7 @@ export interface IFileState {
     addProperty(filename: string, key: string, value: string): void
     disableProperty(filename: string, key: string, value: string): void
     enableProperty(filename: string, key: string, value: string): void
+    removeProperty(filename: string, key: string, value: string): void
     updateProperty(filename: string, key: string, prev_value: string, value: string): void
 
 }
@@ -34,7 +35,6 @@ export class FileState implements IFileState {
     constructor(storage: LocalStorageService) {
         this.storage = storage;
     }
-
     hasEnv(fileName: string, env: string): boolean {
         const envs = this.getFileInfo(fileName).envs;
         if (envs.indexOf(env) > -1) {
@@ -127,6 +127,13 @@ export class FileState implements IFileState {
         })
         this.updateFileinfo(filename, fileinfo);
     }
+
+    removeProperty(filename: string, key: string, value: string): void {
+        const fileinfo = this.getFileInfo(filename);
+        fileinfo.properties = fileinfo.properties.filter(prop => !(prop.key === key && prop.value === value))
+        this.updateFileinfo(filename, fileinfo);
+    }
+
 
     removeEnv(filename: string, env: string) {
         const fileinfo = this.getFileInfo(filename);

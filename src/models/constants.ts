@@ -14,6 +14,10 @@ export enum Constants {
     // commands
     runFileCommand = 'dothttp.command.run',
     genCurlForFileCommand = 'dothttp.command.gencurl',
+    toggleExperimentalCommand = "dothttp.command.toggle.experimental",
+    toggleHistoryCommand = "dothttp.command.toggle.history",
+    toggleNocookieCommand = "dothttp.command.toggle.nocookie",
+    
     //    env tree
     envTreeView = 'dothttpEnvView',
 
@@ -34,6 +38,8 @@ export enum Constants {
     disablePropCommand = 'dothttpPropView.disableproperty',
     copyEnvPropCommand = 'dothttpPropView.copyPropertyValue',
     updatePropCommand = 'dothttpPropView.updateproperty',
+    removePropCommand = "dothttpPropView.removeproperty",
+    disableAllPropCommand = "dothttpPropView.disableAllProperties",
     // tree vars
     propViewEnabled = "dothttpPropViewEnabled",
 

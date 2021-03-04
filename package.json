@@ -57,7 +57,6 @@
 			{
 				"command": "dothttp.command.run",
 				"title": "run first target",
-				"category": "Dothttp",
 				"icon": {
 					"dark": "./media/rocket.svg",
 					"light": "./media/rocket.svg"
@@ -66,10 +65,36 @@
 			{
 				"command": "dothttp.command.gencurl",
 				"title": "generate curl for first target",
-				"category": "Dothttp",
 				"icon": {
 					"dark": "media/mirror.svg",
 					"light": "media/mirror.svg"
+				}
+			},
+			{
+				"command": "dothttp.command.toggle.experimental",
+				"title": "toggles experimental setting",
+				"category": "Dothttp",
+				"icon": {
+					"dark": "./media/gear.svg",
+					"light": "./media/gear.svg"
+				}
+			},
+			{
+				"command": "dothttp.command.toggle.history",
+				"title": "toggles history setting",
+				"category": "Dothttp",
+				"icon": {
+					"dark": "./media/gear.svg",
+					"light": "./media/gear.svg"
+				}
+			},
+			{
+				"command": "dothttp.command.toggle.nocookie",
+				"title": "toggles cookie setting",
+				"category": "Dothttp",
+				"icon": {
+					"dark": "./media/gear.svg",
+					"light": "./media/gear.svg"
 				}
 			},
 			{
@@ -137,6 +162,22 @@
 				}
 			},
 			{
+				"command": "dothttpPropView.disableAllProperties",
+				"title": "disable all properties",
+				"icon": {
+					"dark": "./media/close-all.svg",
+					"light": "./media/close-all.svg"
+				}
+			},
+			{
+				"command": "dothttpPropView.removeproperty",
+				"title": "remove property",
+				"icon": {
+					"dark": "./media/trash.svg",
+					"light": "./media/trash.svg"
+				}
+			},
+			{
 				"command": "dothttpEnvView.opendothttpjson",
 				"title": "open",
 				"icon": {
@@ -170,6 +211,18 @@
 				{
 					"command": "dothttp.command.run",
 					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+				},
+				{
+					"command": "dothttp.command.toggle.experimental",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+				},
+				{
+					"command": "dothttp.command.toggle.nocookie",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+				},
+				{
+					"command": "dothttp.command.toggle.history",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp"
 				}
 			],
 			"view/title": [
@@ -185,6 +238,11 @@
 				},
 				{
 					"command": "dothttpPropView.add",
+					"when": "view == dothttpPropView",
+					"group": "navigation"
+				},
+				{
+					"command": "dothttpPropView.disableAllProperties",
 					"when": "view == dothttpPropView",
 					"group": "navigation"
 				}
@@ -222,6 +280,11 @@
 				},
 				{
 					"command": "dothttpPropView.updateproperty",
+					"when": "view == dothttpPropView",
+					"group": "inline"
+				},
+				{
+					"command": "dothttpPropView.removeproperty",
 					"when": "view == dothttpPropView",
 					"group": "inline"
 				}

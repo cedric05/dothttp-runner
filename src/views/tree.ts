@@ -129,6 +129,21 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         )
     }
 
+    disableAllProperies() {
+        const filename = this.filename!?.toString();
+        const props = this.fileStateService?.getProperties(filename);
+        props?.forEach(prop => {
+            this.fileStateService!.disableProperty(filename, prop.key, prop.value);
+        }
+        )
+        this.refresh();
+    }
+
+    removeProperty(prop: PropertyTreeItem) {
+        const props = this.fileStateService?.removeProperty(this.filename!?.toString(), prop.key, prop.value);
+        this.refresh();
+    }
+
 }
 
 export class EnvTree implements vscode.TreeDataProvider<Position> {
