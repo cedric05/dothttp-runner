@@ -204,7 +204,7 @@
 			}
 		],
 		"menus": {
-			"editor/title": [
+			"editor/title/run": [
 				{
 					"command": "dothttp.command.run",
 					"group": "navigation",
