@@ -13,27 +13,31 @@ enum importoptions {
 
 export async function importRequests() {
     try {
-        const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger2, importoptions.swagger3]) as importoptions;
+        // const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger2, importoptions.swagger3]) as importoptions;
+        const pickType = importoptions.postman;
         if (!pickType) { return }
         const link = await vscode.window.showInputBox({
             prompt: "postman link",
             ignoreFocusOut: true,
-            validateInput: (value) => {
-                if (value.startsWith("https://www.getpostman.com/collections") ||
-                    value.startsWith("https://www.postman.com/collections")) {
-                    return null;
-                } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
-            },
+            // validateInput: (value) => {
+            // if (value.startsWith("https://www.getpostman.com/collections") ||
+            //     value.startsWith("https://www.postman.com/collections")) {
+            //     return null;
+            // } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
+            // },
             placeHolder: "https://getpostman.com/collections"
         });
         if (!link) { return }
-        const folder = await vscode.window.showWorkspaceFolderPick({
-            ignoreFocusOut: true,
-            placeHolder: vscode.workspace.workspaceFolders![0].name
+        const folder = await vscode.window.showSaveDialog({
+
         });
+        if (!folder?.fsPath) { return }
+        const directory = folder.fsPath!;
+        await vscode.workspace.fs.createDirectory(folder);
         if (folder) {
             if (pickType === importoptions.postman) {
-                ApplicationServices.get().clientHanler.importPostman({ directory: folder.name, link: link! })
+                await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
+
             }
         }
 
