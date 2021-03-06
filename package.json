@@ -107,6 +107,15 @@
 				}
 			},
 			{
+				"command": "dothttp.command.import.external",
+				"title": "import resource to http",
+				"category": "Dothttp",
+				"icon": {
+					"dark": "./media/cloud-download.svg",
+					"light": "./media/cloud-download.svg"
+				}
+			},
+			{
 				"command": "dothttpEnvView.refresh",
 				"title": "Refresh",
 				"icon": {

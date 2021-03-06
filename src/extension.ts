@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { runHttpFileWithOptions } from './commands/run';
+import {  importRequests, runHttpFileWithOptions } from './commands/run';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
@@ -39,6 +39,8 @@ export function activate(context: vscode.ExtensionContext) {
 		() => toggleExperimentalFlag({ 'flag': "nocookie" }));
 	vscode.commands.registerCommand(Constants.toggleHeadersCommand,
 		() => toggleExperimentalFlag({ 'flag': "headers" }));
+
+	vscode.commands.registerCommand(Constants.importCommand, importRequests)
 
 
 

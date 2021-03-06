@@ -114,6 +114,8 @@ export class ClientHandler {
     cli: BaseSpanClient;
     static executecommand = "/file/execute";
     static namescommand = "/file/names";
+    static importPostman = "/import/postman";
+
     constructor(options: { std: boolean, pythonpath: string }) {
         if (options.std) {
             this.cli = new StdoutClient({ pythonpath: options.pythonpath!, stdargs: ['-m', 'dotextensions.server'] });
@@ -132,6 +134,10 @@ export class ClientHandler {
             target: options.target,
             curl: options.curl,
         })
+    }
+
+    async importPostman(options: { link: string, directory: string }) {
+        return await this.cli.request(ClientHandler.importPostman, options)
     }
 
     async getNames(filename: string): Promise<{ names: nameresult[] }> {

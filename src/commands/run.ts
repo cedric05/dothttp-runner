@@ -1,50 +1,46 @@
 import * as vscode from 'vscode';
 import { Configuration, isPythonConfigured } from '../models/config';
-import { Constants } from '../models/constants';
-import { DothttpRunOptions } from "../models/dotoptions";
+import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 
-
-
-export function commandGenerator(options: DothttpRunOptions) {
-    var noCookies = "";
-    var experimental = "";
-    var propertyFile = "";
-    var env = "";
-    var properties = "";
-    var curl = "";
-    if (options.noCookie) {
-        noCookies = "--no-cookie";
-    }
-    if (options.experimental) {
-        experimental = "--experimental";
-    }
-    if (options.propertyFile) {
-        propertyFile = `--property-file ${options.propertyFile}`;
-    }
-    if (options.env && options.env.length > 0) {
-        const envList = options.env.map(a => a.trim()).join(" ");
-        if (envList) {
-            env = `--env ${envList}`;
-        }
-    }
-    if (options.properties) {
-        var properties = Object.entries(options.properties)
-            .map(a => ` ${a[0]}=${a[1]} `)
-            .reduce((a, b) => `${a} ${b}`)
-        if (properties) {
-            properties = `--properties ${properties}`;
-        }
-    }
-    if (options.curl) {
-        curl = "--curl";
-    }
-    const command = `${options.path} -m dothttp  ${options.file} ${noCookies} ${experimental} ${env} ${properties} ${propertyFile} ${curl}`.trim();
-    console.log(command);
-    return command;
+enum importoptions {
+    postman = 'postman',
+    swagger2 = 'swagger2.0',
+    swagger3 = 'swagger3.0'
 }
 
+
+export async function importRequests() {
+    try {
+        const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger2, importoptions.swagger3]) as importoptions;
+        if (!pickType) { return }
+        const link = await vscode.window.showInputBox({
+            prompt: "postman link",
+            ignoreFocusOut: true,
+            validateInput: (value) => {
+                if (value.startsWith("https://www.getpostman.com/collections") ||
+                    value.startsWith("https://www.postman.com/collections")) {
+                    return null;
+                } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
+            },
+            placeHolder: "https://getpostman.com/collections"
+        });
+        if (!link) { return }
+        const folder = await vscode.window.showWorkspaceFolderPick({
+            ignoreFocusOut: true,
+            placeHolder: vscode.workspace.workspaceFolders![0].name
+        });
+        if (folder) {
+            if (pickType === importoptions.postman) {
+                ApplicationServices.get().clientHanler.importPostman({ directory: folder.name, link: link! })
+            }
+        }
+
+    } catch (err) {
+        console.log('could be cancelled');
+    }
+}
 
 
 
