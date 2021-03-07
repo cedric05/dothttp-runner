@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { setUp } from './downloader';
 import { importRequests, runHttpFileWithOptions } from './commands/run';
+import { setUp } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';

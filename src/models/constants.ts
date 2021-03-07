@@ -50,5 +50,5 @@ export enum Constants {
 
     dothttpVersion = "dothttp.version",
 
-    versionApi = "https://code.dothttp.dev/versions"
+    versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json"
 }

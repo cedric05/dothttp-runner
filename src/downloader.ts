@@ -75,27 +75,8 @@ export async function getJSON<T>(api: string): Promise<T> {
     });
 }
 
-async function getVersion() {
-    // var resp = await getJSON<versionResponse>(Constants.versionApi);
-    const resp: versionResponse = {
-        availableversions: [{
-            downloadUrls: {
-                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.8/dotextensions-0.0.8-linux.zip",
-                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.8/dotextensions-0.0.8-x86-windows.zip",
-            },
-            latest: false,
-            stable: true,
-            version: "0.0.8",
-        }],
-        matrix: {
-            "0.0.5": {
-                maxVersion: "0.0.8",
-                minVersion: "0.0.8",
-            }
-
-        }
-
-    };
+export async function getVersion() {
+    var resp = await getJSON<versionResponse>(Constants.versionApi);
     const compatibleMat = resp.matrix[Constants.extensionVersion];
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
