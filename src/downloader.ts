@@ -167,7 +167,7 @@ export async function setUp(context: ExtensionContext) {
 
 function getExePath(exePath: string) {
     if (platform() === 'win32') {
-        exePath = exePath + '.exe';
+        exePath = path.join(exePath, 'cli.exe');
     } else if (platform() === "linux") {
         exePath = path.join(exePath, 'cli');
     }

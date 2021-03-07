@@ -15,20 +15,24 @@ function getPythonVersion(path: string): boolean {
 }
 
 export function isPythonConfigured() {
-    if (Configuration.getPath()) {
-        // checking file path exists is better, but if user gives `python3` --> its not a valid path but it will work in some scenarios
+    try{
 
-        const correctPath = getPythonVersion(Configuration.getPath());
-        if (correctPath) { return true; }
-        const version = getPythonVersion('python3');
-        if (version) {
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Global);
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
+        if (Configuration.getPath()) {
+            // checking file path exists is better, but if user gives `python3` --> its not a valid path but it will work in some scenarios
+            
+            const correctPath = getPythonVersion(Configuration.getPath());
+            if (correctPath) { return true; }
+            const version = getPythonVersion('python3');
+            if (version) {
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Global);
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
+            }
+            return version;
         }
-        return version;
+    } catch(error){
+        return false;
     }
-    return false;
 }
 
 export function isDotHttpCorrect() {
