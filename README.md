@@ -2,15 +2,6 @@
 
 visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 
-
-⚠️ for using dothttp-runner, you will need to install python3.8 and have to install `dothttp-req`
-
-
-install via
-
-`python3 -m pip install dothttp-req==0.0.7`
-
-once installed set vscode pythonpath to `dothttp.conf.pythonpath` in vscode `settings.json`
 ## Features
 
 - Run http file in editor itself
