@@ -144,6 +144,10 @@ async function downloadDothttp(downloadLocation: string) {
     if (res.statusCode !== 200) {
         throw Error('Failed to get VS Code archive location');
     }
+    var range = 20 * 1024 * 1024;
+    if (res.headers.range) {
+        range = Number.parseFloat(res.headers.range)
+    }
     await vscode.window.withProgress({
         title: `downloading binaries from ${url}`,
         cancellable: false,
@@ -151,6 +155,9 @@ async function downloadDothttp(downloadLocation: string) {
     }, async function (progress) {
         await new Promise((resolve, reject) => {
             res.pipe(extract({ path: downloadLocation }))
+                .on('data', (downdata) => {
+                    progress.report({ message: 'completed successfully', increment: downdata.length / range });
+                })
                 .on('close', (resolve: () => void) => {
                     progress.report({ message: 'completed successfully', increment: 100 })
                     resolve();
