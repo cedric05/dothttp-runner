@@ -3,6 +3,7 @@ import * as child_process from 'child_process';
 import { once } from 'events';
 import { createInterface, Interface } from 'readline';
 import { URL } from 'url';
+import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import EventEmitter = require('events');
 
@@ -116,11 +117,20 @@ export class ClientHandler {
     static namescommand = "/file/names";
     static importPostman = "/import/postman";
 
-    constructor(options: { std: boolean, pythonpath: string }) {
-        if (options.std) {
-            this.cli = new StdoutClient({ pythonpath: options.pythonpath!, stdargs: ['-m', 'dotextensions.server'] });
+    constructor(clientOptions: { std: boolean }) {
+        const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[] };
+        if (isDotHttpCorrect()) {
+            options.pythonpath = Configuration.getDothttpPath();
         } else {
-            this.cli = new HttpClient({ pythonpath: options.pythonpath!, stdargs: ['-m', 'dotextensions.server', 'http'] });
+            options.pythonpath = Configuration.getPath();
+            options.stdargs.push('-m');
+            options.stdargs.push('dotextensions.server');
+        }
+        if (clientOptions.std) {
+            this.cli = new StdoutClient(options);
+        } else {
+            options.stdargs.push('http');
+            this.cli = new HttpClient(options);
         }
     }
 

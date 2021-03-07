@@ -46,7 +46,7 @@ export async function importRequests() {
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    if (!DotHttpEditorView.isHttpFile(filename) && isPythonConfigured()) {
+    if (!DotHttpEditorView.isHttpFile(filename)) {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }

@@ -2,11 +2,13 @@ import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import {  importRequests, runHttpFileWithOptions } from './commands/run';
+import { setUp } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+	await setUp(context);
 	ApplicationServices.initialize(context);
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, function (...arr) {
 		if (arr) {

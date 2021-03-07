@@ -32,10 +32,8 @@ export function isPythonConfigured() {
 }
 
 export function isDotHttpCorrect() {
-    if (Configuration.getDothttpPath()) {
-        if (fs.existsSync(Configuration.getPath())) {
-            return true;
-        }
+    if (fs.existsSync(Configuration.getDothttpPath())) {
+        return true;
     }
     return false;
 }
@@ -51,6 +49,10 @@ export class Configuration {
         return vscode.workspace.getConfiguration().get(key);
     }
 
+    static setValue(key: string, value: string) {
+        return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
+    }
+
     // isConfiguredPathCorrect?
     static getPath(): string {
         return Configuration.getConfiguredValue(Constants.pythonPath) as unknown as string;
@@ -59,6 +61,11 @@ export class Configuration {
     static getDothttpPath(): string {
         return Configuration.getConfiguredValue(Constants.dothttpPath) as unknown as string;
     }
+
+    static setDothttpPath(value: string) {
+        return Configuration.setValue(Constants.dothttpPath, value);
+    }
+
 
     static isExperimental(): boolean {
         return Configuration.getConfiguredValue(Constants.experimental) as unknown as boolean;

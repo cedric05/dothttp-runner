@@ -309,7 +309,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {
-        if (this.autoRefresh && this.editor.document && changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
+        if (this.autoRefresh && this.editor && this.editor.document && changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
             this.refresh()
         }
     }

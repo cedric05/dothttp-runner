@@ -19,7 +19,7 @@ export enum Constants {
     toggleNocookieCommand = "dothttp.command.toggle.nocookie",
     toggleHeadersCommand = "dothttp.command.toggle.showheaders",
     importCommand = "dothttp.command.import.external",
-    
+
     //    env tree
     envTreeView = 'dothttpEnvView',
 
@@ -45,5 +45,10 @@ export enum Constants {
     // tree vars
     propViewEnabled = "dothttpPropViewEnabled",
 
+    // download stuff
+    extensionVersion = "0.0.5",
 
+    dothttpVersion = "dothttp.version",
+
+    versionApi = "https://code.dothttp.dev/versions"
 }
