@@ -106,7 +106,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     enableProperty(pos: PropertyTreeItem) {
-        this.fileStateService?.enableProperty(this.filename!?.toString(), pos.key);
+        this.fileStateService?.enableProperty(this.filename!?.toString(), pos.key, pos.value);
         this.refresh();
     }
     copyProperty(node: PropertyTreeItem) {
@@ -114,7 +114,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         this.refresh();
     }
     disableProperty(node: PropertyTreeItem) {
-        this.fileStateService?.disableProperty(this.filename!?.toString(), node.key);
+        this.fileStateService?.disableProperty(this.filename!?.toString(), node.key, node.value);
         this.refresh();
     }
 
@@ -122,11 +122,26 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         vscode.window.showInputBox({ placeHolder: `update property for key: \`${node.key}\` currently \`${node.value}\`` }).then(
             updatedValue => {
                 if (this.filename && (updatedValue || updatedValue === '') && node.value !== updatedValue) {
-                    this.fileStateService?.updateProperty(this.filename!?.toString(), node.key, updatedValue);
+                    this.fileStateService?.updateProperty(this.filename!?.toString(), node.key, node.value, updatedValue);
                     this.refresh();
                 }
             }
         )
+    }
+
+    disableAllProperies() {
+        const filename = this.filename!?.toString();
+        const props = this.fileStateService?.getProperties(filename);
+        props?.forEach(prop => {
+            this.fileStateService!.disableProperty(filename, prop.key, prop.value);
+        }
+        )
+        this.refresh();
+    }
+
+    removeProperty(prop: PropertyTreeItem) {
+        const props = this.fileStateService?.removeProperty(this.filename!?.toString(), prop.key, prop.value);
+        this.refresh();
     }
 
 }
@@ -294,7 +309,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {
-        if (this.autoRefresh && this.editor.document && changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
+        if (this.autoRefresh && this.editor && this.editor.document && changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
             this.refresh()
         }
     }

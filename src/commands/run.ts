@@ -1,56 +1,56 @@
 import * as vscode from 'vscode';
 import { Configuration, isPythonConfigured } from '../models/config';
-import { Constants } from '../models/constants';
-import { DothttpRunOptions } from "../models/dotoptions";
+import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 
-
-
-export function commandGenerator(options: DothttpRunOptions) {
-    var noCookies = "";
-    var experimental = "";
-    var propertyFile = "";
-    var env = "";
-    var properties = "";
-    var curl = "";
-    if (options.noCookie) {
-        noCookies = "--no-cookie";
-    }
-    if (options.experimental) {
-        experimental = "--experimental";
-    }
-    if (options.propertyFile) {
-        propertyFile = `--property-file ${options.propertyFile}`;
-    }
-    if (options.env && options.env.length > 0) {
-        const envList = options.env.map(a => a.trim()).join(" ");
-        if (envList) {
-            env = `--env ${envList}`;
-        }
-    }
-    if (options.properties) {
-        var properties = Object.entries(options.properties)
-            .map(a => ` ${a[0]}=${a[1]} `)
-            .reduce((a, b) => `${a} ${b}`)
-        if (properties) {
-            properties = `--properties ${properties}`;
-        }
-    }
-    if (options.curl) {
-        curl = "--curl";
-    }
-    const command = `${options.path} -m dothttp  ${options.file} ${noCookies} ${experimental} ${env} ${properties} ${propertyFile} ${curl}`.trim();
-    console.log(command);
-    return command;
+enum importoptions {
+    postman = 'postman',
+    swagger2 = 'swagger2.0',
+    swagger3 = 'swagger3.0'
 }
 
+
+export async function importRequests() {
+    try {
+        // const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger2, importoptions.swagger3]) as importoptions;
+        const pickType = importoptions.postman;
+        if (!pickType) { return }
+        const link = await vscode.window.showInputBox({
+            prompt: "postman link",
+            ignoreFocusOut: true,
+            // validateInput: (value) => {
+            // if (value.startsWith("https://www.getpostman.com/collections") ||
+            //     value.startsWith("https://www.postman.com/collections")) {
+            //     return null;
+            // } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
+            // },
+            placeHolder: "https://getpostman.com/collections"
+        });
+        if (!link) { return }
+        const folder = await vscode.window.showSaveDialog({
+
+        });
+        if (!folder?.fsPath) { return }
+        const directory = folder.fsPath!;
+        await vscode.workspace.fs.createDirectory(folder);
+        if (folder) {
+            if (pickType === importoptions.postman) {
+                await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
+
+            }
+        }
+
+    } catch (err) {
+        console.log('could be cancelled');
+    }
+}
 
 
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    if (!DotHttpEditorView.isHttpFile(filename) && isPythonConfigured()) {
+    if (!DotHttpEditorView.isHttpFile(filename)) {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
@@ -59,15 +59,17 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: `running ${filename} target: ${options.target} time: ${now}`,
-        cancellable: false,
+        cancellable: true,
     }, (progress, token) => {
         return new Promise(async (resolve) => {
             const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
             progress.report({ increment: 50, message: 'api called' });
             const out = await prom;
-            const fileNameWithInfo = contructFileName(filename, options, out, now);
-            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
-            progress.report({ increment: 50, message: 'completed' });
+            if (!token.isCancellationRequested) {
+                const fileNameWithInfo = contructFileName(filename, options, out, now);
+                showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
+                progress.report({ increment: 50, message: 'completed' });
+            }
             resolve(true);
         });
     })

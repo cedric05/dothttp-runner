@@ -18,7 +18,6 @@ export class ApplicationServices {
         this.storageService = new LocalStorageService(context.workspaceState);
         this.clientHanler = new ClientHandler({
             std: true,
-            pythonpath: vscode.workspace.getConfiguration().get(Constants.pythonPath) as string
         });
         this.fileStateService = new FileState(this.storageService);
         this.envTree = new EnvTree();

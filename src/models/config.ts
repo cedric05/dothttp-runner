@@ -15,27 +15,29 @@ function getPythonVersion(path: string): boolean {
 }
 
 export function isPythonConfigured() {
-    if (Configuration.getPath()) {
-        // checking file path exists is better, but if user gives `python3` --> its not a valid path but it will work in some scenarios
+    try{
 
-        const correctPath = getPythonVersion(Configuration.getPath());
-        if (correctPath) { return true; }
-        const version = getPythonVersion('python3');
-        if (version) {
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Global);
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
-            vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
+        if (Configuration.getPath()) {
+            // checking file path exists is better, but if user gives `python3` --> its not a valid path but it will work in some scenarios
+            
+            const correctPath = getPythonVersion(Configuration.getPath());
+            if (correctPath) { return true; }
+            const version = getPythonVersion('python3');
+            if (version) {
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Global);
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.Workspace);
+                vscode.workspace.getConfiguration().update(Constants.pythonPath, "python3", vscode.ConfigurationTarget.WorkspaceFolder);
+            }
+            return version;
         }
-        return version;
+    } catch(error){
+        return false;
     }
-    return false;
 }
 
 export function isDotHttpCorrect() {
-    if (Configuration.getDothttpPath()) {
-        if (fs.existsSync(Configuration.getPath())) {
-            return true;
-        }
+    if (fs.existsSync(Configuration.getDothttpPath())) {
+        return true;
     }
     return false;
 }
@@ -51,6 +53,10 @@ export class Configuration {
         return vscode.workspace.getConfiguration().get(key);
     }
 
+    static setValue(key: string, value: string) {
+        return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
+    }
+
     // isConfiguredPathCorrect?
     static getPath(): string {
         return Configuration.getConfiguredValue(Constants.pythonPath) as unknown as string;
@@ -59,6 +65,11 @@ export class Configuration {
     static getDothttpPath(): string {
         return Configuration.getConfiguredValue(Constants.dothttpPath) as unknown as string;
     }
+
+    static setDothttpPath(value: string) {
+        return Configuration.setValue(Constants.dothttpPath, value);
+    }
+
 
     static isExperimental(): boolean {
         return Configuration.getConfiguredValue(Constants.experimental) as unknown as boolean;

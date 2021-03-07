@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import { extname } from 'path';
 import * as vscode from 'vscode';
-import { Configuration, isPythonConfigured } from '../models/config';
+import { Configuration, isDotHttpCorrect, isPythonConfigured } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import { ApplicationServices } from '../services/global';
 import querystring = require('querystring');
@@ -33,7 +33,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
     }
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
-        if (DotHttpEditorView.isHttpFile(kwargs.filename) && isPythonConfigured()) {
+        if (DotHttpEditorView.isHttpFile(kwargs.filename) && (isPythonConfigured() || isDotHttpCorrect())) {
             const clientHandler = ApplicationServices.get().getClientHandler();
             const filestateService = ApplicationServices.get().getFileStateService();
             const options: DothttpRunOptions = {
@@ -58,7 +58,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
     static getEnabledProperties(filename: string) {
         const fileservice = ApplicationServices.get().getFileStateService();
         const properties: any = {};
-        fileservice.getProperties(filename).filter(prop => prop.enabled).forEach(prop => {
+        (fileservice.getProperties(filename) ?? []).filter(prop => prop.enabled).forEach(prop => {
             properties[prop.key] = prop.value;
         })
         return properties;
