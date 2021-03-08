@@ -47,6 +47,27 @@ export async function importRequests() {
 }
 
 
+export function runFileCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
+	return function (...arr) {
+		if (arr) {
+			// this is bad, find out better signature
+			runHttpFileWithOptions({ target: arr[2].target, curl: false });
+		} else {
+			runHttpFileWithOptions({ curl: false, target: '1' });
+		}
+	};
+}
+
+export function genCurlCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
+	return function (...arr) {
+		if (arr) {
+			runHttpFileWithOptions({ target: arr[2].target, curl: true });
+		} else {
+			runHttpFileWithOptions({ curl: true, target: '1' });
+		}
+	};
+}
+
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';

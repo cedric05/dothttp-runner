@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { importRequests, runHttpFileWithOptions } from './commands/run';
+import { genCurlCommand, importRequests, runFileCommand, runHttpFileWithOptions } from './commands/run';
 import { setUp } from './downloader';
+import { DothttpNameSymbolProvider } from './lib/document';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
@@ -10,21 +11,11 @@ import DotHttpEditorView from './views/editor';
 export async function activate(context: vscode.ExtensionContext) {
 	await setUp(context);
 	ApplicationServices.initialize(context);
-	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, function (...arr) {
-		if (arr) {
-			// this is bad, find out better signature
-			runHttpFileWithOptions({ target: arr[2].target, curl: false });
-		} else {
-			runHttpFileWithOptions({ curl: false, target: '1' });
-		}
-	});
-	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, function (...arr) {
-		if (arr) {
-			runHttpFileWithOptions({ target: arr[2].target, curl: true });
-		} else {
-			runHttpFileWithOptions({ curl: true, target: '1' });
-		}
-	});
+	const symbolProvider = new DothttpNameSymbolProvider();
+
+	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: 'dothttp-vscode' }, symbolProvider);
+	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand());
+	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand());
 
 	let openEnvFileDisp = vscode.commands.registerCommand(Constants.openEnvFileCommmand, function () {
 		const filename = ApplicationServices.get().getEnvProvder().filename;
@@ -75,4 +66,5 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
 
 }
+
 export function deactivate() { }
