@@ -6,6 +6,7 @@ import { URL } from 'url';
 import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import EventEmitter = require('events');
+import * as vscode from 'vscode';
 
 interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
@@ -32,17 +33,22 @@ class CmdClientError extends Error {
 abstract class BaseSpanClient implements ICommandClient {
     readonly proc: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
+    channel: vscode.OutputChannel;
 
     constructor(options: { pythonpath: string, stdargs: string[] }) {
         this.proc = child_process.spawn(options.pythonpath,
             options.stdargs,
             { stdio: ["pipe", "pipe", "inherit"] }
         );
+        this.channel = vscode.window.createOutputChannel('dothttp-code');
     }
 
     async request(method: string, params: {}): Promise<any> {
         const id = BaseSpanClient.count++;
-        const result = await this.call({ method, params, id });
+        const requestData = { method, params, id };
+        this.channel.appendLine(JSON.stringify(requestData));
+        const result = await this.call(requestData);
+        this.channel.appendLine(JSON.stringify(result));
         if (result.id !== id) {
             throw new CmdClientError("id's are not same");
         }
