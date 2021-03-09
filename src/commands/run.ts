@@ -1,5 +1,6 @@
+import { platform } from 'os';
 import * as vscode from 'vscode';
-import { Configuration, isPythonConfigured } from '../models/config';
+import { Configuration } from '../models/config';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
@@ -48,24 +49,24 @@ export async function importRequests() {
 
 
 export function runFileCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
-	return function (...arr) {
-		if (arr) {
-			// this is bad, find out better signature
-			runHttpFileWithOptions({ target: arr[2].target, curl: false });
-		} else {
-			runHttpFileWithOptions({ curl: false, target: '1' });
-		}
-	};
+    return function (...arr) {
+        if (arr) {
+            // this is bad, find out better signature
+            runHttpFileWithOptions({ target: arr[2].target, curl: false });
+        } else {
+            runHttpFileWithOptions({ curl: false, target: '1' });
+        }
+    };
 }
 
 export function genCurlCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
-	return function (...arr) {
-		if (arr) {
-			runHttpFileWithOptions({ target: arr[2].target, curl: true });
-		} else {
-			runHttpFileWithOptions({ curl: true, target: '1' });
-		}
-	};
+    return function (...arr) {
+        if (arr) {
+            runHttpFileWithOptions({ target: arr[2].target, curl: true });
+        } else {
+            runHttpFileWithOptions({ curl: true, target: '1' });
+        }
+    };
 }
 
 
@@ -76,7 +77,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         return;
     }
     const date = new Date();
-    const now = dateFormat(date, 'h:MM:ss');
+    const now = dateFormat(date, 'hh:MM:ss');
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: `running ${filename} target: ${options.target} time: ${now}`,
@@ -128,10 +129,13 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
 function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, now: string) {
     var middlepart = 'error';
     if (!out.error_message) {
-        middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}`
+        middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}-${now}`
+        if (platform() === 'win32') {
+            middlepart = middlepart.replace(/:/g, ' ')
+        }
     }
     return {
-        filename: `${filename}-${middlepart}-${now}.${out.filenameExtension}`,
-        header: `${filename}-${middlepart}-headers-${now}.json`,
+        filename: `${filename}-${middlepart}.${out.filenameExtension}`,
+        header: `${filename}-${middlepart}-headers.json`,
     };
 }
