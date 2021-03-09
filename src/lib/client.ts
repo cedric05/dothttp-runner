@@ -126,6 +126,7 @@ export class ClientHandler {
             options.stdargs.push('-m');
             options.stdargs.push('dotextensions.server');
         }
+        console.log("launch params", JSON.stringify(options));
         if (clientOptions.std) {
             this.cli = new StdoutClient(options);
         } else {

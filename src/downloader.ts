@@ -113,6 +113,7 @@ async function fetchDownloadUrl() {
 }
 
 async function downloadDothttp(downloadLocation: string) {
+    console.log("downloading to ", downloadLocation);
     if (!fs.existsSync(downloadLocation)) {
         fs.mkdirSync(downloadLocation);
     }
@@ -125,6 +126,7 @@ async function downloadDothttp(downloadLocation: string) {
     if (res.statusCode !== 200) {
         throw Error('Failed to get VS Code archive location');
     }
+    console.log(`download from url ${url}`)
     var range = 20 * 1024 * 1024;
     if (res.headers.range) {
         range = Number.parseFloat(res.headers.range)
@@ -136,12 +138,9 @@ async function downloadDothttp(downloadLocation: string) {
     }, async function (progress) {
         await new Promise((resolve, reject) => {
             res.pipe(extract({ path: downloadLocation }))
-                .on('data', (downdata) => {
-                    progress.report({ message: 'completed successfully', increment: downdata.length / range });
-                })
-                .on('close', (resolve: () => void) => {
+                .on('close', () => {
                     progress.report({ message: 'completed successfully', increment: 100 })
-                    resolve();
+                    resolve(null);
                 })
                 .on('error', (error) => {
                     progress.report({ message: 'ran into error', increment: 100 })
@@ -158,12 +157,16 @@ export async function setUp(context: ExtensionContext) {
         const globalStorageDir = context.globalStorageUri.fsPath;
         if (!fs.existsSync(globalStorageDir)) {
             fs.mkdirSync(globalStorageDir);
+            console.log('making global storage directory ', globalStorageDir);
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
+        console.log('download directory ', downloadLocation);
         await downloadDothttp(downloadLocation);
+        console.log('download successfull ', downloadLocation);
         var exePath = path.join(downloadLocation, 'cli');
         exePath = getExePath(exePath);
         Configuration.setDothttpPath(exePath)
+        console.log('dothttp path set to', exePath);
     }
 }
 
