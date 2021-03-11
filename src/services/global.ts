@@ -16,8 +16,8 @@ export class ApplicationServices {
     private fileStateService: IFileState;
     private envTree: EnvTree
     private propTree: PropertyTree;
+    private historyTreeProvider: HistoryTreeProvider;
     historyService: IHistoryService;
-    historyTreeProvider: HistoryTreeProvider;
     dotHttpEditorView: DotHttpEditorView;
 
     constructor(context: vscode.ExtensionContext) {
@@ -74,6 +74,13 @@ export class ApplicationServices {
 
     getPropTreeProvider(): PropertyTree {
         return this.propTree;
+    }
+
+    getHistoryTreeProvider(): HistoryTreeProvider {
+        return this.historyTreeProvider;
+    }
+    setHistoryTreeProvider(value: HistoryTreeProvider) {
+        this.historyTreeProvider = value;
     }
 
 }

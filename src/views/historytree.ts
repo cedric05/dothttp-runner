@@ -31,7 +31,7 @@ interface HistoryTreeItem {
 export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
     private readonly emitter = new EventEmitter<HistoryTreeItem | null>();
-    onDidChangeTreeData: Event<null | HistoryTreeItem> = this.emitter.event;
+    public onDidChangeTreeData: Event<null | HistoryTreeItem> = this.emitter.event;
     private _historyService!: IHistoryService;
     map: Map<string, history[]> = new Map();
     fetcedCount: number = 0;
@@ -46,10 +46,14 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
         this.fetchMore();
     }
 
+    recentChanged(history: history) {
+        this.map.get('recent')!.unshift(history);
+        this.emitter.fire(null)
+    }
+
     getTreeItem(element: HistoryTreeItem): TreeItem | Thenable<TreeItem> {
         if (element.type === TreeType.item) {
             const item = element.item!;
-            const date = dateFormat(item.time, 'hh:MM:ss');
             const query = querystring.encode({
                 '_id': item._id!.toString(),
                 'date': item.time.getTime()
@@ -93,8 +97,8 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             const recent = dateFormat(new Date(), this.dateFormat);
             const childs = []
             for (const label of this.map.keys()) {
-                if (recent == label)
-                    childs.push({ type: TreeType.recent, label: label });
+                if (recent === label)
+                    childs.push({ type: TreeType.recent, label: 'recent' });
                 else
                     childs.push({ type: TreeType.date, label: label });
             }
@@ -117,9 +121,13 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     private async fetchMore() {
         const historyItems = await this.historyService.fetchMore(this.fetcedCount, 100);
         this.fetcedCount += historyItems.length;
+        const recent = dateFormat(new Date(), this.dateFormat);
         historyItems
             .forEach(item => {
-                const label = dateFormat(item.time, this.dateFormat);
+                var label = dateFormat(item.time, this.dateFormat);
+                if (label === recent) {
+                    label = "recent";
+                }
                 if (this.map.has(label)) {
                     this.map.get(label)!.push(item)
                 } else {

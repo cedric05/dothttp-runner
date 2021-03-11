@@ -87,15 +87,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
             const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
             progress.report({ increment: 50, message: 'api called' });
             const out = await prom;
-            ApplicationServices.get().historyService.addNew(
-                {
-                    url: out.url as string,
-                    http: out.http as string,
-                    filename: filename as string,
-                    target: options.target as string,
-                    time: new Date(),
-                    status_code: out.status as number
-                })
+            addHistory(out, filename, options);
             if (!token.isCancellationRequested) {
                 const fileNameWithInfo = contructFileName(filename, options, out, now);
                 showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
@@ -104,6 +96,20 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
             resolve(true);
         });
     })
+}
+
+function addHistory(out: any, filename: string, options: { curl: boolean; target: string; }) {
+    const history = {
+        url: out.url as string,
+        http: out.http as string,
+        filename: filename as string,
+        target: options.target as string,
+        time: new Date(),
+        status_code: out.status as number
+    };
+    ApplicationServices.get().historyService.addNew(
+        history);
+    ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
 }
 
 function showInUntitledView(scriptFileName: string, headerURI: string, out: { error?: boolean, error_message?: string, body?: string, headers: {} }) {
