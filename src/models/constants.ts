@@ -23,6 +23,10 @@ export enum Constants {
     //    env tree
     envTreeView = 'dothttpEnvView',
 
+
+    // history tree
+    dothttpHistory = "dothttpHistory",
+
     refreshEnvCommand = 'dothttpEnvView.refresh',
     enableEnvCommand = 'dothttpEnvView.enableenv',
     disableEnvCommand = 'dothttpEnvView.disableenv',

@@ -65,6 +65,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
 
+	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, ApplicationServices.get().historyTreeProvider);
+
 }
 
 export function deactivate() { }

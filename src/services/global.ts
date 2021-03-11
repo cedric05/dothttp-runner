@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import { ClientHandler } from "../lib/client";
-import { Constants } from "../models/constants";
 import { LocalStorageService } from "../services/storage";
+import { IHistoryService, TingoHistoryService } from "../tingohelpers";
 import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState } from "./state";
+import path = require('path');
+import { HistoryTreeProvider } from "../views/historytree";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -13,6 +15,8 @@ export class ApplicationServices {
     private fileStateService: IFileState;
     private envTree: EnvTree
     private propTree: PropertyTree;
+    historyService: IHistoryService;
+    historyTreeProvider: HistoryTreeProvider;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -22,6 +26,8 @@ export class ApplicationServices {
         this.fileStateService = new FileState(this.storageService);
         this.envTree = new EnvTree();
         this.propTree = new PropertyTree();
+        this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
+        this.historyTreeProvider = new HistoryTreeProvider();
     }
 
     static get() {
@@ -42,6 +48,7 @@ export class ApplicationServices {
     postInitialize() {
         this.envTree.setFileStateService(this);
         this.propTree.fileStateService = this.fileStateService;
+        this.historyTreeProvider.historyService = this.historyService;
     }
 
     getClientHandler(): ClientHandler {
