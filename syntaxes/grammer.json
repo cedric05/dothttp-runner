@@ -26,6 +26,87 @@
         }
     ],
     "repository": {
+        "array": {
+            "begin": "\\[",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.begin.json.comments"
+                }
+            },
+            "end": "\\]",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.end.json.comments"
+                }
+            },
+            "name": "meta.structure.array.json.comments",
+            "patterns": [
+                {
+                    "include": "#value"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.array.json.comments"
+                },
+                {
+                    "match": "[^\\s\\]]",
+                    "name": "invalid.illegal.expected-array-separator.json.comments"
+                }
+            ]
+        },
+        "object": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.begin.json.comments"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.end.json.comments"
+                }
+            },
+            "name": "meta.structure.dictionary.json.comments",
+            "patterns": [
+                {
+                    "comment": "the JSON object key",
+                    "include": "#objectkey"
+                },
+                {
+                    "include": "#comments"
+                },
+                {
+                    "begin": ":",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.separator.dictionary.key-value.json.comments"
+                        }
+                    },
+                    "end": "(,)|(?=\\})",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.separator.dictionary.pair.json.comments"
+                        }
+                    },
+                    "name": "meta.structure.dictionary.value.json.comments",
+                    "patterns": [
+                        {
+                            "comment": "the JSON object value",
+                            "include": "#value"
+                        },
+                        {
+                            "match": "[^\\s,^#s,]",
+                            "name": "invalid.illegal.expected-dictionary-separator.json.comments"
+                        }
+                    ]
+                },
+                {
+                    "match": "[^\\s\\}]",
+                    "name": "invalid.illegal.expected-dictionary-separator.json.comments"
+                }
+            ]
+        },
         "variables": {
             "patterns": [
                 {
@@ -134,7 +215,7 @@
                 },
                 {
                     "match": "query",
-                    "name": "variable.other.enummember"
+                    "name": "entity.name.function"
                 },
                 {
                     "match": "\\?",
@@ -177,12 +258,22 @@
                     "name": "support.class"
                 },
                 {
-                    "match": "\\{",
+                    "match": "@name",
                     "name": "constant.language"
                 },
                 {
-                    "match": "\\}",
+                    "match": "true",
                     "name": "constant.language"
+                },
+                {
+                    "include": "#array"
+                },
+                {
+                    "include": "#object"
+                },
+                {
+                    "include": "#variables",
+                    "name": "entity.other.attribute-name"
                 }
             ]
         },
