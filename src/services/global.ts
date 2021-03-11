@@ -6,6 +6,7 @@ import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState } from "./state";
 import path = require('path');
 import { HistoryTreeProvider } from "../views/historytree";
+import DotHttpEditorView from "../views/editor";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -17,6 +18,7 @@ export class ApplicationServices {
     private propTree: PropertyTree;
     historyService: IHistoryService;
     historyTreeProvider: HistoryTreeProvider;
+    dotHttpEditorView: DotHttpEditorView;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -28,6 +30,7 @@ export class ApplicationServices {
         this.propTree = new PropertyTree();
         this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
         this.historyTreeProvider = new HistoryTreeProvider();
+        this.dotHttpEditorView = new DotHttpEditorView();
     }
 
     static get() {
@@ -49,6 +52,8 @@ export class ApplicationServices {
         this.envTree.setFileStateService(this);
         this.propTree.fileStateService = this.fileStateService;
         this.historyTreeProvider.historyService = this.historyService;
+        this.dotHttpEditorView.historyService = this.historyService;
+
     }
 
     getClientHandler(): ClientHandler {

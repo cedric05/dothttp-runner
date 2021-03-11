@@ -4,24 +4,33 @@ import * as vscode from 'vscode';
 import { Configuration, isDotHttpCorrect, isPythonConfigured } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import { ApplicationServices } from '../services/global';
+import { IHistoryService } from '../tingohelpers';
 import querystring = require('querystring');
 var mime = require('mime-types');
 
 
 export default class DotHttpEditorView implements vscode.TextDocumentContentProvider {
     static scheme = 'dothttp';
+    private _historyService: IHistoryService;
+    public get historyService(): IHistoryService {
+        return this._historyService;
+    }
+    public set historyService(value: IHistoryService) {
+        this._historyService = value;
+    }
 
     constructor() {
     }
 
     provideTextDocumentContent(uri: vscode.Uri, _token: vscode.CancellationToken): vscode.ProviderResult<string> {
-        const output = JSON.parse(querystring.decode(uri.query)['out'] as string);
-        return new Promise(async (resolve) => {
-            if (!output.error) {
-                resolve(output.body);
-            }
-            else {
-                resolve(output.error_message)
+
+        return new Promise(async (resolve, reject) => {
+            const id = JSON.parse(querystring.decode(uri.query)['_id'] as string);
+            const output = await this.historyService.getById(id);
+            if (output.http) {
+                resolve(output.http);
+            } else {
+                reject();
             }
         });
     }

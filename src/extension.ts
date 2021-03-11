@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-	const provider = new DotHttpEditorView();
+	const provider = ApplicationServices.get().dotHttpEditorView;
 	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, provider);
 	context.subscriptions.push(runCommandDisp);
 	context.subscriptions.push(genCurlDisp);

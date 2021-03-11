@@ -29,7 +29,7 @@ export class HistoryTreeProvider implements TreeDataProvider<history> {
     getTreeItem(element: history): TreeItem | Thenable<TreeItem> {
         const date = dateFormat(element.time, 'hh:MM:ss');
         const query = querystring.encode({
-            'out': JSON.stringify({ 'body': element.http }),
+            '_id': element._id.toString(),
             'date': element.time.getTime()
         })
         const uri = Uri.parse(`${DotHttpEditorView.scheme}:///${path.basename(element.filename)}?${query}`)

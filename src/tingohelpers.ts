@@ -8,11 +8,12 @@ export interface history {
     time: Date,
     filename: string,
     target: string
-    id?: number
+    _id?: number
 }
 
 
 export interface IHistoryService {
+    getById(id: number): Promise<history>;
     addNew(history: history): Promise<void>
     fetchMore(): Promise<history[]>
     fetchMore(skip: number): Promise<history[]>
@@ -29,6 +30,13 @@ export class TingoHistoryService implements IHistoryService {
         const db = new Db(location, {});
         this._collection = db.collection(TingoHistoryService.collectionName);
     }
+    getById(_id: number): Promise<history> {
+        return new Promise((resolve, reject) => {
+            this._collection.findOne({ _id }, (error, results) => {
+                resolve(results);
+            })
+        })
+    }
     async addNew(history: history): Promise<void> {
         return new Promise((resolve, reject) => {
             this._collection.insert(history, (error) => {
@@ -42,7 +50,10 @@ export class TingoHistoryService implements IHistoryService {
     }
     async fetchMore(skip: number = 0, limit: number = 10): Promise<history[]> {
         return new Promise((resolve, reject) => {
-            const cursor = this._collection.find({}).skip(skip).limit(limit);
+            const cursor = this._collection.find({}, { time: 1, status_code: 1, filename: 1, target: 1, _id: 1 })
+                .sort({ time: -1 })
+                .skip(skip)
+                .limit(limit);
             cursor.toArray((error, results) => {
                 resolve(results)
             })
