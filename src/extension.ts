@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
-import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { genCurlCommand, importRequests, runFileCommand, runHttpFileWithOptions } from './commands/run';
+import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
 import { setUp } from './downloader';
-import { DothttpNameSymbolProvider } from './lib/document';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
@@ -11,14 +9,12 @@ import DotHttpEditorView from './views/editor';
 export async function activate(context: vscode.ExtensionContext) {
 	await setUp(context);
 	ApplicationServices.initialize(context);
-	const symbolProvider = new DothttpNameSymbolProvider();
-
-	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: 'dothttp-vscode' }, symbolProvider);
+	const appServices = ApplicationServices.get();
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand());
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand());
 
 	let openEnvFileDisp = vscode.commands.registerCommand(Constants.openEnvFileCommmand, function () {
-		const filename = ApplicationServices.get().getEnvProvder().filename;
+		const filename = appServices.getEnvProvder().filename;
 		vscode.workspace.openTextDocument(filename).then(editor => {
 			vscode.window.showTextDocument(editor, 2, false);
 		});
@@ -37,13 +33,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-	const provider = ApplicationServices.get().dotHttpEditorView;
-	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, provider);
+	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView());
 	context.subscriptions.push(runCommandDisp);
 	context.subscriptions.push(genCurlDisp);
 	context.subscriptions.push(openEnvFileDisp)
 
-	const envProvider = ApplicationServices.get().getEnvProvder();
+	const envProvider = appServices.getEnvProvder();
 	vscode.window.registerTreeDataProvider(Constants.envTreeView, envProvider);
 	vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envProvider.refresh());
 	vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand);
@@ -51,7 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty);
 
 
-	const propProvider = ApplicationServices.get().getPropTreeProvider();
+	const propProvider = appServices.getPropTreeProvider();
 	vscode.window.registerTreeDataProvider(Constants.propTreeView, propProvider);
 
 	vscode.commands.registerCommand(Constants.addPropCommand, () => { propProvider.addProperty() });
@@ -63,9 +58,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propProvider.updateProperty(node) });
 	vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propProvider.removeProperty(node) });
 
-	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
+	vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
+	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
 
-	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, ApplicationServices.get().getHistoryTreeProvider());
+	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider());
 
 }
 

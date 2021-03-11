@@ -112,7 +112,6 @@ interface nameresult {
     name: string,
     start: number,
     end: number
-
 }
 
 
@@ -157,7 +156,10 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getNames(filename: string, source?: string): Promise<{ names: nameresult[] }> {
+    async getNames(filename: string, source?: string): Promise<{
+        names: nameresult[], error?: boolean,
+        error_message?: string,
+    }> {
         return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
     }
 

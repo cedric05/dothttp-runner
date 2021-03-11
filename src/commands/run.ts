@@ -107,7 +107,7 @@ function addHistory(out: any, filename: string, options: { curl: boolean; target
         time: new Date(),
         status_code: out.status as number
     };
-    ApplicationServices.get().historyService.addNew(
+    ApplicationServices.get().getHistoryService().addNew(
         history);
     ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
 }

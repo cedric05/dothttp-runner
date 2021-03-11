@@ -1,6 +1,8 @@
 
 export enum Constants {
 
+    langCode = 'dothttp-vscode',
+
     // configs
     pythonPath = "dothttp.conf.pythonpath",
     dothttpPath = "dothttp.conf.path",

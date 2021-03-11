@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
+import { DothttpNameSymbolProvider } from "../codelensprovider";
 import { ClientHandler } from "../lib/client";
 import { LocalStorageService } from "../services/storage";
 import { IHistoryService, TingoHistoryService } from "../tingohelpers";
+import DotHttpEditorView from "../views/editor";
+import { HistoryTreeProvider } from "../views/historytree";
 import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState } from "./state";
 import path = require('path');
-import { HistoryTreeProvider } from "../views/historytree";
-import DotHttpEditorView from "../views/editor";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -17,8 +18,10 @@ export class ApplicationServices {
     private envTree: EnvTree
     private propTree: PropertyTree;
     private historyTreeProvider: HistoryTreeProvider;
-    historyService: IHistoryService;
-    dotHttpEditorView: DotHttpEditorView;
+    private historyService: IHistoryService;
+    private dotHttpEditorView: DotHttpEditorView;
+    private dothttpSymbolProvier: DothttpNameSymbolProvider;
+    private diagnostics: vscode.DiagnosticCollection;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -31,6 +34,9 @@ export class ApplicationServices {
         this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
         this.historyTreeProvider = new HistoryTreeProvider();
         this.dotHttpEditorView = new DotHttpEditorView();
+        this.diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
+        this.dothttpSymbolProvier = new DothttpNameSymbolProvider();
+        context.subscriptions.push(this.diagnostics);
     }
 
     static get() {
@@ -53,6 +59,8 @@ export class ApplicationServices {
         this.propTree.fileStateService = this.fileStateService;
         this.historyTreeProvider.historyService = this.historyService;
         this.dotHttpEditorView.historyService = this.historyService;
+        this.dothttpSymbolProvier.setClientHandler(this.clientHanler);
+        this.dothttpSymbolProvier.setDiagnostics(this.diagnostics);
 
     }
 
@@ -81,6 +89,34 @@ export class ApplicationServices {
     }
     setHistoryTreeProvider(value: HistoryTreeProvider) {
         this.historyTreeProvider = value;
+    }
+
+    getDiagnostics(): vscode.DiagnosticCollection {
+        return this.diagnostics;
+    }
+    setDiagnostics(value: vscode.DiagnosticCollection) {
+        this.diagnostics = value;
+    }
+
+    getDothttpSymbolProvier(): DothttpNameSymbolProvider {
+        return this.dothttpSymbolProvier;
+    }
+    setDothttpSymbolProvier(value: DothttpNameSymbolProvider) {
+        this.dothttpSymbolProvier = value;
+    }
+
+    getDotHttpEditorView(): DotHttpEditorView {
+        return this.dotHttpEditorView;
+    }
+    setDotHttpEditorView(value: DotHttpEditorView) {
+        this.dotHttpEditorView = value;
+    }
+
+    getHistoryService(): IHistoryService {
+        return this.historyService;
+    }
+    setHistoryService(value: IHistoryService) {
+        this.historyService = value;
     }
 
 }
