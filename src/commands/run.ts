@@ -128,6 +128,7 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
 
 function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, now: string) {
     var middlepart = 'error';
+    options.target = options.target.replace(/[^\w\s]/gi, '')
     if (!out.error_message) {
         middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}-${now}`
         if (platform() === 'win32') {

@@ -12,7 +12,7 @@ export class DothttpNameSymbolProvider implements vscode.DocumentSymbolProvider 
     }
     provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
         return new Promise<SymbolInformation[]>(async (resolve, reject) => {
-            const names = await this.clientHandler.getNames(document.fileName);
+            const names = await this.clientHandler.getNames(document.fileName, 'symbol');
             resolve(names.names.map(element =>
                 new SymbolInformation(element.name, vscode.SymbolKind.Class,
                     new Range(

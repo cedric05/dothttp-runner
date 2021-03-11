@@ -157,8 +157,8 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getNames(filename: string): Promise<{ names: nameresult[] }> {
-        return await this.cli.request(ClientHandler.namescommand, { file: filename })
+    async getNames(filename: string, source?: string): Promise<{ names: nameresult[] }> {
+        return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
     }
 
     close() {
