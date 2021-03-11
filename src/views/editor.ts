@@ -11,7 +11,7 @@ var mime = require('mime-types');
 
 export default class DotHttpEditorView implements vscode.TextDocumentContentProvider {
     static scheme = 'dothttp';
-    private _historyService: IHistoryService;
+    private _historyService!: IHistoryService;
     public get historyService(): IHistoryService {
         return this._historyService;
     }

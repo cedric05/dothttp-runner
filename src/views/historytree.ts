@@ -1,53 +1,132 @@
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, Uri } from "vscode";
-import { history, IHistoryService } from "../tingohelpers";
 import * as path from 'path';
+import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { history, IHistoryService } from "../tingohelpers";
+import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
-import DotHttpEditorView from "./editor";
 
+enum TreeType {
+    recent,
+    more,
+    date,
+    item
+}
 
-interface HistoryTreeItem extends history {
-    more: boolean
+const historyItemicons = {
+    STATUS_2XX: new ThemeIcon("check"),
+    STATUS_3XX: new ThemeIcon("redo"),
+    STATUS_4XX: new ThemeIcon("warning"),
+    STATUS_5XX: new ThemeIcon("error"),
+    STATUS_ISSUE: new ThemeIcon("issues")
 }
 
 
-export class HistoryTreeProvider implements TreeDataProvider<history> {
+interface HistoryTreeItem {
+    type: TreeType
+    label: string,
+    item?: history
+}
 
-    private readonly emitter = new EventEmitter<history | null>();
-    onDidChangeTreeData?: Event<void | history> = this.emitter.event;
-    private _historyService: IHistoryService;
+
+export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
+
+    private readonly emitter = new EventEmitter<HistoryTreeItem | null>();
+    onDidChangeTreeData: Event<null | HistoryTreeItem> = this.emitter.event;
+    private _historyService!: IHistoryService;
+    map: Map<string, history[]> = new Map();
+    fetcedCount: number = 0;
+
+    private readonly dateFormat = "yyyy-mm-dd";
+
     public get historyService(): IHistoryService {
         return this._historyService;
     }
     public set historyService(value: IHistoryService) {
         this._historyService = value;
+        this.fetchMore();
     }
 
-    constructor() {
-
-    }
-    getTreeItem(element: history): TreeItem | Thenable<TreeItem> {
-        const date = dateFormat(element.time, 'hh:MM:ss');
-        const query = querystring.encode({
-            '_id': element._id.toString(),
-            'date': element.time.getTime()
-        })
-        const uri = Uri.parse(`${DotHttpEditorView.scheme}:///${path.basename(element.filename)}?${query}`)
-        const tree = {
-            label: `status:${element.status_code} ${date}, ${element.target}, ${path.basename(element.filename)}`,
-            command: {
+    getTreeItem(element: HistoryTreeItem): TreeItem | Thenable<TreeItem> {
+        if (element.type === TreeType.item) {
+            const item = element.item!;
+            const date = dateFormat(item.time, 'hh:MM:ss');
+            const query = querystring.encode({
+                '_id': item._id!.toString(),
+                'date': item.time.getTime()
+            })
+            const uri = Uri.parse(`${DotHttpEditorView.scheme}:///${path.basename(item.filename)}?${query}`)
+            var command: Command | null = {
+                title: "",
                 command: 'vscode.open',
                 arguments: [uri]
+            };
+            var iconType = historyItemicons.STATUS_ISSUE
+            if (item.status_code < 300) {
+                iconType = historyItemicons.STATUS_2XX
+            } else if (item.status_code >= 300 && item.status_code < 400) {
+                iconType = historyItemicons.STATUS_3XX
+            } else if (item.status_code >= 400 && item.status_code < 500) {
+                iconType = historyItemicons.STATUS_4XX
+            } else if (item.status_code >= 500) {
+                iconType = historyItemicons.STATUS_5XX
+            } else {
+                iconType = historyItemicons.STATUS_ISSUE
+                command = null
             }
-        } as TreeItem;
-        return tree;
+            const tree = {
+                label: `${path.basename(item.filename)} #${item.target}`,
+                command: command,
+                iconPath: iconType,
+                tooltip: `${item.status_code} ${item.url}`,
+            } as TreeItem;
+            return tree;
+        } else {
+            return {
+                label: element.label,
+                collapsibleState: TreeItemCollapsibleState.Collapsed,
+            }
+        }
     }
-    getChildren(element?: history): ProviderResult<history[]> {
-        return new Promise(async (resolve, reject) => {
-            const history = await this.historyService.fetchMore(0, 100);
-            resolve(history);
-        })
+    async getChildren(element?: HistoryTreeItem): Promise<HistoryTreeItem[]> {
+        if (!element) {
+            await this.fetchMore();
+            const recent = dateFormat(new Date(), this.dateFormat);
+            const childs = []
+            for (const label of this.map.keys()) {
+                if (recent == label)
+                    childs.push({ type: TreeType.recent, label: label });
+                else
+                    childs.push({ type: TreeType.date, label: label });
+            }
+            childs.push({ type: TreeType.more, label: 'more' })
+            return childs
+        } else if (element.type === TreeType.date || element.type === TreeType.recent) {
+            const data = this.map.get(element.label)!.map(item => ({ item, type: TreeType.item, label: "" }));
+            return data;
+        } else if (element.type === TreeType.more) {
+            const initialCount = this.fetcedCount;
+            this.fetchMore();
+            if (initialCount !== this.fetcedCount) {
+                this.emitter.fire(null);
+            }
+            return [];
+        } return [];
     }
 
+
+    private async fetchMore() {
+        const historyItems = await this.historyService.fetchMore(this.fetcedCount, 100);
+        this.fetcedCount += historyItems.length;
+        historyItems
+            .forEach(item => {
+                const label = dateFormat(item.time, this.dateFormat);
+                if (this.map.has(label)) {
+                    this.map.get(label)!.push(item)
+                } else {
+                    this.map.set(label, [item]);
+                }
+                return ({ item, type: TreeType.item });
+            });
+    }
 };
 

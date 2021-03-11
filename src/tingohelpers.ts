@@ -32,14 +32,14 @@ export class TingoHistoryService implements IHistoryService {
     }
     getById(_id: number): Promise<history> {
         return new Promise((resolve, reject) => {
-            this._collection.findOne({ _id }, (error, results) => {
+            this._collection.findOne({ _id }, (error: Error, results: history) => {
                 resolve(results);
             })
         })
     }
     async addNew(history: history): Promise<void> {
         return new Promise((resolve, reject) => {
-            this._collection.insert(history, (error) => {
+            this._collection.insert(history, (error: Error) => {
                 if (error) {
                     reject(error);
                     return;
@@ -54,7 +54,7 @@ export class TingoHistoryService implements IHistoryService {
                 .sort({ time: -1 })
                 .skip(skip)
                 .limit(limit);
-            cursor.toArray((error, results) => {
+            cursor.toArray((_error: Error, results: history[]) => {
                 resolve(results)
             })
         })
