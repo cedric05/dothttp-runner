@@ -47,6 +47,9 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
 
     recentChanged(history: history) {
+        if (!this.map.has('recent')) {
+            this.map.set('recent', []);
+        }
         this.map.get('recent')!.unshift(history);
         this.emitter.fire(null)
     }
@@ -101,6 +104,9 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                     childs.push({ type: TreeType.recent, label: 'recent' });
                 else
                     childs.push({ type: TreeType.date, label: label });
+            }
+            if (childs[0].label != 'recent'){
+                childs.unshift({ type: TreeType.more, label: 'recent' })
             }
             childs.push({ type: TreeType.more, label: 'more' })
             return childs
