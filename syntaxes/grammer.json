@@ -264,16 +264,6 @@
                 {
                     "match": "true",
                     "name": "constant.language"
-                },
-                {
-                    "include": "#array"
-                },
-                {
-                    "include": "#object"
-                },
-                {
-                    "include": "#variables",
-                    "name": "entity.other.attribute-name"
                 }
             ]
         },
