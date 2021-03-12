@@ -108,11 +108,25 @@
             ]
         },
         "variables": {
+            "begin": "{{\\s*(\\w+)\\s*=\\s*(\\w*)\\s*?",
+            "end": "}}",
+            "name": "variable.parameter",
+            "beginCaptures": {
+                "0": {
+                    "name": "variable.name"
+                },
+                "1": {
+                    "name": "constant"
+                }
+            }
+        },
+        "json": {
+            "begin": "json[\\s]*(",
+            "end": ")",
+            "name": "entity.name.class",
             "patterns": [
                 {
-                    "begin": "{{",
-                    "end": "}}",
-                    "name": "variable.parameter"
+                    "include": "#object"
                 }
             ]
         },
@@ -215,7 +229,7 @@
                 },
                 {
                     "match": "query",
-                    "name": "entity.name.function"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "\\?",
@@ -227,23 +241,23 @@
                 },
                 {
                     "match": "data",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "fileinput",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "json",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "files",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "output",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "\\[",
@@ -259,11 +273,21 @@
                 },
                 {
                     "match": "@name",
-                    "name": "constant.language"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "true",
-                    "name": "constant.language"
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "false",
+                    "name": "keyword.other"
+                },
+                {
+                    "#include": "#object"
+                },
+                {
+                    "#include": "#json"
                 }
             ]
         },
