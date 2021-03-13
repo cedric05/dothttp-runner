@@ -4,10 +4,10 @@
     "scopeName": "source.dothttp-vscode",
     "patterns": [
         {
-            "include": "#comment"
+            "include": "source.json"
         },
         {
-            "include": "#string"
+            "include": "#comment"
         },
         {
             "include": "#number"
@@ -121,7 +121,7 @@
             }
         },
         "json": {
-            "begin": "json[\\s]*(",
+            "begin": "((json)|(data))[\\s]*(",
             "end": ")",
             "name": "entity.name.class",
             "patterns": [
@@ -129,6 +129,77 @@
                     "include": "#object"
                 }
             ]
+        },
+        "name": {
+            "begin": "@name\\(",
+            "end": "\\)",
+            "name": "entity.name.method",
+            "patterns": [
+                {
+                    "match": ".*",
+                    "name": "support.type.property-name"
+                },
+                {
+                    "begin": "\"",
+                    "end": "\"",
+                    "name": "support.type.property-name"
+                },
+                {
+                    "begin": "'",
+                    "end": "'",
+                    "name": "support.type.property-name"
+                }
+            ]
+        },
+        "url": {
+            "begin": "(GET|POST|DELETE|OPTIONS|CONNECT|PUT|HEAD|TRACE)\\s*",
+            "beginCaptures": {
+                "0": {
+                    "name": "variable.other.enummember"
+                }
+            },
+            "end": ".*",
+            "endCaptures": {
+                "0": {
+                    "name": "markup.bold"
+                }
+            }
+        },
+        "header": {
+            "begin": "(\\w*|\\\".*\\\"|'.*')\\s*[:]",
+            "end": "(\\w*|\\\".*\\\")",
+            "beginCaptures": {
+                "0": {
+                    "name": "support.type.property-name"
+                },
+                "1": {
+                    "name": "keyword"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "support.property-value"
+                }
+            },
+            "name": "dothttp.header"
+        },
+        "query": {
+            "begin": "(\\?)\\s*(\\w*|\\\".*\\\"|'.*')\\s*[,=:]",
+            "end": "(\\w*|\\\".*\\\")",
+            "beginCaptures": {
+                "0": {
+                    "name": "support.type.property-name.json"
+                },
+                "1": {
+                    "name": "keyword"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "support.property-value"
+                }
+            },
+            "name": "dothttp.query"
         },
         "comment": {
             "patterns": [
@@ -196,44 +267,8 @@
                     "name": "support.class"
                 },
                 {
-                    "match": "GET",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "POST",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "OPTIONS",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "DELETE",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "CONNECT",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "PUT",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "HEAD",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "TRACE",
-                    "name": "variable.other.enummember"
-                },
-                {
                     "match": "query",
                     "name": "keyword.other"
-                },
-                {
-                    "match": "\\?",
-                    "name": "constant.language"
                 },
                 {
                     "match": "\\=",
@@ -260,34 +295,37 @@
                     "name": "keyword.other"
                 },
                 {
-                    "match": "\\[",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "\\]",
-                    "name": "constant.language"
-                },
-                {
                     "match": "null",
-                    "name": "support.class"
-                },
-                {
-                    "match": "@name",
-                    "name": "keyword.other"
+                    "name": "constant.language"
                 },
                 {
                     "match": "true",
-                    "name": "keyword.other"
+                    "name": "constant.language"
                 },
                 {
                     "match": "false",
-                    "name": "keyword.other"
+                    "name": "constant.language"
+                },
+                {
+                    "#include": "#json"
+                },
+                {
+                    "include": "#name"
+                },
+                {
+                    "include": "#url"
+                },
+                {
+                    "include": "#query"
                 },
                 {
                     "#include": "#object"
                 },
                 {
-                    "#include": "#json"
+                    "include": "#array"
+                },
+                {
+                    "include": "#string"
                 }
             ]
         },
