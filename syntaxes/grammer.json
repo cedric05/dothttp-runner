@@ -26,84 +26,20 @@
         }
     ],
     "repository": {
-        "array": {
-            "begin": "\\[",
-            "beginCaptures": {
-                "0": {
-                    "name": "punctuation.definition.array.begin.json.comments"
-                }
-            },
-            "end": "\\]",
-            "endCaptures": {
-                "0": {
-                    "name": "punctuation.definition.array.end.json.comments"
-                }
-            },
-            "name": "meta.structure.array.json.comments",
+        "comment": {
             "patterns": [
                 {
-                    "include": "#value"
+                    "match": "#.*$",
+                    "name": "comment.line"
                 },
                 {
-                    "match": ",",
-                    "name": "punctuation.separator.array.json.comments"
+                    "match": "//.*$",
+                    "name": "comment.line"
                 },
                 {
-                    "match": "[^\\s\\]]",
-                    "name": "invalid.illegal.expected-array-separator.json.comments"
-                }
-            ]
-        },
-        "object": {
-            "begin": "\\{",
-            "beginCaptures": {
-                "0": {
-                    "name": "punctuation.definition.dictionary.begin.json.comments"
-                }
-            },
-            "end": "\\}",
-            "endCaptures": {
-                "0": {
-                    "name": "punctuation.definition.dictionary.end.json.comments"
-                }
-            },
-            "name": "meta.structure.dictionary.json.comments",
-            "patterns": [
-                {
-                    "comment": "the JSON object key",
-                    "include": "#objectkey"
-                },
-                {
-                    "include": "#comments"
-                },
-                {
-                    "begin": ":",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "punctuation.separator.dictionary.key-value.json.comments"
-                        }
-                    },
-                    "end": "(,)|(?=\\})",
-                    "endCaptures": {
-                        "1": {
-                            "name": "punctuation.separator.dictionary.pair.json.comments"
-                        }
-                    },
-                    "name": "meta.structure.dictionary.value.json.comments",
-                    "patterns": [
-                        {
-                            "comment": "the JSON object value",
-                            "include": "#value"
-                        },
-                        {
-                            "match": "[^\\s,^#s,]",
-                            "name": "invalid.illegal.expected-dictionary-separator.json.comments"
-                        }
-                    ]
-                },
-                {
-                    "match": "[^\\s\\}]",
-                    "name": "invalid.illegal.expected-dictionary-separator.json.comments"
+                    "name": "comment.block",
+                    "begin": "/\\*",
+                    "end": "\\*/"
                 }
             ]
         },
@@ -201,23 +137,6 @@
             },
             "name": "dothttp.query"
         },
-        "comment": {
-            "patterns": [
-                {
-                    "match": "#.*$",
-                    "name": "comment.line"
-                },
-                {
-                    "match": "//.*$",
-                    "name": "comment.line"
-                },
-                {
-                    "name": "comment.block",
-                    "begin": "/\\*",
-                    "end": "\\*/"
-                }
-            ]
-        },
         "string": {
             "patterns": [
                 {
@@ -307,9 +226,6 @@
                     "name": "constant.language"
                 },
                 {
-                    "#include": "#json"
-                },
-                {
                     "include": "#name"
                 },
                 {
@@ -319,7 +235,7 @@
                     "include": "#query"
                 },
                 {
-                    "#include": "#object"
+                    "include": "#object"
                 },
                 {
                     "include": "#array"
