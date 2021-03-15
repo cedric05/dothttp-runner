@@ -11,6 +11,7 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 - properties from editor (add, update, delete, copy, disable all)
 - change environments priority
 - open executed file in seperate tab with content-type
+- creates history entry for requests, can be viewable
 
 <img src="./demo.gif" >
 
