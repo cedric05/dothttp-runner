@@ -38,12 +38,16 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
     private readonly dateFormat = "yyyy-mm-dd";
 
+    constructor() {
+        this.map.set('recent', []);
+    }
+
     public get historyService(): IHistoryService {
         return this._historyService;
     }
     public set historyService(value: IHistoryService) {
         this._historyService = value;
-        this.fetchMore();
+        // this.fetchMore();
     }
 
     recentChanged(history: history) {
@@ -97,16 +101,9 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     async getChildren(element?: HistoryTreeItem): Promise<HistoryTreeItem[]> {
         if (!element) {
             await this.fetchMore();
-            const recent = dateFormat(new Date(), this.dateFormat);
             const childs = []
             for (const label of this.map.keys()) {
-                if (recent === label)
-                    childs.push({ type: TreeType.recent, label: 'recent' });
-                else
-                    childs.push({ type: TreeType.date, label: label });
-            }
-            if (childs[0].label != 'recent'){
-                childs.unshift({ type: TreeType.more, label: 'recent' })
+                childs.push({ type: TreeType.date, label: label });
             }
             childs.push({ type: TreeType.more, label: 'more' })
             return childs
