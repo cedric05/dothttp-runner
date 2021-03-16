@@ -100,7 +100,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
     async getChildren(element?: HistoryTreeItem): Promise<HistoryTreeItem[]> {
         if (!element) {
-            await this.fetchMore();
+            await this.fetchMore(20);
             const childs = []
             for (const label of this.map.keys()) {
                 childs.push({ type: TreeType.date, label: label });
@@ -112,7 +112,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             return data;
         } else if (element.type === TreeType.more) {
             const initialCount = this.fetcedCount;
-            this.fetchMore();
+            await this.fetchMore(100);
             if (initialCount !== this.fetcedCount) {
                 this.emitter.fire(null);
             }
@@ -121,8 +121,8 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
 
 
-    private async fetchMore() {
-        const historyItems = await this.historyService.fetchMore(this.fetcedCount, 100);
+    private async fetchMore(loadCount=100) {
+        const historyItems = await this.historyService.fetchMore(this.fetcedCount, loadCount);
         this.fetcedCount += historyItems.length;
         const recent = dateFormat(new Date(), this.dateFormat);
         historyItems
