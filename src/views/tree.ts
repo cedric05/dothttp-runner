@@ -118,15 +118,15 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         this.refresh();
     }
 
-    updateProperty(node: PropertyTreeItem) {
-        vscode.window.showInputBox({ placeHolder: `update property for key: \`${node.key}\` currently \`${node.value}\`` }).then(
-            updatedValue => {
-                if (this.filename && (updatedValue || updatedValue === '') && node.value !== updatedValue) {
-                    this.fileStateService?.updateProperty(this.filename!?.toString(), node.key, node.value, updatedValue);
-                    this.refresh();
-                }
-            }
-        )
+    async updateProperty(node: PropertyTreeItem) {
+        const updatedValue = await vscode.window.showInputBox({
+            placeHolder: `update property for key: \`${node.key}\` currently \`${node.value}\``,
+            value: node?.value
+        })
+        if (this.filename && (updatedValue || updatedValue === '') && node.value !== updatedValue) {
+            this.fileStateService?.updateProperty(this.filename!?.toString(), node.key, node.value, updatedValue);
+            this.refresh();
+        }
     }
 
     disableAllProperies() {
@@ -147,8 +147,6 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
 }
 
 export class EnvTree implements vscode.TreeDataProvider<Position> {
-
-
     private _onDidChangeTreeData: vscode.EventEmitter<Position | null> = new vscode.EventEmitter<Position | null>();
     readonly onDidChangeTreeData: vscode.Event<Position | null> = this._onDidChangeTreeData.event;
 
@@ -179,6 +177,15 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         } else {
             this._onDidChangeTreeData.fire(null);
         }
+    }
+
+    disableAllEnv() {
+        const filename = vscode.window.activeTextEditor?.document.fileName!;
+        const allEnv = this.filestate?.getEnv(filename);
+        allEnv?.forEach(env => {
+            this.filestate?.removeEnv(filename, env);
+        })
+        this.refresh()
     }
 
 

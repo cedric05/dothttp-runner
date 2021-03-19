@@ -34,6 +34,7 @@ export enum Constants {
     disableEnvCommand = 'dothttpEnvView.disableenv',
     copyEnvValueCommand = 'dothttpEnvView.copyPropertyValue',
     openEnvFileCommmand = 'dothttpEnvView.opendothttpjson',
+    disableAllEnvCommmand = "dothttpEnvView.disableAllEnv",
 
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 

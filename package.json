@@ -188,6 +188,14 @@
 				}
 			},
 			{
+				"command": "dothttpEnvView.disableAllEnv",
+				"title": "disable all env",
+				"icon": {
+					"dark": "./media/close-all.svg",
+					"light": "./media/close-all.svg"
+				}
+			},
+			{
 				"command": "dothttpPropView.removeproperty",
 				"title": "remove property",
 				"icon": {
@@ -231,16 +239,16 @@
 					"when": "resourceExtname == .http || resourceExtname == .dhttp"
 				},
 				{
-					"command": "dothttp.command.toggle.experimental",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"command": "dothttp.command.toggle.experimental"
 				},
 				{
-					"command": "dothttp.command.toggle.nocookie",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"command": "dothttp.command.toggle.nocookie"
 				},
 				{
-					"command": "dothttp.command.toggle.history",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"command": "dothttp.command.toggle.history"
+				},
+				{
+					"command": "dothttp.command.toggle.showheaders"
 				}
 			],
 			"view/title": [
@@ -251,6 +259,11 @@
 				},
 				{
 					"command": "dothttpEnvView.opendothttpjson",
+					"when": "view == dothttpEnvView",
+					"group": "navigation"
+				},
+				{
+					"command": "dothttpEnvView.disableAllEnv",
 					"when": "view == dothttpEnvView",
 					"group": "navigation"
 				},

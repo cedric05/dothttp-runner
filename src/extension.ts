@@ -38,14 +38,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(genCurlDisp);
 	context.subscriptions.push(openEnvFileDisp)
 
+	// env view commands
 	const envProvider = appServices.getEnvProvder();
 	vscode.window.registerTreeDataProvider(Constants.envTreeView, envProvider);
 	vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envProvider.refresh());
 	vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand);
 	vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand);
 	vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty);
+	vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envProvider.disableAllEnv() });
 
 
+	// propertiy view commands
 	const propProvider = appServices.getPropTreeProvider();
 	vscode.window.registerTreeDataProvider(Constants.propTreeView, propProvider);
 
@@ -57,6 +60,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.copyEnvPropCommand, (node) => { propProvider.copyProperty(node) });
 	vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propProvider.updateProperty(node) });
 	vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propProvider.removeProperty(node) });
+
+
 
 	vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
 	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
