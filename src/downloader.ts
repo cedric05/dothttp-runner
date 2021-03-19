@@ -162,7 +162,11 @@ async function wait(time = 1000) {
 
 
 export async function setUp(context: ExtensionContext) {
-    if (!isPythonConfigured() && !isDothttpConfigured()) {
+    const dothttpConfigured = isDothttpConfigured();
+    const pythonConfigured = isPythonConfigured();
+    if (!pythonConfigured && !dothttpConfigured) {
+        console.log('dothttpConfigured', dothttpConfigured);
+        console.log('pythonConfigured', pythonConfigured);
         const globalStorageDir = context.globalStorageUri.fsPath;
         if (!fs.existsSync(globalStorageDir)) {
             fs.mkdirSync(globalStorageDir);
@@ -185,6 +189,7 @@ function getExePath(exePath: string) {
         exePath = path.join(exePath, 'cli.exe');
     } else if (platform() === "linux") {
         exePath = path.join(exePath, 'cli');
+        fs.chmodSync(exePath, 0o755); 
     }
     return exePath;
 }
