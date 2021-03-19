@@ -152,6 +152,15 @@ async function downloadDothttp(downloadLocation: string) {
     return;
 }
 
+async function wait(time = 1000) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(time);
+        }, time);
+    });
+}
+
+
 export async function setUp(context: ExtensionContext) {
     if (!isPythonConfigured() && !isDothttpConfigured()) {
         const globalStorageDir = context.globalStorageUri.fsPath;
@@ -167,6 +176,7 @@ export async function setUp(context: ExtensionContext) {
         exePath = getExePath(exePath);
         Configuration.setDothttpPath(exePath)
         console.log('dothttp path set to', exePath);
+        await wait(4000);
     }
 }
 
