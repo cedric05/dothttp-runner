@@ -8,11 +8,28 @@
             "latest": false,
             "stable": true,
             "version": "0.0.8"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.9/dotextensions-0.0.9-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.9/dotextensions-0.0.9-x86-windows.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.9"
         }
     ],
     "matrix": {
         "0.0.5": {
-            "maxVersion": "0.0.8",
+            "maxVersion": "0.0.9",
+            "minVersion": "0.0.8"
+        },
+        "0.0.6": {
+            "maxVersion": "0.0.9",
+            "minVersion": "0.0.8"
+        },
+        "0.0.7": {
+            "maxVersion": "0.0.9",
             "minVersion": "0.0.8"
         }
     }
