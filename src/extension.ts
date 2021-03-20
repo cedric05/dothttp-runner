@@ -10,8 +10,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	await setUp(context);
 	ApplicationServices.initialize(context);
 	const appServices = ApplicationServices.get();
-	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand());
-	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand());
+	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
+	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);
 
 	let openEnvFileDisp = vscode.commands.registerCommand(Constants.openEnvFileCommmand, function () {
 		const filename = appServices.getEnvProvder().filename;

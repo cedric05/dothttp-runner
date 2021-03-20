@@ -48,27 +48,42 @@ export async function importRequests() {
 }
 
 
-export function runFileCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
-    return function (...arr) {
-        if (arr) {
-            // this is bad, find out better signature
-            runHttpFileWithOptions({ target: arr[2].target, curl: false });
-        } else {
-            runHttpFileWithOptions({ curl: false, target: '1' });
-        }
-    };
+export async function runFileCommand(...arr: any[]) {
+    const target = await getTargetFromQuickPick(arr);
+    const storage = ApplicationServices.get().getStorageService();
+    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
+    storage.setValue(`httpruntarget://${filename}`, target);
+    runHttpFileWithOptions({ curl: false, target: target });
 }
 
-export function genCurlCommand(): (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void {
-    return function (...arr) {
-        if (arr) {
-            runHttpFileWithOptions({ target: arr[2].target, curl: true });
-        } else {
-            runHttpFileWithOptions({ curl: true, target: '1' });
-        }
-    };
+export async function genCurlCommand(...arr: any[]) {
+    const target = await getTargetFromQuickPick(arr);
+    const storage = ApplicationServices.get().getStorageService();
+    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
+    storage.setValue(`httpruntarget://${filename}`, target);
+    runHttpFileWithOptions({ curl: true, target: target });
 }
 
+
+async function getTargetFromQuickPick(arr: any[]) {
+    // decide target from arguments,
+    // this request is from code-lens
+    if (arr && arr.length >= 2) {
+        var target = arr[2].target;
+        if (target) {
+            return target;
+        }
+    }
+    // otherwise ask for user input
+    const filename = vscode.window.activeTextEditor?.document.fileName!;
+    if (Configuration.isRecentEnabled()){
+        const storage = ApplicationServices.get().getStorageService();
+        return storage.getValue(`httpruntarget://${filename}`, '1');
+    }
+    const names = await ApplicationServices.get().getClientHandler().getNames(filename);
+    const option = await vscode.window.showQuickPick(names.names.map(namer => namer.name), { canPickMany: false, ignoreFocusOut: true });
+    return option || '1';
+}
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
     const filename = vscode.window.activeTextEditor?.document.fileName ?? '';

@@ -91,4 +91,8 @@ export class Configuration {
         return Configuration.getConfiguredValue(Constants.history) as unknown as boolean;
     }
 
+    static isRecentEnabled(): boolean{
+        return Configuration.getConfiguredValue(Constants.runConf) as unknown as boolean;
+    }
+
 }

@@ -56,181 +56,121 @@
 		"commands": [
 			{
 				"command": "dothttp.command.run",
-				"title": "run first target",
-				"icon": {
-					"dark": "./media/rocket.svg",
-					"light": "./media/rocket.svg"
-				}
+				"title": "Run Target",
+				"icon": "$(rocket)"
 			},
 			{
 				"command": "dothttp.command.gencurl",
-				"title": "generate curl for first target",
-				"icon": {
-					"dark": "media/mirror.svg",
-					"light": "media/mirror.svg"
-				}
+				"title": "Generate Curl",
+				"icon": "$(mirror)"
 			},
 			{
 				"command": "dothttp.command.toggle.experimental",
 				"title": "toggles experimental setting",
 				"category": "Dothttp",
-				"icon": {
-					"dark": "./media/gear.svg",
-					"light": "./media/gear.svg"
-				}
+				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.showheaders",
 				"title": "toggles experimental setting",
 				"category": "Dothttp",
-				"icon": {
-					"dark": "./media/gear.svg",
-					"light": "./media/gear.svg"
-				}
+				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.history",
 				"title": "toggles history setting",
 				"category": "Dothttp",
-				"icon": {
-					"dark": "./media/gear.svg",
-					"light": "./media/gear.svg"
-				}
+				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.nocookie",
 				"title": "toggles cookie setting",
 				"category": "Dothttp",
-				"icon": {
-					"dark": "./media/gear.svg",
-					"light": "./media/gear.svg"
-				}
+				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.import.external",
 				"title": "import resource to http",
 				"category": "Dothttp",
-				"icon": {
-					"dark": "./media/cloud-download.svg",
-					"light": "./media/cloud-download.svg"
-				}
+				"icon": "$(cloud-download)"
 			},
 			{
 				"command": "dothttpEnvView.refresh",
 				"title": "Refresh",
-				"icon": {
-					"dark": "media/refresh.svg",
-					"light": "media/refresh.svg"
-				}
+				"icon": "$(refresh)"
 			},
 			{
 				"command": "dothttpEnvView.enableenv",
 				"title": "enable env",
-				"icon": {
-					"dark": "./media/add.svg",
-					"light": "./media/add.svg"
-				}
+				"icon": "$(add)"
 			},
 			{
 				"command": "dothttpEnvView.disableenv",
 				"title": "disable env",
-				"icon": {
-					"dark": "media/remove.svg",
-					"light": "media/remove.svg"
-				}
+				"icon": "$(remove)"
 			},
 			{
 				"command": "dothttpPropView.add",
 				"title": "add property",
-				"icon": {
-					"dark": "media/new-file.svg",
-					"light": "media/new-file.svg"
-				}
+				"icon": "$(new-file)"
 			},
 			{
 				"command": "dothttpPropView.enableproperty",
 				"title": "enable property",
-				"icon": {
-					"dark": "./media/add.svg",
-					"light": "./media/add.svg"
-				}
+				"icon": "$(add)"
 			},
 			{
 				"command": "dothttpPropView.disableproperty",
 				"title": "disable property",
-				"icon": {
-					"dark": "media/remove.svg",
-					"light": "media/remove.svg"
-				}
+				"icon": "$(remove)"
 			},
 			{
 				"command": "dothttpPropView.copyPropertyValue",
 				"title": "copy property value",
-				"icon": {
-					"dark": "./media/chrome-restore.svg",
-					"light": "./media/chrome-restore.svg"
-				}
+				"icon": "$(chrome-restore)"
 			},
 			{
 				"command": "dothttpPropView.updateproperty",
 				"title": "update property",
-				"icon": {
-					"dark": "./media/edit.svg",
-					"light": "./media/edit.svg"
-				}
+				"icon": "$(edit)"
 			},
 			{
 				"command": "dothttpPropView.disableAllProperties",
 				"title": "disable all properties",
-				"icon": {
-					"dark": "./media/close-all.svg",
-					"light": "./media/close-all.svg"
-				}
+				"icon": "$(close-all)"
 			},
 			{
 				"command": "dothttpEnvView.disableAllEnv",
 				"title": "disable all env",
-				"icon": {
-					"dark": "./media/close-all.svg",
-					"light": "./media/close-all.svg"
-				}
+				"icon": "$(close-all)"
 			},
 			{
 				"command": "dothttpPropView.removeproperty",
 				"title": "remove property",
-				"icon": {
-					"dark": "./media/trash.svg",
-					"light": "./media/trash.svg"
-				}
+				"icon": "$(trash)"
 			},
 			{
 				"command": "dothttpEnvView.opendothttpjson",
 				"title": "open",
-				"icon": {
-					"dark": "./media/edit.svg",
-					"light": "./media/edit.svg"
-				}
+				"icon": "$(edit)"
 			},
 			{
 				"command": "dothttpEnvView.copyPropertyValue",
 				"title": "copy env property",
-				"icon": {
-					"dark": "./media/chrome-restore.svg",
-					"light": "./media/chrome-restore.svg"
-				}
+				"icon": "$(chrome-restore)"
 			}
 		],
 		"menus": {
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
-					"group": "navigation",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"group": "navigation@1"
 				},
 				{
 					"command": "dothttp.command.gencurl",
-					"group": "navigation",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"group": "navigation@2"
 				}
 			],
 			"commandPalette": [
@@ -330,6 +270,12 @@
 						"default": "/usr/bin/python3",
 						"description": "python installation location for making requests"
 					},
+					"dothttp.conf.runrecent": {
+						"type": "boolean",
+						"default": true,
+						"description": "set true to run most recent otherwise, it will ask with available targets",
+						"$comment": "true means recent"
+					},
 					"dothttp.conf.path": {
 						"type": "string",
 						"default": "/usr/bin/dothttp",
@@ -380,7 +326,14 @@
 					"name": "Dothttp history"
 				}
 			]
-		}
+		},
+		"submenus": [
+			{
+				"id": "dothttp.editor.title.run",
+				"label": "Run dotHttp Target",
+				"icon": "$(rocket)"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
@@ -396,7 +349,6 @@
 	"devDependencies": {
 		"@types/dateformat": "^3.0.1",
 		"@types/glob": "^7.1.3",
-		"@types/lodash": "^4.14.168",
 		"@types/mime-types": "^2.1.0",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^12.20.0",
@@ -415,10 +367,8 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
-		"axios": "^0.21.1",
 		"dateformat": "^4.5.1",
 		"jsonc-parser": "^3.0.0",
-		"lodash": "^4.17.20",
 		"mime-types": "^2.1.29",
 		"semver": "^7.3.4",
 		"tingodb": "^0.6.1",

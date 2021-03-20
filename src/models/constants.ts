@@ -11,6 +11,7 @@ export enum Constants {
     history = "dothttp.conf.history",
     curl = "dothttp.conf.curl",
     showheaders = "dothttp.conf.showheaders",
+    runConf = "dothttp.conf.runrecent",
     // view props
 
     // commands

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+// import axios, { AxiosResponse } from 'axios';
 import * as child_process from 'child_process';
 import { once } from 'events';
 import { createInterface, Interface } from 'readline';
@@ -90,23 +90,23 @@ export class StdoutClient extends BaseSpanClient {
 }
 
 
-export class HttpClient extends BaseSpanClient {
-    constructor(options: { pythonpath: string, stdargs: string[] }) {
-        super(options);
-    }
-    async call(command: ICommand): Promise<IResult> {
-        const id = command.id;
-        const axiosResponse: AxiosResponse<IResult> = await axios({
-            url: new URL(command.method, 'http://localhost:5000/').href,
-            method: "POST",
-            params: {
-                id
-            },
-            data: command.params
-        });
-        return axiosResponse.data
-    }
-}
+// export class HttpClient extends BaseSpanClient {
+//     constructor(options: { pythonpath: string, stdargs: string[] }) {
+//         super(options);
+//     }
+//     async call(command: ICommand): Promise<IResult> {
+//         const id = command.id;
+//         const axiosResponse: AxiosResponse<IResult> = await axios({
+//             url: new URL(command.method, 'http://localhost:5000/').href,
+//             method: "POST",
+//             params: {
+//                 id
+//             },
+//             data: command.params
+//         });
+//         return axiosResponse.data
+//     }
+// }
 
 interface nameresult {
     name: string,
@@ -132,12 +132,12 @@ export class ClientHandler {
             options.stdargs.push('dotextensions.server');
         }
         console.log("launch params", JSON.stringify(options));
-        if (clientOptions.std) {
-            this.cli = new StdoutClient(options);
-        } else {
-            options.stdargs.push('http');
-            this.cli = new HttpClient(options);
-        }
+        // if (clientOptions.std) {
+        this.cli = new StdoutClient(options);
+        // } else {
+        //     options.stdargs.push('http');
+        //     this.cli = new HttpClient(options);
+        // }
     }
 
     // TODO, add env, propertys, target ...
