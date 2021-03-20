@@ -53,7 +53,7 @@ export class Configuration {
         return vscode.workspace.getConfiguration().get(key);
     }
 
-    static setValue(key: string, value: string) {
+    static setGlobalValue(key: string, value: string) {
         return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
     }
 
@@ -67,7 +67,7 @@ export class Configuration {
     }
 
     static setDothttpPath(value: string) {
-        return Configuration.setValue(Constants.dothttpPath, value);
+        return Configuration.setGlobalValue(Constants.dothttpPath, value);
     }
 
 

@@ -75,7 +75,7 @@ export async function getJSON<T>(api: string): Promise<T> {
     });
 }
 
-export async function getVersion() {
+export async function getVersion(): Promise<version> {
     var resp = await getJSON<versionResponse>(Constants.versionApi);
     const compatibleMat = resp.matrix[Constants.extensionVersion];
     if (compatibleMat) {
@@ -97,8 +97,7 @@ export async function getVersion() {
     throw new Error('version not available')
 }
 
-async function fetchDownloadUrl() {
-    const accepted = await getVersion();
+function fetchDownloadUrl(accepted: version) {
     const plat = platform();
     switch (plat) {
         case "win32":
@@ -112,12 +111,11 @@ async function fetchDownloadUrl() {
     }
 }
 
-async function downloadDothttp(downloadLocation: string) {
+async function downloadDothttp(downloadLocation: string, url: string) {
     console.log("downloading to ", downloadLocation);
     if (!fs.existsSync(downloadLocation)) {
         fs.mkdirSync(downloadLocation);
     }
-    const url = await fetchDownloadUrl();
     console.log(`download from url ${url}`)
     var res = await getStream(url!);
     if (res.statusCode === 302) {
@@ -189,7 +187,9 @@ export async function setUp(context: ExtensionContext) {
             }
         }
         console.log('download directory ', downloadLocation);
-        await downloadDothttp(downloadLocation);
+        const acceptableVersion = await getVersion();
+        const url = fetchDownloadUrl(acceptableVersion);
+        await downloadDothttp(downloadLocation, url!);
         console.log('download successfull ', downloadLocation);
         var exePath = path.join(downloadLocation, 'cli');
         exePath = getExePath(exePath);
@@ -197,6 +197,7 @@ export async function setUp(context: ExtensionContext) {
         console.log('dothttp path set to', exePath);
         context.globalState.update("dothttp.downloadContentCompleted", true);
         await wait(4000);
+        return acceptableVersion.version;
     }
 }
 
@@ -210,14 +211,14 @@ function getExePath(exePath: string) {
     return exePath;
 }
 
-export async function updateDothttpIfAvailable(context: ExtensionContext) {
-    const currentVersion: string = getCurrentVersion(context);
+export async function updateDothttpIfAvailable(globalStorageDir: string) {
+    const currentVersion: string = ApplicationServices.get().getVersionInfo().getVersionDothttpInfo();
     const versionData = await getVersion();
-    if (semver.gte(currentVersion, versionData.version)) {
+    if (semver.gt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
             'new version available', 'upgrade', 'leave')
         if (accepted === 'upgrade') {
-            ApplicationServices.get().clientHanler.close();
+            // ApplicationServices.get().clientHanler.close();
             if (isPythonConfigured()) {
                 // using exec is better in this scenario,
                 // but need to check
@@ -226,23 +227,22 @@ export async function updateDothttpIfAvailable(context: ExtensionContext) {
                     { stdio: ["pipe", "pipe", "inherit"] }
                 );
             } else if (isDothttpConfigured()) {
-                const globalStorageDir = context.globalStorageUri.fsPath;
                 const downloadLocation = path.join(globalStorageDir, `cli-${versionData.version}`);
-                await downloadDothttp(downloadLocation);
+                const url = fetchDownloadUrl(versionData)
+                await downloadDothttp(downloadLocation, url!);
                 const originalLocation = path.join(globalStorageDir, 'cli');
-                fs.rmdirSync(originalLocation);
+                fs.rmdirSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
-                chmodSync(downloadLocation, fs.constants.S_IXOTH);
+                getExePath(path.join(originalLocation, 'cli'));
             }
-            setCurrentVersion(context, versionData.version);
+            ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(versionData.version);
+            const shouldReload = await vscode.window.showInformationMessage(
+                'dothttp upgrade completed, reload to view latest updates', 'reload', 'leave')
+            if (shouldReload === 'reload') {
+                vscode.commands.executeCommand(
+                    'workbench.action.reloadWindow',
+                );
+            }
         }
     }
-}
-
-function getCurrentVersion(context: ExtensionContext): string {
-    return context.globalState.get(Constants.dothttpVersion) as string;
-}
-
-function setCurrentVersion(context: ExtensionContext, version: string) {
-    context.globalState.update(Constants.dothttpVersion, version);
 }

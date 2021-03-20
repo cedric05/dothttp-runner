@@ -6,7 +6,7 @@ import { IHistoryService, TingoHistoryService } from "../tingohelpers";
 import DotHttpEditorView from "../views/editor";
 import { HistoryTreeProvider } from "../views/historytree";
 import { EnvTree, PropertyTree } from "../views/tree";
-import { FileState, IFileState } from "./state";
+import { FileState, IFileState, VersionInfo } from "./state";
 import path = require('path');
 
 export class ApplicationServices {
@@ -22,9 +22,12 @@ export class ApplicationServices {
     private dotHttpEditorView: DotHttpEditorView;
     private dothttpSymbolProvier: DothttpNameSymbolProvider;
     private diagnostics: vscode.DiagnosticCollection;
+    private globalstorageService: LocalStorageService;
+    private versionInfo: VersionInfo;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
+        this.globalstorageService = new LocalStorageService(context.globalState);
         this.clientHanler = new ClientHandler({
             std: true,
         });
@@ -36,6 +39,7 @@ export class ApplicationServices {
         this.dotHttpEditorView = new DotHttpEditorView();
         this.diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
         this.dothttpSymbolProvier = new DothttpNameSymbolProvider();
+        this.versionInfo = new VersionInfo(this.globalstorageService);
         context.subscriptions.push(this.diagnostics);
     }
 
@@ -117,6 +121,20 @@ export class ApplicationServices {
     }
     setHistoryService(value: IHistoryService) {
         this.historyService = value;
+    }
+
+    getGlobalstorageService(): LocalStorageService {
+        return this.globalstorageService;
+    }
+    setGlobalstorageService(value: LocalStorageService) {
+        this.globalstorageService = value;
+    }
+
+    getVersionInfo(): VersionInfo {
+        return this.versionInfo;
+    }
+    setVersionInfo(value: VersionInfo) {
+        this.versionInfo = value;
     }
 
 }

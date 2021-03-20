@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "dothttp-code",
 	"description": "run dothttp files in vscode natively",
-	"version": "0.0.7-dev",
+	"version": "0.0.7",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"

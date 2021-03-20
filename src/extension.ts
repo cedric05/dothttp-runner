@@ -1,14 +1,18 @@
 import * as vscode from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
-import { setUp } from './downloader';
+import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
 
 export async function activate(context: vscode.ExtensionContext) {
-	await setUp(context);
+	const version = await setUp(context);
 	ApplicationServices.initialize(context);
+	if (version) {
+		ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(version);
+	}
+	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
 	const appServices = ApplicationServices.get();
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);

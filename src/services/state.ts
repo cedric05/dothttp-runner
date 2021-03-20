@@ -26,6 +26,23 @@ export interface IFileState {
 }
 
 
+export class VersionInfo {
+    storage: LocalStorageService;
+    private static readonly versionKey = 'dotthtp-req';
+
+    constructor(storage: LocalStorageService) {
+        this.storage = storage;
+    }
+    setVersionDothttpInfo(version: string) {
+        this.storage.setValue(VersionInfo.versionKey, version);
+    }
+    getVersionDothttpInfo(){
+        return this.storage.getValue(VersionInfo.versionKey, '0.0.8');
+    }
+
+}
+
+
 export class FileState implements IFileState {
     private static section = "files";
 
