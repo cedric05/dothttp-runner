@@ -129,14 +129,24 @@ async function downloadDothttp(downloadLocation: string) {
     console.log(`download from url ${url}`)
     var range = 20 * 1024 * 1024;
     if (res.headers.range) {
-        range = Number.parseFloat(res.headers.range)
+        try {
+            range = Number.parseFloat(res.headers.range)
+        } catch (_errorIgnored) { }
     }
+    var contentDownloaded = 0;
     await vscode.window.withProgress({
         title: `downloading binaries from ${url}`,
         cancellable: false,
         location: vscode.ProgressLocation.Window
     }, async function (progress) {
         await new Promise((resolve, reject) => {
+            res.on('data', function (data) {
+                contentDownloaded += data.length;
+                const increment = (data.length / range) * 100
+                const totalPercent = (contentDownloaded / range) * 100
+                console.log(`downloaded ${totalPercent}`)
+                progress.report({ message: 'completed successfully', increment: increment })
+            })
             res.pipe(extract({ path: downloadLocation }))
                 .on('close', () => {
                     progress.report({ message: 'completed successfully', increment: 100 })
@@ -173,6 +183,11 @@ export async function setUp(context: ExtensionContext) {
             console.log('making global storage directory ', globalStorageDir);
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
+        if (context.globalState.get("dothttp.downloadContentCompleted", false)) {
+            if (fs.existsSync(downloadLocation)) {
+                fs.rmdirSync(downloadLocation);
+            }
+        }
         console.log('download directory ', downloadLocation);
         await downloadDothttp(downloadLocation);
         console.log('download successfull ', downloadLocation);
@@ -180,6 +195,7 @@ export async function setUp(context: ExtensionContext) {
         exePath = getExePath(exePath);
         Configuration.setDothttpPath(exePath)
         console.log('dothttp path set to', exePath);
+        context.globalState.update("dothttp.downloadContentCompleted", true);
         await wait(4000);
     }
 }
@@ -189,7 +205,7 @@ function getExePath(exePath: string) {
         exePath = path.join(exePath, 'cli.exe');
     } else if (platform() === "linux") {
         exePath = path.join(exePath, 'cli');
-        fs.chmodSync(exePath, 0o755); 
+        fs.chmodSync(exePath, 0o755);
     }
     return exePath;
 }
