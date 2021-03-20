@@ -56,13 +56,15 @@
 		"commands": [
 			{
 				"command": "dothttp.command.run",
-				"title": "Run Target",
-				"icon": "$(rocket)"
+				"title": "Dothttp Run Target",
+				"icon": "$(rocket)",
+				"category": "Dothttp"
 			},
 			{
 				"command": "dothttp.command.gencurl",
-				"title": "Generate Curl",
-				"icon": "$(mirror)"
+				"title": "Dothttp Generate Curl",
+				"icon": "$(mirror)",
+				"category": "Dothttp"
 			},
 			{
 				"command": "dothttp.command.toggle.experimental",

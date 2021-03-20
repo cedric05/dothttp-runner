@@ -78,7 +78,7 @@ async function cacheAndGetTarget(arr: any[]) {
 async function getTargetFromQuickPick(arr: any[]) {
     // decide target from arguments,
     // this request is from code-lens
-    if (arr && arr.length >= 2) {
+    if (arr && arr.length >= 3) {
         var target = arr[2].target;
         if (target) {
             return target;

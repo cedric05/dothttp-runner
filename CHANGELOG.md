@@ -5,6 +5,22 @@ All notable changes to the "dothttp-runner" extension will be documented in this
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
+## [0.0.7]
+- [New] now users can use `{{$randomStr}}, {{$randomStr:10}}, {{$randomInt}}, {{$randomInt:10}}, {{$randomBool}}, {{$randomFloat}}` to generate random strings in payload (from dothttp-req)
+  - you can reuse random string via define here `{{username=$randomStr:10}}` and reuse like this `{{username}}`
+- [Improvement] run and curl generation initally runs first target in http file. 
+    >when user runs/trys two generate two options
+    >if dothttp.conf.runrecent  to true (defaults to true)
+     - runs most recently run target (optional)
+    >if dothttp.conf.runrecent  to false
+      - asks user for which target to run
+- [Improvement] while updating properties, input box will prefills old value
+- [Improvement] added option to disable all environments at a time.
+- [Bug] History pane is loading too much data while page load fixed.
+- [Bug] curl generation in editor title is not working fixed
+- [Bug] linux installation has few glitches 
+
+
 ## [0.0.6]
 
 - history

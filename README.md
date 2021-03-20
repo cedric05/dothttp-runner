@@ -75,7 +75,7 @@ basicauth("{{username}}, "{{password}}")
 
 # posts with urlencoded
 data({
-    "name": "Adam A",
+    "name": "Adam {{$randomStr}}",
     "org": "dothttp",
     "location": "Hyderabad",
     "interests": ["exploring", "listening to music"],
@@ -103,6 +103,7 @@ at present you will need python3.9.
 * `dothttp.conf.nocookie`
 * `dothttp.conf.history`
 * `dothttp.conf.curl`
+* `dothttp.conf.runrecent`
 
 ## Known Issues
 - [ ] only file names without - are working
