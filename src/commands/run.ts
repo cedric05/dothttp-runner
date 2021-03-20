@@ -4,6 +4,7 @@ import { Configuration } from '../models/config';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
+import { nameresult as targetAndRange } from '../lib/client';
 
 enum importoptions {
     postman = 'postman',
@@ -49,19 +50,28 @@ export async function importRequests() {
 
 
 export async function runFileCommand(...arr: any[]) {
-    const target = await getTargetFromQuickPick(arr);
-    const storage = ApplicationServices.get().getStorageService();
-    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    storage.setValue(`httpruntarget://${filename}`, target);
-    runHttpFileWithOptions({ curl: false, target: target });
+    const target = await cacheAndGetTarget(arr);
+    if (target) {
+        runHttpFileWithOptions({ curl: false, target: target });
+    }
 }
 
 export async function genCurlCommand(...arr: any[]) {
+    const target = await cacheAndGetTarget(arr);
+    if (target) {
+        runHttpFileWithOptions({ curl: true, target: target });
+    }
+}
+
+
+async function cacheAndGetTarget(arr: any[]) {
     const target = await getTargetFromQuickPick(arr);
-    const storage = ApplicationServices.get().getStorageService();
-    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    storage.setValue(`httpruntarget://${filename}`, target);
-    runHttpFileWithOptions({ curl: true, target: target });
+    if (target) {
+        const storage = ApplicationServices.get().getStorageService();
+        const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
+        storage.setValue(`httpruntarget://${filename}`, target);
+        return target;
+    }
 }
 
 
@@ -76,13 +86,27 @@ async function getTargetFromQuickPick(arr: any[]) {
     }
     // otherwise ask for user input
     const filename = vscode.window.activeTextEditor?.document.fileName!;
-    if (Configuration.isRecentEnabled()){
+    if (Configuration.isRecentEnabled()) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
     const names = await ApplicationServices.get().getClientHandler().getNames(filename);
-    const option = await vscode.window.showQuickPick(names.names.map(namer => namer.name), { canPickMany: false, ignoreFocusOut: true });
-    return option || '1';
+    if (names.error) {
+        return '1';
+    }
+    const option = await vscode.window.showQuickPick(names.names.map(namer => ({ label: namer.name, target: namer })),
+        {
+            canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: targetAndRange }) {
+                const document = vscode.window.activeTextEditor?.document!;
+                const range = new vscode.Range(
+                    document.positionAt(quickPickItem.target.start),
+                    document.positionAt(quickPickItem.target.end));
+                vscode.window.activeTextEditor?.revealRange(range, vscode.TextEditorRevealType.InCenter);
+            }
+        });
+    if (option?.label) {
+        return option.label;
+    }
 }
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {

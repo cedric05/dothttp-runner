@@ -108,7 +108,7 @@ export class StdoutClient extends BaseSpanClient {
 //     }
 // }
 
-interface nameresult {
+export interface nameresult {
     name: string,
     start: number,
     end: number
