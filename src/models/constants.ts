@@ -1,6 +1,8 @@
 
 export enum Constants {
 
+    langCode = 'dothttp-vscode',
+
     // configs
     pythonPath = "dothttp.conf.pythonpath",
     dothttpPath = "dothttp.conf.path",
@@ -9,6 +11,7 @@ export enum Constants {
     history = "dothttp.conf.history",
     curl = "dothttp.conf.curl",
     showheaders = "dothttp.conf.showheaders",
+    runConf = "dothttp.conf.runrecent",
     // view props
 
     // commands
@@ -23,11 +26,16 @@ export enum Constants {
     //    env tree
     envTreeView = 'dothttpEnvView',
 
+
+    // history tree
+    dothttpHistory = "dothttpHistory",
+
     refreshEnvCommand = 'dothttpEnvView.refresh',
     enableEnvCommand = 'dothttpEnvView.enableenv',
     disableEnvCommand = 'dothttpEnvView.disableenv',
     copyEnvValueCommand = 'dothttpEnvView.copyPropertyValue',
     openEnvFileCommmand = 'dothttpEnvView.opendothttpjson',
+    disableAllEnvCommmand = "dothttpEnvView.disableAllEnv",
 
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 
@@ -46,7 +54,7 @@ export enum Constants {
     propViewEnabled = "dothttpPropViewEnabled",
 
     // download stuff
-    extensionVersion = "0.0.5",
+    extensionVersion = "0.0.7",
 
     dothttpVersion = "dothttp.version",
 

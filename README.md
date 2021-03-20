@@ -11,6 +11,7 @@ visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
 - properties from editor (add, update, delete, copy, disable all)
 - change environments priority
 - open executed file in seperate tab with content-type
+- creates history entry for requests, can be viewable
 
 <img src="./demo.gif" >
 
@@ -74,7 +75,7 @@ basicauth("{{username}}, "{{password}}")
 
 # posts with urlencoded
 data({
-    "name": "Adam A",
+    "name": "Adam {{$randomStr}}",
     "org": "dothttp",
     "location": "Hyderabad",
     "interests": ["exploring", "listening to music"],
@@ -102,6 +103,7 @@ at present you will need python3.9.
 * `dothttp.conf.nocookie`
 * `dothttp.conf.history`
 * `dothttp.conf.curl`
+* `dothttp.conf.runrecent`
 
 ## Known Issues
 - [ ] only file names without - are working

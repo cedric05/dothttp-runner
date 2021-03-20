@@ -1,7 +1,5 @@
-import * as vscode from 'vscode'
-import { Range } from 'vscode';
-import { ApplicationServices } from './services/global';
-import * as loadsh from 'lodash';
+import * as vscode from 'vscode';
+import { Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
 
 
@@ -16,18 +14,19 @@ class DothttpPositions extends vscode.CodeLens {
 }
 
 
-export class CodelensProvider implements vscode.CodeLensProvider<DothttpPositions> {
+export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<DothttpPositions>, vscode.DocumentSymbolProvider {
 
 
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
-    private clientHandler: ClientHandler;
+    private clientHandler!: ClientHandler;
+    private diagnostics!: vscode.DiagnosticCollection;
+    static readonly regex = /.*:(?<line>\d*):(?<column>\d*):/
 
     constructor() {
-        vscode.window.onDidChangeActiveTextEditor(loadsh.debounce(() => {
+        vscode.window.onDidChangeActiveTextEditor(() => {
             this._onDidChangeCodeLenses.fire()
-        }, 10000));
-        this.clientHandler = ApplicationServices.get().getClientHandler();
+        });
     }
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
@@ -50,6 +49,7 @@ export class CodelensProvider implements vscode.CodeLensProvider<DothttpPosition
                         resolve(codeLenses);
                     })
                 else {
+                    this.updateDiagnostics(names, document);
                     resolve(codeLenses);
                 }
             });
@@ -64,5 +64,50 @@ export class CodelensProvider implements vscode.CodeLensProvider<DothttpPosition
             arguments: [{ "target": codeLens.target, "curl": codeLens.curl }]
         };
         return codeLens;
+    }
+
+
+    async provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
+        const result = await this.clientHandler.getNames(document.fileName, 'symbol');
+        if (!result.error) {
+            this.diagnostics.clear();
+            return result.names.map(element =>
+                new SymbolInformation(element.name, vscode.SymbolKind.Class,
+                    new Range(
+                        document.positionAt(element.start),
+                        document.positionAt(element.end)),
+                ));
+        }
+        else {
+            this.updateDiagnostics(result, document);
+            return [];
+        }
+    }
+
+
+
+    public updateDiagnostics(result: { error?: boolean | undefined; error_message?: string | undefined; }, document: vscode.TextDocument) {
+        const matches = result.error_message!.match(DothttpNameSymbolProvider.regex);
+        if (matches?.groups) {
+            const line = Number.parseInt(matches.groups.line) - 1;
+            const column = Number.parseInt(matches.groups.column) - 1;
+            const diagnostics = [new vscode.Diagnostic(new Range(line, column, line, column + 2),
+                result.error_message!, vscode.DiagnosticSeverity.Error)];
+            this.diagnostics.clear();
+            this.diagnostics.set(document.uri, diagnostics);
+        }
+    }
+
+    public getDiagnostics(): vscode.DiagnosticCollection {
+        return this.diagnostics;
+    }
+    public setDiagnostics(value: vscode.DiagnosticCollection) {
+        this.diagnostics = value;
+    }
+    public getClientHandler(): ClientHandler {
+        return this.clientHandler;
+    }
+    public setClientHandler(value: ClientHandler) {
+        this.clientHandler = value;
     }
 }

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+// import axios, { AxiosResponse } from 'axios';
 import * as child_process from 'child_process';
 import { once } from 'events';
 import { createInterface, Interface } from 'readline';
@@ -6,6 +6,7 @@ import { URL } from 'url';
 import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import EventEmitter = require('events');
+import * as vscode from 'vscode';
 
 interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
@@ -32,17 +33,22 @@ class CmdClientError extends Error {
 abstract class BaseSpanClient implements ICommandClient {
     readonly proc: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
+    channel: vscode.OutputChannel;
 
     constructor(options: { pythonpath: string, stdargs: string[] }) {
         this.proc = child_process.spawn(options.pythonpath,
             options.stdargs,
             { stdio: ["pipe", "pipe", "inherit"] }
         );
+        this.channel = vscode.window.createOutputChannel('dothttp-code');
     }
 
     async request(method: string, params: {}): Promise<any> {
         const id = BaseSpanClient.count++;
-        const result = await this.call({ method, params, id });
+        const requestData = { method, params, id };
+        this.channel.appendLine(JSON.stringify(requestData));
+        const result = await this.call(requestData);
+        this.channel.appendLine(JSON.stringify(result));
         if (result.id !== id) {
             throw new CmdClientError("id's are not same");
         }
@@ -84,29 +90,28 @@ export class StdoutClient extends BaseSpanClient {
 }
 
 
-export class HttpClient extends BaseSpanClient {
-    constructor(options: { pythonpath: string, stdargs: string[] }) {
-        super(options);
-    }
-    async call(command: ICommand): Promise<IResult> {
-        const id = command.id;
-        const axiosResponse: AxiosResponse<IResult> = await axios({
-            url: new URL(command.method, 'http://localhost:5000/').href,
-            method: "POST",
-            params: {
-                id
-            },
-            data: command.params
-        });
-        return axiosResponse.data
-    }
-}
+// export class HttpClient extends BaseSpanClient {
+//     constructor(options: { pythonpath: string, stdargs: string[] }) {
+//         super(options);
+//     }
+//     async call(command: ICommand): Promise<IResult> {
+//         const id = command.id;
+//         const axiosResponse: AxiosResponse<IResult> = await axios({
+//             url: new URL(command.method, 'http://localhost:5000/').href,
+//             method: "POST",
+//             params: {
+//                 id
+//             },
+//             data: command.params
+//         });
+//         return axiosResponse.data
+//     }
+// }
 
-interface nameresult {
+export interface nameresult {
     name: string,
     start: number,
     end: number
-
 }
 
 
@@ -126,12 +131,13 @@ export class ClientHandler {
             options.stdargs.push('-m');
             options.stdargs.push('dotextensions.server');
         }
-        if (clientOptions.std) {
-            this.cli = new StdoutClient(options);
-        } else {
-            options.stdargs.push('http');
-            this.cli = new HttpClient(options);
-        }
+        console.log("launch params", JSON.stringify(options));
+        // if (clientOptions.std) {
+        this.cli = new StdoutClient(options);
+        // } else {
+        //     options.stdargs.push('http');
+        //     this.cli = new HttpClient(options);
+        // }
     }
 
     // TODO, add env, propertys, target ...
@@ -150,8 +156,11 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getNames(filename: string): Promise<{ names: nameresult[] }> {
-        return await this.cli.request(ClientHandler.namescommand, { file: filename })
+    async getNames(filename: string, source?: string): Promise<{
+        names: nameresult[], error?: boolean,
+        error_message?: string,
+    }> {
+        return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
     }
 
     close() {

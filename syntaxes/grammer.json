@@ -4,10 +4,10 @@
     "scopeName": "source.dothttp-vscode",
     "patterns": [
         {
-            "include": "#comment"
+            "include": "source.json"
         },
         {
-            "include": "#string"
+            "include": "#comment"
         },
         {
             "include": "#number"
@@ -26,15 +26,6 @@
         }
     ],
     "repository": {
-        "variables": {
-            "patterns": [
-                {
-                    "begin": "{{",
-                    "end": "}}",
-                    "name": "variable.parameter"
-                }
-            ]
-        },
         "comment": {
             "patterns": [
                 {
@@ -51,6 +42,100 @@
                     "end": "\\*/"
                 }
             ]
+        },
+        "variables": {
+            "begin": "{{\\s*(\\w+)\\s*=\\s*(\\w*)\\s*?",
+            "end": "}}",
+            "name": "variable.parameter",
+            "beginCaptures": {
+                "0": {
+                    "name": "variable.name"
+                },
+                "1": {
+                    "name": "constant"
+                }
+            }
+        },
+        "json": {
+            "begin": "((json)|(data))[\\s]*(",
+            "end": ")",
+            "name": "entity.name.class",
+            "patterns": [
+                {
+                    "include": "#object"
+                }
+            ]
+        },
+        "name": {
+            "begin": "@name\\(",
+            "end": "\\)",
+            "name": "entity.name.method",
+            "patterns": [
+                {
+                    "match": ".*",
+                    "name": "support.type.property-name"
+                },
+                {
+                    "begin": "\"",
+                    "end": "\"",
+                    "name": "support.type.property-name"
+                },
+                {
+                    "begin": "'",
+                    "end": "'",
+                    "name": "support.type.property-name"
+                }
+            ]
+        },
+        "url": {
+            "begin": "(GET|POST|DELETE|OPTIONS|CONNECT|PUT|HEAD|TRACE)\\s*",
+            "beginCaptures": {
+                "0": {
+                    "name": "variable.other.enummember"
+                }
+            },
+            "end": ".*",
+            "endCaptures": {
+                "0": {
+                    "name": "markup.bold"
+                }
+            }
+        },
+        "header": {
+            "begin": "(\\w*|\\\".*\\\"|'.*')\\s*[:]",
+            "end": "(\\w*|\\\".*\\\")",
+            "beginCaptures": {
+                "0": {
+                    "name": "support.type.property-name"
+                },
+                "1": {
+                    "name": "keyword"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "support.property-value"
+                }
+            },
+            "name": "dothttp.header"
+        },
+        "query": {
+            "begin": "(\\?)\\s*(\\w*|\\\".*\\\"|'.*')\\s*[,=:]",
+            "end": "(\\w*|\\\".*\\\")",
+            "beginCaptures": {
+                "0": {
+                    "name": "support.type.property-name.json"
+                },
+                "1": {
+                    "name": "keyword"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "support.property-value"
+                }
+            },
+            "name": "dothttp.query"
         },
         "string": {
             "patterns": [
@@ -101,44 +186,8 @@
                     "name": "support.class"
                 },
                 {
-                    "match": "GET",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "POST",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "OPTIONS",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "DELETE",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "CONNECT",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "PUT",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "HEAD",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "TRACE",
-                    "name": "variable.other.enummember"
-                },
-                {
                     "match": "query",
-                    "name": "variable.other.enummember"
-                },
-                {
-                    "match": "\\?",
-                    "name": "constant.language"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "\\=",
@@ -146,43 +195,53 @@
                 },
                 {
                     "match": "data",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "fileinput",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "json",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "files",
-                    "name": "support.class"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "output",
-                    "name": "support.class"
-                },
-                {
-                    "match": "\\[",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "\\]",
-                    "name": "constant.language"
+                    "name": "keyword.other"
                 },
                 {
                     "match": "null",
-                    "name": "support.class"
-                },
-                {
-                    "match": "\\{",
                     "name": "constant.language"
                 },
                 {
-                    "match": "\\}",
+                    "match": "true",
                     "name": "constant.language"
+                },
+                {
+                    "match": "false",
+                    "name": "constant.language"
+                },
+                {
+                    "include": "#name"
+                },
+                {
+                    "include": "#url"
+                },
+                {
+                    "include": "#query"
+                },
+                {
+                    "include": "#object"
+                },
+                {
+                    "include": "#array"
+                },
+                {
+                    "include": "#string"
                 }
             ]
         },

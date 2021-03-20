@@ -1,33 +1,24 @@
 import * as vscode from 'vscode';
-import { CodelensProvider } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { importRequests, runHttpFileWithOptions } from './commands/run';
-import { setUp } from './downloader';
+import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
+import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
 
 export async function activate(context: vscode.ExtensionContext) {
-	await setUp(context);
+	const version = await setUp(context);
 	ApplicationServices.initialize(context);
-	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, function (...arr) {
-		if (arr) {
-			// this is bad, find out better signature
-			runHttpFileWithOptions({ target: arr[2].target, curl: false });
-		} else {
-			runHttpFileWithOptions({ curl: false, target: '1' });
-		}
-	});
-	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, function (...arr) {
-		if (arr) {
-			runHttpFileWithOptions({ target: arr[2].target, curl: true });
-		} else {
-			runHttpFileWithOptions({ curl: true, target: '1' });
-		}
-	});
+	if (version) {
+		ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(version);
+	}
+	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
+	const appServices = ApplicationServices.get();
+	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
+	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);
 
 	let openEnvFileDisp = vscode.commands.registerCommand(Constants.openEnvFileCommmand, function () {
-		const filename = ApplicationServices.get().getEnvProvder().filename;
+		const filename = appServices.getEnvProvder().filename;
 		vscode.workspace.openTextDocument(filename).then(editor => {
 			vscode.window.showTextDocument(editor, 2, false);
 		});
@@ -46,21 +37,23 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-	const provider = new DotHttpEditorView();
-	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, provider);
+	vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView());
 	context.subscriptions.push(runCommandDisp);
 	context.subscriptions.push(genCurlDisp);
 	context.subscriptions.push(openEnvFileDisp)
 
-	const envProvider = ApplicationServices.get().getEnvProvder();
+	// env view commands
+	const envProvider = appServices.getEnvProvder();
 	vscode.window.registerTreeDataProvider(Constants.envTreeView, envProvider);
 	vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envProvider.refresh());
 	vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand);
 	vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand);
 	vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty);
+	vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envProvider.disableAllEnv() });
 
 
-	const propProvider = ApplicationServices.get().getPropTreeProvider();
+	// propertiy view commands
+	const propProvider = appServices.getPropTreeProvider();
 	vscode.window.registerTreeDataProvider(Constants.propTreeView, propProvider);
 
 	vscode.commands.registerCommand(Constants.addPropCommand, () => { propProvider.addProperty() });
@@ -72,7 +65,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propProvider.updateProperty(node) });
 	vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propProvider.removeProperty(node) });
 
-	vscode.languages.registerCodeLensProvider("dothttp-vscode", new CodelensProvider());
+
+
+	vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
+	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
+
+	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider());
 
 }
+
 export function deactivate() { }

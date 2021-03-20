@@ -75,7 +75,7 @@ export async function getJSON<T>(api: string): Promise<T> {
     });
 }
 
-export async function getVersion() {
+export async function getVersion(): Promise<version> {
     var resp = await getJSON<versionResponse>(Constants.versionApi);
     const compatibleMat = resp.matrix[Constants.extensionVersion];
     if (compatibleMat) {
@@ -97,8 +97,7 @@ export async function getVersion() {
     throw new Error('version not available')
 }
 
-async function fetchDownloadUrl() {
-    const accepted = await getVersion();
+function fetchDownloadUrl(accepted: version) {
     const plat = platform();
     switch (plat) {
         case "win32":
@@ -112,11 +111,11 @@ async function fetchDownloadUrl() {
     }
 }
 
-async function downloadDothttp(downloadLocation: string) {
+async function downloadDothttp(downloadLocation: string, url: string) {
+    console.log("downloading to ", downloadLocation);
     if (!fs.existsSync(downloadLocation)) {
         fs.mkdirSync(downloadLocation);
     }
-    const url = await fetchDownloadUrl();
     console.log(`download from url ${url}`)
     var res = await getStream(url!);
     if (res.statusCode === 302) {
@@ -125,23 +124,31 @@ async function downloadDothttp(downloadLocation: string) {
     if (res.statusCode !== 200) {
         throw Error('Failed to get VS Code archive location');
     }
+    console.log(`download from url ${url}`)
     var range = 20 * 1024 * 1024;
     if (res.headers.range) {
-        range = Number.parseFloat(res.headers.range)
+        try {
+            range = Number.parseFloat(res.headers.range)
+        } catch (_errorIgnored) { }
     }
+    var contentDownloaded = 0;
     await vscode.window.withProgress({
         title: `downloading binaries from ${url}`,
         cancellable: false,
         location: vscode.ProgressLocation.Window
     }, async function (progress) {
         await new Promise((resolve, reject) => {
+            res.on('data', function (data) {
+                contentDownloaded += data.length;
+                const increment = (data.length / range) * 100
+                const totalPercent = (contentDownloaded / range) * 100
+                console.log(`downloaded ${totalPercent}`)
+                progress.report({ message: 'completed successfully', increment: increment })
+            })
             res.pipe(extract({ path: downloadLocation }))
-                .on('data', (downdata) => {
-                    progress.report({ message: 'completed successfully', increment: downdata.length / range });
-                })
-                .on('close', (resolve: () => void) => {
+                .on('close', () => {
                     progress.report({ message: 'completed successfully', increment: 100 })
-                    resolve();
+                    resolve(null);
                 })
                 .on('error', (error) => {
                     progress.report({ message: 'ran into error', increment: 100 })
@@ -153,17 +160,44 @@ async function downloadDothttp(downloadLocation: string) {
     return;
 }
 
+async function wait(time = 1000) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(time);
+        }, time);
+    });
+}
+
+
 export async function setUp(context: ExtensionContext) {
-    if (!isPythonConfigured() && !isDothttpConfigured()) {
+    const dothttpConfigured = isDothttpConfigured();
+    const pythonConfigured = isPythonConfigured();
+    if (!pythonConfigured && !dothttpConfigured) {
+        console.log('dothttpConfigured', dothttpConfigured);
+        console.log('pythonConfigured', pythonConfigured);
         const globalStorageDir = context.globalStorageUri.fsPath;
         if (!fs.existsSync(globalStorageDir)) {
             fs.mkdirSync(globalStorageDir);
+            console.log('making global storage directory ', globalStorageDir);
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
-        await downloadDothttp(downloadLocation);
+        if (context.globalState.get("dothttp.downloadContentCompleted", false)) {
+            if (fs.existsSync(downloadLocation)) {
+                fs.rmdirSync(downloadLocation);
+            }
+        }
+        console.log('download directory ', downloadLocation);
+        const acceptableVersion = await getVersion();
+        const url = fetchDownloadUrl(acceptableVersion);
+        await downloadDothttp(downloadLocation, url!);
+        console.log('download successfull ', downloadLocation);
         var exePath = path.join(downloadLocation, 'cli');
         exePath = getExePath(exePath);
         Configuration.setDothttpPath(exePath)
+        console.log('dothttp path set to', exePath);
+        context.globalState.update("dothttp.downloadContentCompleted", true);
+        await wait(4000);
+        return acceptableVersion.version;
     }
 }
 
@@ -172,18 +206,19 @@ function getExePath(exePath: string) {
         exePath = path.join(exePath, 'cli.exe');
     } else if (platform() === "linux") {
         exePath = path.join(exePath, 'cli');
+        fs.chmodSync(exePath, 0o755);
     }
     return exePath;
 }
 
-export async function updateDothttpIfAvailable(context: ExtensionContext) {
-    const currentVersion: string = getCurrentVersion(context);
+export async function updateDothttpIfAvailable(globalStorageDir: string) {
+    const currentVersion: string = ApplicationServices.get().getVersionInfo().getVersionDothttpInfo();
     const versionData = await getVersion();
-    if (semver.gte(currentVersion, versionData.version)) {
+    if (semver.gt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
             'new version available', 'upgrade', 'leave')
         if (accepted === 'upgrade') {
-            ApplicationServices.get().clientHanler.close();
+            // ApplicationServices.get().clientHanler.close();
             if (isPythonConfigured()) {
                 // using exec is better in this scenario,
                 // but need to check
@@ -192,23 +227,22 @@ export async function updateDothttpIfAvailable(context: ExtensionContext) {
                     { stdio: ["pipe", "pipe", "inherit"] }
                 );
             } else if (isDothttpConfigured()) {
-                const globalStorageDir = context.globalStorageUri.fsPath;
                 const downloadLocation = path.join(globalStorageDir, `cli-${versionData.version}`);
-                await downloadDothttp(downloadLocation);
+                const url = fetchDownloadUrl(versionData)
+                await downloadDothttp(downloadLocation, url!);
                 const originalLocation = path.join(globalStorageDir, 'cli');
-                fs.rmdirSync(originalLocation);
+                fs.rmdirSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
-                chmodSync(downloadLocation, fs.constants.S_IXOTH);
+                getExePath(path.join(originalLocation, 'cli'));
             }
-            setCurrentVersion(context, versionData.version);
+            ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(versionData.version);
+            const shouldReload = await vscode.window.showInformationMessage(
+                'dothttp upgrade completed, reload to view latest updates', 'reload', 'leave')
+            if (shouldReload === 'reload') {
+                vscode.commands.executeCommand(
+                    'workbench.action.reloadWindow',
+                );
+            }
         }
     }
-}
-
-function getCurrentVersion(context: ExtensionContext): string {
-    return context.globalState.get(Constants.dothttpVersion) as string;
-}
-
-function setCurrentVersion(context: ExtensionContext, version: string) {
-    context.globalState.update(Constants.dothttpVersion, version);
 }
