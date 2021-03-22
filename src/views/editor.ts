@@ -43,12 +43,14 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
         if (DotHttpEditorView.isHttpFile(kwargs.filename) && (isPythonConfigured() || isDotHttpCorrect())) {
-            const clientHandler = ApplicationServices.get().getClientHandler();
-            const filestateService = ApplicationServices.get().getFileStateService();
+            const app = ApplicationServices.get();
+            const clientHandler = app.getClientHandler();
+            const filestateService = app.getFileStateService();
+            const config = app.getCconfig();
             const options: DothttpRunOptions = {
-                path: Configuration.getPath(),
-                noCookie: Configuration.isCookiesNotEnabled(),
-                experimental: Configuration.isExperimental(),
+                path: config.pythonPath,
+                noCookie: config.noCookies,
+                experimental: config.isExperimental,
                 file: kwargs.filename,
                 curl: kwargs.curl,
                 target: kwargs.target ?? '1',
