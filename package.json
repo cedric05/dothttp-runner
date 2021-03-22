@@ -67,6 +67,18 @@
 				"category": "Dothttp"
 			},
 			{
+				"command": "dothttp.command.toggle.reuse",
+				"title": "toggles reuse tab setting",
+				"category": "Dothttp",
+				"icon": "$(gear)"
+			},
+			{
+				"command": "dothttp.command.toggle.runrecent",
+				"title": "toggles run recent setting",
+				"category": "Dothttp",
+				"icon": "$(gear)"
+			},
+			{
 				"command": "dothttp.command.toggle.experimental",
 				"title": "toggles experimental setting",
 				"category": "Dothttp",
@@ -74,7 +86,7 @@
 			},
 			{
 				"command": "dothttp.command.toggle.showheaders",
-				"title": "toggles experimental setting",
+				"title": "toggles showheaders setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
@@ -177,6 +189,12 @@
 			],
 			"commandPalette": [
 				{
+					"command": "dothttp.command.toggle.reuse"
+				},
+				{
+					"command": "dothttp.command.toggle.runrecent"
+				},
+				{
 					"command": "dothttp.command.run",
 					"when": "resourceExtname == .http || resourceExtname == .dhttp"
 				},
@@ -267,6 +285,11 @@
 			{
 				"title": "Dothttp Configuration",
 				"properties": {
+					"dothttp.conf.run.reuseold": {
+						"type": "boolean",
+						"default": false,
+						"description": "enable it if reusing old tab while runing requets is preferred"
+					},
 					"dothttp.conf.pythonpath": {
 						"type": "string",
 						"default": "/usr/bin/python3",

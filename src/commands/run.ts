@@ -86,7 +86,7 @@ async function getTargetFromQuickPick(arr: any[]) {
     }
     // otherwise ask for user input
     const filename = vscode.window.activeTextEditor?.document.fileName!;
-    if (Configuration.isRecentEnabled()) {
+    if (ApplicationServices.get().getCconfig().runRecent) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
@@ -116,7 +116,10 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         return;
     }
     const date = new Date();
-    const now = dateFormat(date, 'hh:MM:ss');
+    var now = dateFormat(date, 'hh:MM:ss');
+    if (ApplicationServices.get().getCconfig().reUseOld) {
+        now = '';
+    }
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: `running ${filename} target: ${options.target} time: ${now}`,
@@ -159,24 +162,33 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
      * after some feedback one of both will be removed
      */
     const outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    if (ApplicationServices.get().getCconfig().reUseOld) {
+        const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
+        if (editors.length !== 0) {
+            const editor = editors[0];
+            showEditor(editor.document, out.error ? out.error_message! : out.body!);
+            return
+        }
+    }
     vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
-        vscode.window.showTextDocument(textDoc, 2 /** new group */, false /**preserveFocus */).then(e => {
-            e.edit(edit => {
-                const scriptContent = out.error ? out.error_message! : out.body!;
-                edit.insert(new vscode.Position(0, 0), scriptContent);
-            });
-        });
-        if (Configuration.isHistoryEnabled() && !out.error) {
+        showEditor(textDoc, out.error ? out.error_message! : out.body!);
+        if (ApplicationServices.get().getCconfig().showHeaders && !out.error) {
             const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
             vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
-                vscode.window.showTextDocument(textDoc, -2 /** new group */, true /**preserveFocus */).then(e => {
-                    e.edit(edit => {
-                        const scriptContent = JSON.stringify(out.headers);
-                        edit.insert(new vscode.Position(0, 0), scriptContent);
-                    });
-                });
+                showEditor(textDoc, JSON.stringify(out.headers), -2);
             });
         }
+    });
+}
+
+function showEditor(textDoc: vscode.TextDocument, scriptContent: string, column = 2) {
+    vscode.window.showTextDocument(textDoc, column /** new group */, false /**preserveFocus */).then(e => {
+        e.edit(edit => {
+            if (ApplicationServices.get().getCconfig().reUseOld) {
+                edit.delete(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(textDoc.lineCount + 1, 0)))
+            }
+            edit.insert(new vscode.Position(0, 0), scriptContent);
+        });
     });
 }
 
