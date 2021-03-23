@@ -29,23 +29,29 @@ export function copyProperty(node: Position) {
 }
 
 
-export function toggleExperimentalFlag(flag: string) {
+export function toggleExperimentalFlag(confKey: string) {
     return function () {
-        const options = { flag };
-        var confKey = null
-        switch (options.flag) {
-            case "experimental":
-                confKey = Constants.experimental;
+        var key = "";
+        switch (confKey) {
+            case "dothttp.command.toggle.experimental":
+                key = "dothttp.conf.experimental"
                 break;
-            case "history":
-                confKey = Constants.history;
+            case "dothttp.command.toggle.history":
+                key = "dothttp.conf.history"
                 break;
-            case "nocookie":
-                confKey = Constants.nocookie;
+            case "dothttp.command.toggle.nocookie":
+                key = "dothttp.conf.nocookie"
                 break;
-            case "headers":
-                confKey = Constants.toggleHeadersCommand;
+            case "dothttp.command.toggle.showheaders":
+                key = "dothttp.conf.showheaders"
+                break;
+            case "dothttp.command.toggle.runrecent":
+                key = "dothttp.conf.runrecent"
+                break;
+            case "dothttp.command.toggle.reuse":
+                key = "dothttp.conf.run.reuseold"
+                break;
         }
-        vscode.workspace.getConfiguration().update(confKey!, !vscode.workspace.getConfiguration().get(confKey!), vscode.ConfigurationTarget.Workspace);
+        vscode.workspace.getConfiguration().update(key!, !vscode.workspace.getConfiguration().get(key!), vscode.ConfigurationTarget.Workspace);
     };
 }

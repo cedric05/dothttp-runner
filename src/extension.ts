@@ -19,10 +19,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(genCurlDisp);
 	context.subscriptions.push(openEnvFileDisp)
 
-	vscode.commands.registerCommand(Constants.toggleExperimentalCommand, toggleExperimentalFlag("experimental"));
-	vscode.commands.registerCommand(Constants.toggleHistoryCommand, toggleExperimentalFlag("history"));
-	vscode.commands.registerCommand(Constants.toggleNocookieCommand, toggleExperimentalFlag("nocookie"));
-	vscode.commands.registerCommand(Constants.toggleHeadersCommand, toggleExperimentalFlag("headers"));
+	vscode.commands.registerCommand(Constants.toggleExperimentalCommand, toggleExperimentalFlag(Constants.toggleExperimentalCommand));
+	vscode.commands.registerCommand(Constants.toggleHistoryCommand, toggleExperimentalFlag(Constants.toggleHistoryCommand));
+	vscode.commands.registerCommand(Constants.toggleNocookieCommand, toggleExperimentalFlag(Constants.toggleNocookieCommand));
+	vscode.commands.registerCommand(Constants.toggleHeadersCommand, toggleExperimentalFlag(Constants.toggleHeadersCommand));
+	vscode.commands.registerCommand(Constants.toggleReuseTabCommand, toggleExperimentalFlag(Constants.toggleReuseTabCommand));
+	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
 	vscode.commands.registerCommand(Constants.importCommand, importRequests)
 
 
