@@ -29,20 +29,23 @@ export function copyProperty(node: Position) {
 }
 
 
-export function toggleExperimentalFlag(options: { flag: "experimental" | "history" | "nocookie" | "headers" }) {
-    var confKey = null
-    switch (options.flag) {
-        case "experimental":
-            confKey = Constants.experimental;
-            break;
-        case "history":
-            confKey = Constants.history;
-            break;
-        case "nocookie":
-            confKey = Constants.nocookie;
-            break;
-        case "headers": 
-            confKey = Constants.toggleHeadersCommand;
-    }
-    vscode.workspace.getConfiguration().update(confKey, !vscode.workspace.getConfiguration().get(confKey), vscode.ConfigurationTarget.Workspace);
+export function toggleExperimentalFlag(flag: string) {
+    return function () {
+        const options = { flag };
+        var confKey = null
+        switch (options.flag) {
+            case "experimental":
+                confKey = Constants.experimental;
+                break;
+            case "history":
+                confKey = Constants.history;
+                break;
+            case "nocookie":
+                confKey = Constants.nocookie;
+                break;
+            case "headers":
+                confKey = Constants.toggleHeadersCommand;
+        }
+        vscode.workspace.getConfiguration().update(confKey!, !vscode.workspace.getConfiguration().get(confKey!), vscode.ConfigurationTarget.Workspace);
+    };
 }

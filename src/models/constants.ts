@@ -12,6 +12,7 @@ export enum Constants {
     curl = "dothttp.conf.curl",
     showheaders = "dothttp.conf.showheaders",
     runConf = "dothttp.conf.runrecent",
+    reUseOldTab = "dothttp.conf.run.reuseold",
     // view props
 
     // commands

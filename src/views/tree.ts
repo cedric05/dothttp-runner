@@ -321,4 +321,11 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         }
     }
 
+
+    openEnvFile() {
+        vscode.workspace.openTextDocument(this.filename).then(editor => {
+            vscode.window.showTextDocument(editor, 2, false);
+        });
+    }
+
 }

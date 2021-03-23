@@ -15,11 +15,11 @@ function getPythonVersion(path: string): boolean {
 }
 
 export function isPythonConfigured() {
-    try{
+    try {
 
         if (Configuration.getPath()) {
             // checking file path exists is better, but if user gives `python3` --> its not a valid path but it will work in some scenarios
-            
+
             const correctPath = getPythonVersion(Configuration.getPath());
             if (correctPath) { return true; }
             const version = getPythonVersion('python3');
@@ -30,7 +30,7 @@ export function isPythonConfigured() {
             }
             return version;
         }
-    } catch(error){
+    } catch (error) {
         return false;
     }
 }
@@ -48,7 +48,6 @@ export function isDotHttpCorrect() {
 // keep a private copy and listener when ever property changes, update
 
 export class Configuration {
-
     static getConfiguredValue(key: string) {
         return vscode.workspace.getConfiguration().get(key);
     }
@@ -71,28 +70,42 @@ export class Configuration {
     }
 
 
-    static isExperimental(): boolean {
-        return Configuration.getConfiguredValue(Constants.experimental) as unknown as boolean;
+    reUseOld = false;
+    runRecent = false;
+    showHeaders = false;
+    noCookies = false;
+    isExperimental = false;
+    configchange = vscode.workspace.onDidChangeConfiguration(() => this.update());
+    pythonPath!: string;
+    dothttpPath!: string;
+
+
+    private constructor() {
+        this.preset();
     }
 
-    static isCookiesNotEnabled(): boolean {
-        return Configuration.getConfiguredValue(Constants.nocookie) as unknown as boolean;
+    preset() {
+        const vsCodeconfig = vscode.workspace.getConfiguration();
+        this.reUseOld = vsCodeconfig.get(Constants.reUseOldTab) as boolean;
+        this.runRecent = vsCodeconfig.get(Constants.runConf) as boolean;
+        this.showHeaders = vsCodeconfig.get(Constants.showheaders) as boolean;
+        this.noCookies = vsCodeconfig.get(Constants.nocookie) as boolean
+        this.pythonPath = vsCodeconfig.get(Constants.pythonPath) as string;
+        this.dothttpPath = vsCodeconfig.get(Constants.dothttpPath) as string;
     }
 
-    static isHistoryEnabled(): boolean {
-        return Configuration.getConfiguredValue(Constants.history) as unknown as boolean;
+    public update() {
+        this.preset();
     }
 
-    static isCurlEnabled(): boolean {
-        return Configuration.getConfiguredValue(Constants.curl) as unknown as boolean;
-    }
 
-    static isHeadersEnabled(): boolean {
-        return Configuration.getConfiguredValue(Constants.history) as unknown as boolean;
-    }
-
-    static isRecentEnabled(): boolean{
-        return Configuration.getConfiguredValue(Constants.runConf) as unknown as boolean;
+    private static _config: Configuration;
+    static instance() {
+        if (Configuration._config) {
+            return Configuration._config;
+        }
+        Configuration._config = new Configuration();
+        return Configuration._config;
     }
 
 }

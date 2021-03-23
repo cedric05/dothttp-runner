@@ -8,6 +8,7 @@ import { HistoryTreeProvider } from "../views/historytree";
 import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState, VersionInfo } from "./state";
 import path = require('path');
+import { Configuration } from "../models/config";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -24,6 +25,7 @@ export class ApplicationServices {
     private diagnostics: vscode.DiagnosticCollection;
     private globalstorageService: LocalStorageService;
     private versionInfo: VersionInfo;
+    private config: Configuration;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -40,6 +42,7 @@ export class ApplicationServices {
         this.diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
         this.dothttpSymbolProvier = new DothttpNameSymbolProvider();
         this.versionInfo = new VersionInfo(this.globalstorageService);
+        this.config = Configuration.instance();
         context.subscriptions.push(this.diagnostics);
     }
 
@@ -135,6 +138,13 @@ export class ApplicationServices {
     }
     setVersionInfo(value: VersionInfo) {
         this.versionInfo = value;
+    }
+
+    public getCconfig(): Configuration {
+        return this.config;
+    }
+    public setCconfig(value: Configuration) {
+        this.config = value;
     }
 
 }
