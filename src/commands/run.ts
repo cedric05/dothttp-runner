@@ -90,7 +90,7 @@ async function getTargetFromQuickPick(arr: any[]) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
-    const names = await ApplicationServices.get().getClientHandler().getNames(filename);
+    const names = await ApplicationServices.get().getClientHandler().getTargetsInHttpFile(filename);
     if (names.error) {
         return '1';
     }

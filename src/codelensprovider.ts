@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
+import * as json from 'jsonc-parser';
 
 
 class DothttpPositions extends vscode.CodeLens {
@@ -14,7 +15,7 @@ class DothttpPositions extends vscode.CodeLens {
 }
 
 
-export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<DothttpPositions>, vscode.DocumentSymbolProvider {
+export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<DothttpPositions>, vscode.DocumentSymbolProvider, vscode.CodeActionProvider {
 
 
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -28,11 +29,36 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
             this._onDidChangeCodeLenses.fire()
         });
     }
+    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
+        const text = document.getText(range);
+        try {
+            if (!(range.start.line === range.end.line && range.start.character === range.end.character)) {
+                const formatted = json.format(text, undefined, { eol: document.eol === 1 ? '\n' : '\r\n', insertFinalNewline: true });
+
+                if (formatted) {
+                    const action = new vscode.CodeAction("format json", vscode.CodeActionKind.QuickFix);
+                    const edits = []
+                    const initalOffset = document.offsetAt(range.start);
+                    const wedit = new vscode.WorkspaceEdit();
+                    formatted.forEach(edit => {
+                        wedit.replace(document.uri, new Range(
+                            document.positionAt(initalOffset + edit.offset),
+                            document.positionAt(initalOffset + edit.offset + edit.length)), edit.content)
+                        edits.push(wedit);
+                    })
+                    action.edit = wedit;
+                    return [action];
+                }
+            }
+        } catch (e) {
+        }
+        return [];
+    }
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
         return new Promise(async (resolve) => {
             const codeLenses: DothttpPositions[] = [];
-            this.clientHandler.getNames(document.fileName).then((names) => {
+            this.clientHandler.getTargetsInHttpFile(document.fileName).then((names) => {
                 if (names.names)
                     names.names.forEach(name => {
                         const runCommand = new DothttpPositions(new Range(
@@ -68,7 +94,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
 
 
     async provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
-        const result = await this.clientHandler.getNames(document.fileName, 'symbol');
+        const result = await this.clientHandler.getTargetsInHttpFile(document.fileName, 'symbol');
         if (!result.error) {
             this.diagnostics.clear();
             return result.names.map(element =>

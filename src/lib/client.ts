@@ -156,7 +156,7 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getNames(filename: string, source?: string): Promise<{
+    async getTargetsInHttpFile(filename: string, source?: string): Promise<{
         names: nameresult[], error?: boolean,
         error_message?: string,
     }> {
