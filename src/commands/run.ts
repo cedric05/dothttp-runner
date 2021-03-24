@@ -1,10 +1,9 @@
 import { platform } from 'os';
 import * as vscode from 'vscode';
-import { Configuration } from '../models/config';
+import { nameresult as targetAndRange } from '../lib/client';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
-import { nameresult as targetAndRange } from '../lib/client';
 
 enum importoptions {
     postman = 'postman',
@@ -110,8 +109,9 @@ async function getTargetFromQuickPick(arr: any[]) {
 }
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
-    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    if (!DotHttpEditorView.isHttpFile(filename)) {
+    const document = vscode.window.activeTextEditor?.document!;
+    const filename = document.fileName ?? '';
+    if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
@@ -126,7 +126,12 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         cancellable: true,
     }, (progress, token) => {
         return new Promise(async (resolve) => {
-            const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            var prom;
+            if (document.uri.scheme === 'file') {
+                prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            } else if (document.uri.scheme === DotHttpEditorView.scheme) {
+                prom = DotHttpEditorView.runContent({ content: document.getText(), curl: options.curl, target: options.target });
+            }
             progress.report({ increment: 50, message: 'api called' });
             const out = await prom;
             addHistory(out, filename, options);

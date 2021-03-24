@@ -40,6 +40,10 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         return existsSync(filename)
             && new Set([".dhttp", ".http"]).has(fileExtension);
     }
+    static runContent(options: { content: string; curl: boolean; target: string; }): any {
+        const app = ApplicationServices.get();
+        return app.getClientHandler().executeContent({ content: options.content, env: [], curl: options.curl, file: '' })
+    }
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
         if (DotHttpEditorView.isHttpFile(kwargs.filename) && (isPythonConfigured() || isDotHttpCorrect())) {
@@ -48,7 +52,6 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             const filestateService = app.getFileStateService();
             const config = app.getCconfig();
             const options: DothttpRunOptions = {
-                path: config.pythonPath,
                 noCookie: config.noCookies,
                 experimental: config.isExperimental,
                 file: kwargs.filename,
@@ -57,7 +60,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 properties: DotHttpEditorView.getEnabledProperties(kwargs.filename),
                 env: filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
             }
-            const out = await clientHandler.execute(options);
+            const out = await clientHandler.executeFile(options);
             out['filenameExtension'] = mime.extension((out['headers'] ?? {})['Content-Type'] ?? 'text/plain')
             return out;
         } else {

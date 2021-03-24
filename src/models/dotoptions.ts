@@ -1,6 +1,5 @@
 
 export interface DothttpRunOptions {
-    path: string;
     noCookie?: boolean,
     experimental?: boolean,
     env?: string[],
