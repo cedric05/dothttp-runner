@@ -28,7 +28,7 @@ jobs:
               run: npm install vsce
             - name: Publish Extension
               run: |
-                vsce package
+                npx vsce package
                 yarn vsce publish --yarn --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
             - name: Create GitHub release
               id: create_release
