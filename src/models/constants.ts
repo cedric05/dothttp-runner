@@ -57,7 +57,7 @@ export enum Constants {
     propViewEnabled = "dothttpPropViewEnabled",
 
     // download stuff
-    extensionVersion = "0.0.7",
+    extensionVersion = "0.0.8",
 
     dothttpVersion = "dothttp.version",
 
