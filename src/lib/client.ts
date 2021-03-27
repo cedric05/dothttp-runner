@@ -108,10 +108,25 @@ export class StdoutClient extends BaseSpanClient {
 //     }
 // }
 
-export interface nameresult {
-    name: string,
-    start: number,
-    end: number
+
+export type TargetSymbolInfo = {
+    name: string;
+    start: number;
+    end: number;
+};
+
+
+export interface DotTttpSymbol {
+    names?: Array<TargetSymbolInfo>,
+    urls?: Array<{
+        start: number,
+        url: string,
+        method: string,
+        end: number
+
+    }>,
+    error?: boolean,
+    error_message?: string,
 }
 
 
@@ -167,10 +182,7 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getTargetsInHttpFile(filename: string, source?: string): Promise<{
-        names: nameresult[], error?: boolean,
-        error_message?: string,
-    }> {
+    async getTargetsInHttpFile(filename: string, source?: string): Promise<DotTttpSymbol> {
         return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
     }
 

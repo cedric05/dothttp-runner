@@ -1,6 +1,6 @@
 import { platform } from 'os';
 import * as vscode from 'vscode';
-import { nameresult as targetAndRange } from '../lib/client';
+import { TargetSymbolInfo } from '../lib/client';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
@@ -93,9 +93,9 @@ async function getTargetFromQuickPick(arr: any[]) {
     if (names.error) {
         return '1';
     }
-    const option = await vscode.window.showQuickPick(names.names.map(namer => ({ label: namer.name, target: namer })),
+    const option = await vscode.window.showQuickPick((names.names ?? []).map(namer => ({ label: namer.name, target: namer })),
         {
-            canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: targetAndRange }) {
+            canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: TargetSymbolInfo }) {
                 const document = vscode.window.activeTextEditor?.document!;
                 const range = new vscode.Range(
                     document.positionAt(quickPickItem.target.start),

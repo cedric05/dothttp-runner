@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Range, SymbolInformation } from 'vscode';
+import { EndOfLine, Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
 import * as json from 'jsonc-parser';
 
@@ -97,12 +97,25 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         const result = await this.clientHandler.getTargetsInHttpFile(document.fileName, 'symbol');
         if (!result.error) {
             this.diagnostics.clear();
-            return result.names.map(element =>
+            if (document.eol == EndOfLine.CRLF) {
+                // TODO, find better fix for this 
+                vscode.window.visibleTextEditors.filter
+                    (editor => editor.document.uri === document.uri)
+                    .forEach(editor => {
+                        editor.edit(builder => builder.setEndOfLine(vscode.EndOfLine.LF));
+                    })
+            }
+            return (result.names ?? []).map(element =>
                 new SymbolInformation(element.name, vscode.SymbolKind.Class,
                     new Range(
                         document.positionAt(element.start),
                         document.positionAt(element.end)),
-                ));
+                )).concat((result.urls ?? []).map(element =>
+                    new SymbolInformation(element.method + " " + element.url, vscode.SymbolKind.Field,
+                        new Range(
+                            document.positionAt(element.start),
+                            document.positionAt(element.end)),
+                    )));
         }
         else {
             this.updateDiagnostics(result, document);
