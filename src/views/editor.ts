@@ -61,7 +61,11 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 env: filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
             }
             const out = await clientHandler.executeFile(options);
-            out['filenameExtension'] = mime.extension((out['headers'] ?? {})['Content-Type'] ?? 'text/plain')
+            out['filenameExtension'] = 'txt';
+            const headers = out['headers'] ?? {};
+            Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+                out['filenameExtension'] = mime.extension(headers[key])
+            })
             return out;
         } else {
             vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
