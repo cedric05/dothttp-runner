@@ -1,10 +1,9 @@
 import { platform } from 'os';
 import * as vscode from 'vscode';
-import { Configuration } from '../models/config';
+import { TargetSymbolInfo } from '../lib/client';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
-import { nameresult as targetAndRange } from '../lib/client';
 
 enum importoptions {
     postman = 'postman',
@@ -86,17 +85,17 @@ async function getTargetFromQuickPick(arr: any[]) {
     }
     // otherwise ask for user input
     const filename = vscode.window.activeTextEditor?.document.fileName!;
-    if (Configuration.isRecentEnabled()) {
+    if (ApplicationServices.get().getCconfig().runRecent) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
-    const names = await ApplicationServices.get().getClientHandler().getNames(filename);
+    const names = await ApplicationServices.get().getClientHandler().getTargetsInHttpFile(filename);
     if (names.error) {
         return '1';
     }
-    const option = await vscode.window.showQuickPick(names.names.map(namer => ({ label: namer.name, target: namer })),
+    const option = await vscode.window.showQuickPick((names.names ?? []).map(namer => ({ label: namer.name, target: namer })),
         {
-            canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: targetAndRange }) {
+            canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: TargetSymbolInfo }) {
                 const document = vscode.window.activeTextEditor?.document!;
                 const range = new vscode.Range(
                     document.positionAt(quickPickItem.target.start),
@@ -110,20 +109,29 @@ async function getTargetFromQuickPick(arr: any[]) {
 }
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
-    const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
-    if (!DotHttpEditorView.isHttpFile(filename)) {
+    const document = vscode.window.activeTextEditor?.document!;
+    const filename = document.fileName ?? '';
+    if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
     const date = new Date();
-    const now = dateFormat(date, 'hh:MM:ss');
+    var now = dateFormat(date, 'hh:MM:ss');
+    if (ApplicationServices.get().getCconfig().reUseOld) {
+        now = '';
+    }
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: `running ${filename} target: ${options.target} time: ${now}`,
         cancellable: true,
     }, (progress, token) => {
         return new Promise(async (resolve) => {
-            const prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            var prom;
+            if (document.uri.scheme === 'file') {
+                prom = DotHttpEditorView.runFile({ filename, curl: options.curl, target: options.target });
+            } else if (document.uri.scheme === DotHttpEditorView.scheme) {
+                prom = DotHttpEditorView.runContent({ content: document.getText(), curl: options.curl, target: options.target });
+            }
             progress.report({ increment: 50, message: 'api called' });
             const out = await prom;
             addHistory(out, filename, options);
@@ -159,24 +167,33 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
      * after some feedback one of both will be removed
      */
     const outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    if (ApplicationServices.get().getCconfig().reUseOld) {
+        const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
+        if (editors.length !== 0) {
+            const editor = editors[0];
+            showEditor(editor.document, out.error ? out.error_message! : out.body!);
+            return
+        }
+    }
     vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
-        vscode.window.showTextDocument(textDoc, 2 /** new group */, false /**preserveFocus */).then(e => {
-            e.edit(edit => {
-                const scriptContent = out.error ? out.error_message! : out.body!;
-                edit.insert(new vscode.Position(0, 0), scriptContent);
-            });
-        });
-        if (Configuration.isHistoryEnabled() && !out.error) {
+        showEditor(textDoc, out.error ? out.error_message! : out.body!);
+        if (ApplicationServices.get().getCconfig().showHeaders && !out.error) {
             const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
             vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
-                vscode.window.showTextDocument(textDoc, -2 /** new group */, true /**preserveFocus */).then(e => {
-                    e.edit(edit => {
-                        const scriptContent = JSON.stringify(out.headers);
-                        edit.insert(new vscode.Position(0, 0), scriptContent);
-                    });
-                });
+                showEditor(textDoc, JSON.stringify(out.headers), -2);
             });
         }
+    });
+}
+
+function showEditor(textDoc: vscode.TextDocument, scriptContent: string, column = 2) {
+    vscode.window.showTextDocument(textDoc, column /** new group */, false /**preserveFocus */).then(e => {
+        e.edit(edit => {
+            if (ApplicationServices.get().getCconfig().reUseOld) {
+                edit.delete(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(textDoc.lineCount + 1, 0)))
+            }
+            edit.insert(new vscode.Position(0, 0), scriptContent);
+        });
     });
 }
 

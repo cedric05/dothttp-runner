@@ -1,9 +1,12 @@
 # Change Log
 
-All notable changes to the "dothttp-runner" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
+## [0.0.8]
+- [New] reuse old tab, when executing httpdef target
+- [New] format any dictionary/json in httpdef (select dictionary, do `ctrl+1` click format json)
+- [New] execute entries from history
+- [Improvement] now onwards windows users neednot have to change eol to linux file ending
+- [Bug] all toggle commands aren't working fixed
+- [New] url and method in outline
 
 ## [0.0.7]
 - [New] now users can use `{{$randomStr}}, {{$randomStr:10}}, {{$randomInt}}, {{$randomInt:10}}, {{$randomBool}}, {{$randomFloat}}` to generate random strings in payload (from dothttp-req)

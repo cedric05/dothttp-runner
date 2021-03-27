@@ -80,8 +80,8 @@ export async function getVersion(): Promise<version> {
     const compatibleMat = resp.matrix[Constants.extensionVersion];
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
-            .filter(mat => semver.gte(compatibleMat.minVersion, mat.version)
-                && semver.lte(mat.version, compatibleMat.maxVersion))
+            .filter(mat => semver.lte(compatibleMat.minVersion, mat.version)
+            && semver.lte(mat.version, compatibleMat.maxVersion))
             .sort((a, b) => {
                 if (semver.gte(a.version, b.version)) {
                     return -1;
@@ -214,7 +214,7 @@ function getExePath(exePath: string) {
 export async function updateDothttpIfAvailable(globalStorageDir: string) {
     const currentVersion: string = ApplicationServices.get().getVersionInfo().getVersionDothttpInfo();
     const versionData = await getVersion();
-    if (semver.gt(currentVersion, versionData.version)) {
+    if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
             'new version available', 'upgrade', 'leave')
         if (accepted === 'upgrade') {

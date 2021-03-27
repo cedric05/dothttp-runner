@@ -108,17 +108,33 @@ export class StdoutClient extends BaseSpanClient {
 //     }
 // }
 
-export interface nameresult {
-    name: string,
-    start: number,
-    end: number
+
+export type TargetSymbolInfo = {
+    name: string;
+    start: number;
+    end: number;
+};
+
+
+export interface DotTttpSymbol {
+    names?: Array<TargetSymbolInfo>,
+    urls?: Array<{
+        start: number,
+        url: string,
+        method: string,
+        end: number
+
+    }>,
+    error?: boolean,
+    error_message?: string,
 }
 
 
 
 export class ClientHandler {
     cli: BaseSpanClient;
-    static executecommand = "/file/execute";
+    static fileExecuteCommand = "/file/execute";
+    static contentExecutecommand = "/content/execute";
     static namescommand = "/file/names";
     static importPostman = "/import/postman";
 
@@ -140,10 +156,20 @@ export class ClientHandler {
         // }
     }
 
-    // TODO, add env, propertys, target ...
-    async execute(options: DothttpRunOptions) {
-        return await this.cli.request(ClientHandler.executecommand, {
+    async executeFile(options: DothttpRunOptions) {
+        return await this.cli.request(ClientHandler.fileExecuteCommand, {
             file: options.file,
+            env: options.env,
+            properties: options.properties,
+            nocookie: options.noCookie,
+            target: options.target,
+            curl: options.curl,
+        })
+    }
+
+    async executeContent(options: DothttpRunOptions & { content: string }) {
+        return await this.cli.request(ClientHandler.contentExecutecommand, {
+            content: options.content,
             env: options.env,
             properties: options.properties,
             nocookie: options.noCookie,
@@ -156,10 +182,7 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.importPostman, options)
     }
 
-    async getNames(filename: string, source?: string): Promise<{
-        names: nameresult[], error?: boolean,
-        error_message?: string,
-    }> {
+    async getTargetsInHttpFile(filename: string, source?: string): Promise<DotTttpSymbol> {
         return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
     }
 

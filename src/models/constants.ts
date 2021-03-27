@@ -12,6 +12,7 @@ export enum Constants {
     curl = "dothttp.conf.curl",
     showheaders = "dothttp.conf.showheaders",
     runConf = "dothttp.conf.runrecent",
+    reUseOldTab = "dothttp.conf.run.reuseold",
     // view props
 
     // commands
@@ -21,6 +22,8 @@ export enum Constants {
     toggleHistoryCommand = "dothttp.command.toggle.history",
     toggleNocookieCommand = "dothttp.command.toggle.nocookie",
     toggleHeadersCommand = "dothttp.command.toggle.showheaders",
+    toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
+    toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     importCommand = "dothttp.command.import.external",
 
     //    env tree
