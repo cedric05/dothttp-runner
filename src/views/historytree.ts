@@ -91,7 +91,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 label: `${path.basename(item.filename)} #${item.target} ${hourAndMinutes}`,
                 command: command,
                 iconPath: iconType,
-                tooltip: `${item.status_code} ${item.url}`,
+                tooltip: `${item.status_code} ${item.url ?? ''}`,
             } as TreeItem;
             return tree;
         } else {
