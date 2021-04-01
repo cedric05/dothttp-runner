@@ -292,7 +292,6 @@
 					},
 					"dothttp.conf.pythonpath": {
 						"type": "string",
-						"default": "/usr/bin/python3",
 						"description": "python installation location for making requests"
 					},
 					"dothttp.conf.runrecent": {
