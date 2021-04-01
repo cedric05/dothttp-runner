@@ -116,15 +116,16 @@ export type TargetSymbolInfo = {
 };
 
 
+export type UrlSymbolInfo = {
+    start: number;
+    url: string;
+    method: string;
+    end: number;
+};
+
 export interface DotTttpSymbol {
     names?: Array<TargetSymbolInfo>,
-    urls?: Array<{
-        start: number,
-        url: string,
-        method: string,
-        end: number
-
-    }>,
+    urls?: Array<UrlSymbolInfo>,
     error?: boolean,
     error_message?: string,
 }

@@ -1,3 +1,4 @@
+import { zip } from 'lodash';
 import { platform } from 'os';
 import * as vscode from 'vscode';
 import { TargetSymbolInfo } from '../lib/client';
@@ -84,7 +85,9 @@ async function getTargetFromQuickPick(arr: any[]) {
         }
     }
     // otherwise ask for user input
-    const filename = vscode.window.activeTextEditor?.document.fileName!;
+    const editor = vscode.window.activeTextEditor!;
+    const document = editor.document!;
+    const filename = document.fileName!;
     if (ApplicationServices.get().getCconfig().runRecent) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
@@ -93,10 +96,24 @@ async function getTargetFromQuickPick(arr: any[]) {
     if (names.error) {
         return '1';
     }
-    const option = await vscode.window.showQuickPick((names.names ?? []).map(namer => ({ label: namer.name, target: namer })),
+    // const selectionDone = false;
+    // @ts-ignore
+    const items: vscode.QuickPickItem[] = zip(names.names, names.urls).map(comb => {
+        const namer = comb[0]!;
+        return {
+            label: namer.name,
+            detail: comb[1]?.url,
+            target: namer,
+            /* 
+                picking multiple is not supported by dothttp, picking one is not supported by vscode
+                so, for now commenting
+            */
+            // picked: !selectionDone && editor.visibleRanges[0].intersection(range) ? true : false,
+        };
+    });
+    const option = await vscode.window.showQuickPick(items,
         {
             canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: TargetSymbolInfo }) {
-                const document = vscode.window.activeTextEditor?.document!;
                 const range = new vscode.Range(
                     document.positionAt(quickPickItem.target.start),
                     document.positionAt(quickPickItem.target.end));
