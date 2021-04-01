@@ -40,9 +40,11 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         return existsSync(filename)
             && new Set([".dhttp", ".http"]).has(fileExtension);
     }
-    static runContent(options: { content: string; curl: boolean; target: string; }): any {
+    static async runContent(options: { content: string; curl: boolean; target: string; }): Promise<any> {
         const app = ApplicationServices.get();
-        return app.getClientHandler().executeContent({ content: options.content, env: [], curl: options.curl, file: '' })
+        const out = await app.getClientHandler().executeContent({ content: options.content, env: [], curl: options.curl, file: '' });
+        DotHttpEditorView.attachFileExtension(out);
+        return out
     }
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
@@ -61,16 +63,20 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 env: filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
             }
             const out = await clientHandler.executeFile(options);
-            out['filenameExtension'] = 'txt';
-            const headers = out['headers'] ?? {};
-            Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
-                out['filenameExtension'] = mime.extension(headers[key])
-            })
+            DotHttpEditorView.attachFileExtension(out);
             return out;
         } else {
             vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
             throw new Error();
         }
+    }
+
+    private static attachFileExtension(out: any) {
+        out['filenameExtension'] = 'txt';
+        const headers = out['headers'] ?? {};
+        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+            out['filenameExtension'] = mime.extension(headers[key]);
+        });
     }
 
     static getEnabledProperties(filename: string) {

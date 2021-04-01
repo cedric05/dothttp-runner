@@ -37,6 +37,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     fetcedCount: number = 0;
 
     private readonly dateFormat = "yyyy-mm-dd";
+    private readonly historyItemFormat = "hh:MM";
 
     constructor() {
         this.map.set('recent', []);
@@ -84,8 +85,10 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 iconType = historyItemicons.STATUS_ISSUE
                 command = null
             }
+
+            const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
             const tree = {
-                label: `${path.basename(item.filename)} #${item.target}`,
+                label: `${path.basename(item.filename)} #${item.target} ${hourAndMinutes}`,
                 command: command,
                 iconPath: iconType,
                 tooltip: `${item.status_code} ${item.url}`,
@@ -121,7 +124,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
 
 
-    private async fetchMore(loadCount=100) {
+    private async fetchMore(loadCount = 100) {
         const historyItems = await this.historyService.fetchMore(this.fetcedCount, loadCount);
         this.fetcedCount += historyItems.length;
         const recent = dateFormat(new Date(), this.dateFormat);
