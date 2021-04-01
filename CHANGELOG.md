@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.0.9]
+- [**Bug**] don't set default python3 path (if user adds it, he has to install dothttp-req)
+- [**Bug**] history execute is not showing file extension/ file syntax
+- [**Improvement**] history item will now start showing time it executed for better difference
+- [**Improvement**] execute quick pick item, will not start showing urls also.
+
 ## [0.0.8]
 - [New] reuse old tab, when executing httpdef target
 - [New] format any dictionary/json in httpdef (select dictionary, do `ctrl+1` click format json)
