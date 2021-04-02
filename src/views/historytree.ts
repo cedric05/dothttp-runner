@@ -4,6 +4,7 @@ import { history, IHistoryService } from "../tingohelpers";
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
+const transform = require('../utils/text-colors.js');
 
 enum TreeType {
     recent,
@@ -87,8 +88,9 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             }
 
             const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
+
             const tree = {
-                label: `${path.basename(item.filename)} #${item.target} ${hourAndMinutes}`,
+                label: transform(`${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
                 command: command,
                 iconPath: iconType,
                 tooltip: `${item.status_code} ${item.url ?? ''}`,
