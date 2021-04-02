@@ -5,7 +5,7 @@
 - [**Bug**] postman import is creating duplicate folder, use showOpenDialog rather than, showSaveDialog
 - [**Bug**] history execute is not showing file extension/ file syntax
 - [**Bug**] history item hove is showing `200 undefined` fixed.
-- [**Improvement**] history item will now start showing time it executed for better difference
+- [**Improvement**] history item label will be bold and will now start showing time it executed for better difference
 - [**Improvement**] execute quick pick item, will not start showing urls also.
 
 ## [0.0.8]

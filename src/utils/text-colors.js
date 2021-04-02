@@ -57,6 +57,19 @@ CharTransform.boldenTransforms = [
     new DigitTransform('𝟬'),
 ];
 
+function transformator(transforms) {
+    return function transform(text) {
+        let codesBuffer = [];
+        for (let i = 0; i < text.length; i++) {
+            let code = text.charCodeAt(i);
+            const transform = transforms.find(t => t.matches(code));
+            if (transform) transform.transform(code, codesBuffer);
+            else codesBuffer.push(code);
+        }
+        return String.fromCharCode(...codesBuffer);
+    };
+}
+
 const bolden = transformator(CharTransform.boldenTransforms);
 
 module.exports = transform
