@@ -30,9 +30,16 @@ export async function importRequests() {
             placeHolder: "https://getpostman.com/collections"
         });
         if (!link) { return }
-        const folder = await vscode.window.showSaveDialog({
+        const importUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            title: "select folder to import resource",
+            canSelectMany: false,
+            openLabel: "select folder to import"
 
         });
+        if (importUri?.length === 0) { return; }
+        const folder = importUri![0];
         if (!folder?.fsPath) { return }
         const directory = folder.fsPath!;
         await vscode.workspace.fs.createDirectory(folder);
