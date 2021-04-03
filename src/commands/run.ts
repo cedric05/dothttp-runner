@@ -1,9 +1,14 @@
+import { zip } from 'lodash';
 import { platform } from 'os';
 import * as vscode from 'vscode';
 import { TargetSymbolInfo } from '../lib/client';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
+import path = require('path');
+import { Configuration } from '../models/config';
+import { existsSync, lstatSync } from 'fs'
+import { Constants } from '../models/constants';
 
 enum importoptions {
     postman = 'postman',
@@ -29,9 +34,16 @@ export async function importRequests() {
             placeHolder: "https://getpostman.com/collections"
         });
         if (!link) { return }
-        const folder = await vscode.window.showSaveDialog({
+        const importUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            title: "select folder to import resource",
+            canSelectMany: false,
+            openLabel: "select folder to import"
 
         });
+        if (importUri?.length === 0) { return; }
+        const folder = importUri![0];
         if (!folder?.fsPath) { return }
         const directory = folder.fsPath!;
         await vscode.workspace.fs.createDirectory(folder);
@@ -51,14 +63,14 @@ export async function importRequests() {
 export async function runFileCommand(...arr: any[]) {
     const target = await cacheAndGetTarget(arr);
     if (target) {
-        runHttpFileWithOptions({ curl: false, target: target });
+        return runHttpFileWithOptions({ curl: false, target: target });
     }
 }
 
 export async function genCurlCommand(...arr: any[]) {
     const target = await cacheAndGetTarget(arr);
     if (target) {
-        runHttpFileWithOptions({ curl: true, target: target });
+        return runHttpFileWithOptions({ curl: true, target: target });
     }
 }
 
@@ -84,7 +96,9 @@ async function getTargetFromQuickPick(arr: any[]) {
         }
     }
     // otherwise ask for user input
-    const filename = vscode.window.activeTextEditor?.document.fileName!;
+    const editor = vscode.window.activeTextEditor!;
+    const document = editor.document!;
+    const filename = document.fileName!;
     if (ApplicationServices.get().getCconfig().runRecent) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
@@ -93,10 +107,24 @@ async function getTargetFromQuickPick(arr: any[]) {
     if (names.error) {
         return '1';
     }
-    const option = await vscode.window.showQuickPick((names.names ?? []).map(namer => ({ label: namer.name, target: namer })),
+    // const selectionDone = false;
+    // @ts-ignore
+    const items: vscode.QuickPickItem[] = zip(names.names, names.urls).map(comb => {
+        const namer = comb[0]!;
+        return {
+            label: namer.name,
+            detail: comb[1]?.url,
+            target: namer,
+            /* 
+                picking multiple is not supported by dothttp, picking one is not supported by vscode
+                so, for now commenting
+            */
+            // picked: !selectionDone && editor.visibleRanges[0].intersection(range) ? true : false,
+        };
+    });
+    const option = await vscode.window.showQuickPick(items,
         {
             canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: TargetSymbolInfo }) {
-                const document = vscode.window.activeTextEditor?.document!;
                 const range = new vscode.Range(
                     document.positionAt(quickPickItem.target.start),
                     document.positionAt(quickPickItem.target.end));
@@ -109,15 +137,18 @@ async function getTargetFromQuickPick(arr: any[]) {
 }
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
+    const config = ApplicationServices.get().getCconfig();
+
     const document = vscode.window.activeTextEditor?.document!;
-    const filename = document.fileName ?? '';
+    const filename = document.fileName!;
+
     if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
     const date = new Date();
     var now = dateFormat(date, 'hh:MM:ss');
-    if (ApplicationServices.get().getCconfig().reUseOld) {
+    if (config.reUseOld) {
         now = '';
     }
     vscode.window.withProgress({
@@ -136,13 +167,35 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
             const out = await prom;
             addHistory(out, filename, options);
             if (!token.isCancellationRequested) {
-                const fileNameWithInfo = contructFileName(filename, options, out, now);
+                const fileNameWithInfo = contructFileName(getBaseFileNameToSave(config, filename), options, out, now);
                 showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
                 progress.report({ increment: 50, message: 'completed' });
             }
             resolve(true);
         });
     })
+}
+
+function getBaseFileNameToSave(config: Configuration, filename: string) {
+    var sfilename;
+    if (config.responseSaveDirectory) {
+        if (path.isAbsolute(config.responseSaveDirectory)) {
+            // save to absolute directory
+            sfilename = path.join(config.responseSaveDirectory, path.basename(filename));
+        } else {
+            // relatvie to current file's directory
+            const parentDirectory = path.dirname(filename);
+            sfilename = path.join(parentDirectory, config.responseSaveDirectory, path.basename(filename));
+        }
+        const parDirectory = path.dirname(sfilename);
+        if (existsSync(parDirectory) && lstatSync(parDirectory).isDirectory()) {
+            return sfilename
+        } else {
+            vscode.window.showErrorMessage(`${Constants.responseDirectory} is set to incorrect value(non existant directory or is a file)`)
+            return filename;
+        }
+    }
+    return filename;
 }
 
 function addHistory(out: any, filename: string, options: { curl: boolean; target: string; }) {

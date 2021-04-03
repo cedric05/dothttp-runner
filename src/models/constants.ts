@@ -13,6 +13,7 @@ export enum Constants {
     showheaders = "dothttp.conf.showheaders",
     runConf = "dothttp.conf.runrecent",
     reUseOldTab = "dothttp.conf.run.reuseold",
+    responseDirectory = "dothttp.conf.response.savedirectory",
     // view props
 
     // commands
@@ -57,7 +58,7 @@ export enum Constants {
     propViewEnabled = "dothttpPropViewEnabled",
 
     // download stuff
-    extensionVersion = "0.0.8",
+    extensionVersion = "0.0.9",
 
     dothttpVersion = "dothttp.version",
 
