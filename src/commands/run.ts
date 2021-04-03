@@ -63,14 +63,14 @@ export async function importRequests() {
 export async function runFileCommand(...arr: any[]) {
     const target = await cacheAndGetTarget(arr);
     if (target) {
-        runHttpFileWithOptions({ curl: false, target: target });
+        return runHttpFileWithOptions({ curl: false, target: target });
     }
 }
 
 export async function genCurlCommand(...arr: any[]) {
     const target = await cacheAndGetTarget(arr);
     if (target) {
-        runHttpFileWithOptions({ curl: true, target: target });
+        return runHttpFileWithOptions({ curl: true, target: target });
     }
 }
 

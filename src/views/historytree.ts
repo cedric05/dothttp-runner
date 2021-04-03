@@ -4,7 +4,7 @@ import { history, IHistoryService } from "../tingohelpers";
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
-const transform = require('../utils/text-colors.js');
+import transform from '../utils/text-colors';
 
 enum TreeType {
     recent,

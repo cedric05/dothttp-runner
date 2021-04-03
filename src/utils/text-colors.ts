@@ -3,49 +3,48 @@
 // please refer above repository for license.
 
 
-function transform(text, { bold, italics, mono, variable, sub, sup }) {
+export default function transform(text: string, { bold }: { bold: boolean }) {
     text = text.normalize("NFKD");
-    if (sub) text = subscript(text);
-    else if (sup) text = superscript(text);
-    else if (bold && italics) text = boldenAndItalicize(text);
-    else if (bold) text = bolden(text);
-    else if (italics) text = italicize(text);
-    else if (mono) text = monospace(text);
-    else if (variable) text = scriptize(text);
+    if (bold) text = bolden(text);
     return text;
 }
 
+
 class CharTransform {
-    constructor(startLetter, endLetter, startReplacement) {
+    startCode: number;
+    endCode: number;
+    replacementCodes: number[];
+    static boldenTransforms: (CapitalLetterTransform | SmallLetterTransform | DigitTransform)[];
+    constructor(startLetter: string, endLetter: string, startReplacement: string) {
         this.startCode = startLetter.charCodeAt(0);
         this.endCode = endLetter.charCodeAt(0);
         this.replacementCodes = startReplacement.split('').map(c => c.charCodeAt(0));
     }
 
-    matches(charCode) {
+    matches(charCode: number) {
         return charCode >= this.startCode && charCode <= this.endCode;
     }
 
-    transform(charCode, buffer) {
+    transform(charCode: number, buffer: number[]) {
         buffer.push(...this.replacementCodes);
         buffer[buffer.length - 1] += charCode - this.startCode;
     }
 }
 
 class SmallLetterTransform extends CharTransform {
-    constructor(startReplacement) {
+    constructor(startReplacement: string) {
         super('a', 'z', startReplacement);
     }
 }
 
 class CapitalLetterTransform extends CharTransform {
-    constructor(startReplacement) {
+    constructor(startReplacement: string) {
         super('A', 'Z', startReplacement);
     }
 }
 
 class DigitTransform extends CharTransform {
-    constructor(startReplacement) {
+    constructor(startReplacement: string) {
         super('0', '9', startReplacement);
     }
 }
@@ -57,12 +56,12 @@ CharTransform.boldenTransforms = [
     new DigitTransform('𝟬'),
 ];
 
-function transformator(transforms) {
-    return function transform(text) {
+function transformator(transforms: string[] | any[]) {
+    return function transform(text: string) {
         let codesBuffer = [];
         for (let i = 0; i < text.length; i++) {
             let code = text.charCodeAt(i);
-            const transform = transforms.find(t => t.matches(code));
+            const transform = transforms.find((t: { matches: (arg0: any) => any; }) => t.matches(code));
             if (transform) transform.transform(code, codesBuffer);
             else codesBuffer.push(code);
         }
@@ -72,4 +71,3 @@ function transformator(transforms) {
 
 const bolden = transformator(CharTransform.boldenTransforms);
 
-module.exports = transform
