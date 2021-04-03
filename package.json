@@ -3,6 +3,7 @@
 	"displayName": "dothttp-code",
 	"description": "run dothttp files in vscode natively",
 	"version": "0.0.9",
+	 "license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
