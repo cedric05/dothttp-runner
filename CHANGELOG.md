@@ -1,6 +1,7 @@
 # Change Log
 
 ## [0.0.9]
+- [Announcement] dothttp-runner can be run in remote wsl and containers.
 - [**Improvement**] history item label will be bold and will now start showing time it executed for better difference
 - [**Improvement**] execute quick pick item, will not start showing urls also.
 - [**Improvement**] Configure response directory name.
