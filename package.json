@@ -115,12 +115,12 @@
 			},
 			{
 				"command": "dothttpEnvView.enableenv",
-				"title": "enable env",
+				"title": "enable environment",
 				"icon": "$(add)"
 			},
 			{
 				"command": "dothttpEnvView.disableenv",
-				"title": "disable env",
+				"title": "disable environment",
 				"icon": "$(remove)"
 			},
 			{
@@ -155,7 +155,7 @@
 			},
 			{
 				"command": "dothttpEnvView.disableAllEnv",
-				"title": "disable all env",
+				"title": "disable all environment",
 				"icon": "$(close-all)"
 			},
 			{
@@ -170,7 +170,7 @@
 			},
 			{
 				"command": "dothttpEnvView.copyPropertyValue",
-				"title": "copy env property",
+				"title": "copy environment value",
 				"icon": "$(chrome-restore)"
 			}
 		],
@@ -289,6 +289,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "enable it if reusing old tab while runing requets is preferred"
+					},
+					"dothttp.conf.response.savedirectory": {
+						"type": "string",
+						"default": "./",
+						"description": "provide either absolute path or relative path to current file"
 					},
 					"dothttp.conf.pythonpath": {
 						"type": "string",

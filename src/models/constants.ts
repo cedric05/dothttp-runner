@@ -13,6 +13,7 @@ export enum Constants {
     showheaders = "dothttp.conf.showheaders",
     runConf = "dothttp.conf.runrecent",
     reUseOldTab = "dothttp.conf.run.reuseold",
+    responseDirectory = "dothttp.conf.response.savedirectory",
     // view props
 
     // commands

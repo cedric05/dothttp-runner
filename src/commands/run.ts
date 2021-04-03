@@ -5,6 +5,10 @@ import { TargetSymbolInfo } from '../lib/client';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
+import path = require('path');
+import { Configuration } from '../models/config';
+import { existsSync, lstatSync } from 'fs'
+import { Constants } from '../models/constants';
 
 enum importoptions {
     postman = 'postman',
@@ -133,15 +137,18 @@ async function getTargetFromQuickPick(arr: any[]) {
 }
 
 export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
+    const config = ApplicationServices.get().getCconfig();
+
     const document = vscode.window.activeTextEditor?.document!;
-    const filename = document.fileName ?? '';
+    const filename = document.fileName!;
+
     if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }
     const date = new Date();
     var now = dateFormat(date, 'hh:MM:ss');
-    if (ApplicationServices.get().getCconfig().reUseOld) {
+    if (config.reUseOld) {
         now = '';
     }
     vscode.window.withProgress({
@@ -160,13 +167,35 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
             const out = await prom;
             addHistory(out, filename, options);
             if (!token.isCancellationRequested) {
-                const fileNameWithInfo = contructFileName(filename, options, out, now);
+                const fileNameWithInfo = contructFileName(getBaseFileNameToSave(config, filename), options, out, now);
                 showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
                 progress.report({ increment: 50, message: 'completed' });
             }
             resolve(true);
         });
     })
+}
+
+function getBaseFileNameToSave(config: Configuration, filename: string) {
+    var sfilename;
+    if (config.responseSaveDirectory) {
+        if (path.isAbsolute(config.responseSaveDirectory)) {
+            // save to absolute directory
+            sfilename = path.join(config.responseSaveDirectory, path.basename(filename));
+        } else {
+            // relatvie to current file's directory
+            const parentDirectory = path.dirname(filename);
+            sfilename = path.join(parentDirectory, config.responseSaveDirectory, path.basename(filename));
+        }
+        const parDirectory = path.dirname(sfilename);
+        if (existsSync(parDirectory) && lstatSync(parDirectory).isDirectory()) {
+            return sfilename
+        } else {
+            vscode.window.showErrorMessage(`${Constants.responseDirectory} is set to incorrect value(non existant directory or is a file)`)
+            return filename;
+        }
+    }
+    return filename;
 }
 
 function addHistory(out: any, filename: string, options: { curl: boolean; target: string; }) {
