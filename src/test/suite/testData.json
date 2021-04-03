@@ -1,0 +1,86 @@
+[{
+	"name": "first",
+	"kind": 4,
+	"location": {
+		"range": [
+			{
+				"line": 0,
+				"character": 0
+			},
+			{
+				"line": 1,
+				"character": 29
+			}
+		]
+	},
+	"containerName": ""
+},
+{
+	"name": "second",
+	"kind": 4,
+	"location": {
+		"range": [
+			{
+				"line": 4,
+				"character": 0
+			},
+			{
+				"line": 8,
+				"character": 2
+			}
+		]
+	},
+	"containerName": ""
+},
+{
+	"name": "third",
+	"kind": 4,
+	"location": {
+		"range": [
+			{
+				"line": 10,
+				"character": 0
+			},
+			{
+				"line": 14,
+				"character": 2
+			}
+		]
+	},
+	"containerName": ""
+},
+{
+	"name": "fourth",
+	"kind": 4,
+	"location": {
+		"range": [
+			{
+				"line": 17,
+				"character": 0
+			},
+			{
+				"line": 19,
+				"character": 28
+			}
+		]
+	},
+	"containerName": ""
+},
+{
+	"name": "fifth",
+	"kind": 4,
+	"location": {
+		"range": [
+			{
+				"line": 23,
+				"character": 0
+			},
+			{
+				"line": 28,
+				"character": 1
+			}
+		]
+	},
+	"containerName": ""
+}
+];

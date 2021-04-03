@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.0.9]
+- [Announcement] dothttp-runner can be run in remote wsl and containers.
+- [**Improvement**] history item label will be bold and will now start showing time it executed for better difference
+- [**Improvement**] execute quick pick item, will not start showing urls also.
+- [**Improvement**] Configure response directory name.
+- [**Bug**] don't set default python3 path (if user adds it, he has to install dothttp-req)
+- [**Bug**] postman import is creating duplicate folder, use showOpenDialog rather than, showSaveDialog
+- [**Bug**] history execute is not showing file extension/ file syntax
+- [**Bug**] history item hove is showing `200 undefined` fixed.
+
 ## [0.0.8]
 - [New] reuse old tab, when executing httpdef target
 - [New] format any dictionary/json in httpdef (select dictionary, do `ctrl+1` click format json)

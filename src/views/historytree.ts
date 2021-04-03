@@ -4,6 +4,7 @@ import { history, IHistoryService } from "../tingohelpers";
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
+import transform from '../utils/text-colors';
 
 enum TreeType {
     recent,
@@ -37,6 +38,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     fetcedCount: number = 0;
 
     private readonly dateFormat = "yyyy-mm-dd";
+    private readonly historyItemFormat = "hh:MM";
 
     constructor() {
         this.map.set('recent', []);
@@ -84,11 +86,14 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 iconType = historyItemicons.STATUS_ISSUE
                 command = null
             }
+
+            const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
+
             const tree = {
-                label: `${path.basename(item.filename)} #${item.target}`,
+                label: transform(`${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
                 command: command,
                 iconPath: iconType,
-                tooltip: `${item.status_code} ${item.url}`,
+                tooltip: `${item.status_code} ${item.url ?? ''}`,
             } as TreeItem;
             return tree;
         } else {
@@ -121,7 +126,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
 
 
-    private async fetchMore(loadCount=100) {
+    private async fetchMore(loadCount = 100) {
         const historyItems = await this.historyService.fetchMore(this.fetcedCount, loadCount);
         this.fetcedCount += historyItems.length;
         const recent = dateFormat(new Date(), this.dateFormat);

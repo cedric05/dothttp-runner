@@ -1,0 +1,29 @@
+@name('first')
+GET "https://req.dothttp.dev"
+
+
+@name('second')
+POST "https://req.dothttp.dev"
+json({
+    "test": "this is payload"
+})
+
+@name('third')
+POST "https://req.dothttp.dev"
+data({
+    "test": "this is payload"
+})
+
+
+@name('fourth')
+POST "https://req.dothttp.dev"
+data("this is text payload")
+
+
+
+@name('fifth')
+POST "https://req.dothttp.dev"
+files(
+    ('name', "this is multipart"),
+    ('name2', "this is multipart")
+)
