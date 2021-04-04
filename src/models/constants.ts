@@ -26,6 +26,7 @@ export enum Constants {
     toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     importCommand = "dothttp.command.import.external",
+    generateLangCommand = "dothttp.command.generatelang",
 
     //    env tree
     envTreeView = 'dothttpEnvView',

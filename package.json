@@ -3,7 +3,7 @@
 	"displayName": "dothttp-code",
 	"description": "run dothttp files in vscode natively",
 	"version": "0.0.9",
-	 "license": "Apache-2.0",
+	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
@@ -173,9 +173,21 @@
 				"command": "dothttpEnvView.copyPropertyValue",
 				"title": "copy environment value",
 				"icon": "$(chrome-restore)"
+			},
+			{
+				"command": "dothttp.command.generatelang",
+				"title": "Dothttp generate request Programming Languages",
+				"icon": "$(extensions)"
 			}
 		],
 		"menus": {
+			"editor/title/run": [
+				{
+					"command": "dothttp.command.generatelang",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"group": "navigation@2"
+				}
+			],
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
@@ -399,7 +411,9 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
+		"@types/httpsnippet": "^1.23.0",
 		"dateformat": "^4.5.1",
+		"httpsnippet": "^1.25.0",
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.29",
 		"semver": "^7.3.4",

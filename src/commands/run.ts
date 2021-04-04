@@ -9,6 +9,11 @@ import path = require('path');
 import { Configuration } from '../models/config';
 import { existsSync, lstatSync } from 'fs'
 import { Constants } from '../models/constants';
+import { Request } from 'har-format';
+import HTTPSnippet = require("httpsnippet");
+import * as fs from 'fs';
+import { HttpTargetDef } from '../lib/lang-parse';
+
 
 enum importoptions {
     postman = 'postman',
@@ -72,6 +77,70 @@ export async function genCurlCommand(...arr: any[]) {
     if (target) {
         return runHttpFileWithOptions({ curl: true, target: target });
     }
+}
+
+const LANG_GEN_TARGETS = [
+    "c",
+    "clojure",
+    "csharp",
+    "go",
+    "http",
+    "java",
+    "javascript",
+    "kotlin",
+    "node",
+    "objc",
+    "ocaml",
+    "php",
+    "powershell",
+    "python",
+    "r",
+    "ruby",
+    "shell",
+    "swift",
+];
+export async function generateLang(...arr: any[]) {
+    const target = await cacheAndGetTarget(arr);
+    const filename = vscode.window.activeTextEditor?.document.fileName!;
+    if (!fs.existsSync(filename)) {
+        return;
+    }
+
+    const app = ApplicationServices.get();
+    const out = await app.clientHanler.generateLangHttp({
+        file: filename,
+        curl: false,
+        content: "",
+        target: target,
+        properties: DotHttpEditorView.getEnabledProperties(filename),
+        env: app.getFileStateService().getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
+    });
+    try {
+        const newLocal = out.target[target]! as HttpTargetDef;
+        const snippet = new HTTPSnippet({
+            method: newLocal.method, url: newLocal.url,
+            queryString: newLocal.query, headers: newLocal.headers,
+            // @ts-ignore
+            postData: newLocal.payload
+        });
+        const pick = await vscode.window.showQuickPick(LANG_GEN_TARGETS, { canPickMany: false, ignoreFocusOut: true, matchOnDescription: true, matchOnDetail: true });
+        if (!pick) {
+            return;
+        }
+        // TODO Each language has sub options
+        const langSpec = snippet.convert(pick!, {
+            indent: '\t'
+        });
+        // TODO only gives out python file name now.
+        const outputBodyURI = vscode.Uri.parse("untitled:" + filename + ".request.py");
+        vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
+            showEditor(textDoc, langSpec as string);
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+    return;
 }
 
 
