@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { genCurlCommand, generateLang, importRequests, runFileCommand } from './commands/run';
+import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
+import { generateLang } from "./commands/generate";
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
