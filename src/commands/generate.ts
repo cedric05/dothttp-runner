@@ -42,7 +42,7 @@ export async function generateLang(...arr: any[]) {
         content: "",
         target: target,
         properties: DotHttpEditorView.getEnabledProperties(filename),
-        env: app.getFileStateService().getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
+        env: app.getFileStateService().getEnv(filename)! ?? [],
     });
     try {
         const targetHttpDef = out.target[target]! as HttpTargetDef;
