@@ -404,6 +404,7 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
+		"curlconverter": "3.13.0",
 		"@types/httpsnippet": "^1.23.0",
 		"dateformat": "^4.5.1",
 		"httpsnippet": "^1.25.0",
