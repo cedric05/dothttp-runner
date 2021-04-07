@@ -9,7 +9,7 @@ import path = require('path');
 import { Configuration } from '../models/config';
 import { existsSync, lstatSync } from 'fs'
 import { Constants } from '../models/constants';
-import { Request } from 'har-format';
+import { getUnSaved } from '../utils/fileUtils';
 
 
 enum importoptions {
@@ -220,7 +220,11 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
      * i will keep showinUntitedView default, and other one as configrable, 
      * after some feedback one of both will be removed
      */
-    const outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    var outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
+    const ifsavedFileName = vscode.Uri.parse("file:" + scriptFileName);
+    if (existsSync(ifsavedFileName.fsPath)) {
+        outputBodyURI = vscode.Uri.parse("untitled:" + getUnSaved(scriptFileName));
+    }
     if (ApplicationServices.get().getCconfig().reUseOld) {
         const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
         if (editors.length !== 0) {
