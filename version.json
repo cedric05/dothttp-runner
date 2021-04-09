@@ -35,7 +35,43 @@
               "latest": false,
               "stable": true,
               "version": "0.0.11"
-          }
+          },
+          {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.12/dotextensions-0.0.12-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.12/dotextensions-0.0.12-x86-windows.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.12"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.13/dotextensions-0.0.13-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.13/dotextensions-0.0.13-x86-windows.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.13"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.14/dotextensions-0.0.14-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.14/dotextensions-0.0.14-x86-windows.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.14"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.15/dotextensions-0.0.15-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.15/dotextensions-0.0.15-x86-windows.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.15"
+        }
     ],
     "matrix": {
         "0.0.5": {
@@ -60,6 +96,10 @@
         },
         "0.0.10": {
             "maxVersion": "0.0.11",
+            "minVersion": "0.0.8"
+        },
+        "0.0.11": {
+            "maxVersion": "0.0.13",
             "minVersion": "0.0.8"
         }
     }
