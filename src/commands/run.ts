@@ -123,6 +123,12 @@ async function getTargetFromQuickPick(arr: any[]) {
             // picked: !selectionDone && editor.visibleRanges[0].intersection(range) ? true : false,
         };
     });
+    if (items.length === 0){
+        throw new Error("no target available");
+    }
+    if (items.length === 1){
+        return items[0].label;
+    }
     const option = await vscode.window.showQuickPick(items,
         {
             canPickMany: false, ignoreFocusOut: true, onDidSelectItem: function (quickPickItem: { label: string, target: TargetSymbolInfo }) {
