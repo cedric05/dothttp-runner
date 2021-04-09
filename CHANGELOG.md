@@ -1,5 +1,12 @@
 # Change Log
 
+
+## [0.0.10]
+- [**Featture**](https://github.com/cedric05/dothttp-runner/issues/41) generates/exports httpdef to few languages
+- [**Bug**](https://github.com/cedric05/dothttp-runner/issues/43) resuse tab enabled, and request saved, its showing responses
+- [**Bug**](https://github.com/cedric05/dothttp-runner/issues/43) http def coe generation fails when active text editor is output channel
+
+
 ## [0.0.9]
 - [Announcement] dothttp-runner can be run in remote wsl and containers.
 - [**Improvement**] history item label will be bold and will now start showing time it executed for better difference
