@@ -1,6 +1,6 @@
-# dothttp-runner README
+# dothttp-runner
 
-visit dothttp (dsl for http) via [dothttp](https://github.com/cedric05/dothttp).
+checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
 
 ## Features
 
@@ -86,26 +86,3 @@ data({
 
 
 ```
-
-
-
-### future
-current repository will be moved into this [dothttp-code](https://github.com/cedric05/dothttp-code)
-## Requirements
-
-at present you will need python3.9. 
-
-## Extension Settings
-
-* `dothttp.conf.pythonpath` 
-* `dothttp.conf.path` 
-* `dothttp.conf.experimental` 
-* `dothttp.conf.nocookie`
-* `dothttp.conf.history`
-* `dothttp.conf.curl`
-* `dothttp.conf.runrecent`
-
-## Known Issues
-- [ ] only file names without - are working
-
-## Release Notes
