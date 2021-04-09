@@ -126,9 +126,9 @@ async function downloadDothttp(downloadLocation: string, url: string) {
     }
     console.log(`download from url ${url}`)
     var range = 20 * 1024 * 1024;
-    if (res.headers.range) {
+    if (res.headers['content-length']) {
         try {
-            range = Number.parseFloat(res.headers.range)
+            range = Number.parseFloat(res.headers['content-length'])
         } catch (_errorIgnored) { }
     }
     var contentDownloaded = 0;
