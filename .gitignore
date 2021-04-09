@@ -4,3 +4,10 @@ node_modules
 .vscode-test/
 *.vsix
 .vscode/launch.json
+yarn-error.log
+yarn.lock
+.idea/dothttp-runner.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/Project_Default.xml
+test-resources/.vscode/settings.json
