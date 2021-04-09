@@ -7,6 +7,7 @@ import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import EventEmitter = require('events');
 import * as vscode from 'vscode';
+import { HttpFileTargetsDef } from './lang-parse';
 
 interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
@@ -138,6 +139,7 @@ export class ClientHandler {
     static contentExecutecommand = "/content/execute";
     static namescommand = "/file/names";
     static importPostman = "/import/postman";
+    static generateLangHttp = "/file/parse";
 
     constructor(clientOptions: { std: boolean }) {
         const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[] };
@@ -185,6 +187,17 @@ export class ClientHandler {
 
     async getTargetsInHttpFile(filename: string, source?: string): Promise<DotTttpSymbol> {
         return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
+    }
+
+    async generateLangHttp(options: DothttpRunOptions & { content: string }): Promise<HttpFileTargetsDef> {
+        return await this.cli.request(ClientHandler.generateLangHttp, {
+            content: options.content,
+            env: options.env,
+            file: options.file,
+            properties: options.properties,
+            nocookie: options.noCookie,
+            target: options.target,
+        })
     }
 
     close() {

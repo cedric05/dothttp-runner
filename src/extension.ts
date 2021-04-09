@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
+import { generateLang } from "./commands/generate";
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
@@ -8,7 +9,7 @@ import DotHttpEditorView from './views/editor';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
-	
+
 	const appServices = ApplicationServices.get();
 
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
@@ -26,6 +27,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.toggleReuseTabCommand, toggleExperimentalFlag(Constants.toggleReuseTabCommand));
 	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
 	vscode.commands.registerCommand(Constants.importCommand, importRequests)
+	vscode.commands.registerCommand(Constants.generateLangCommand, generateLang);
+
 
 
 
@@ -34,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// env view commands
 	const envProvider = appServices.getEnvProvder();
 	vscode.window.registerTreeDataProvider(Constants.envTreeView, envProvider);
-	
+
 	vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envProvider.refresh());
 	vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand);
 	vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand);

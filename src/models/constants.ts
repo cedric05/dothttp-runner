@@ -26,6 +26,7 @@ export enum Constants {
     toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     importCommand = "dothttp.command.import.external",
+    generateLangCommand = "dothttp.command.generatelang",
 
     //    env tree
     envTreeView = 'dothttpEnvView',
@@ -58,7 +59,7 @@ export enum Constants {
     propViewEnabled = "dothttpPropViewEnabled",
 
     // download stuff
-    extensionVersion = "0.0.9",
+    extensionVersion = "0.0.10",
 
     dothttpVersion = "dothttp.version",
 
