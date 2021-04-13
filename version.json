@@ -47,8 +47,8 @@
         },
         {
             "downloadUrls": {
-                "linux": "https://github.com/cedric05/dotextensions-build/suites/2480510977/artifacts/53415171",
-                "windows": "https://github.com/cedric05/dotextensions-build/suites/2480510977/artifacts/53415170"
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.13/dotextensions-0.0.13-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.13/dotextensions-0.0.13-x86-windows.zip"
             },
             "latest": false,
             "stable": false,
@@ -99,7 +99,7 @@
             "minVersion": "0.0.8"
         },
         "0.0.11": {
-            "maxVersion": "0.0.13",
+            "maxVersion": "0.0.12",
             "minVersion": "0.0.8"
         }
     }
