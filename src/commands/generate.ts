@@ -7,23 +7,23 @@ import { cacheAndGetTarget, showEditor } from './run';
 import HTTPSnippet = require("httpsnippet");
 
 const LANG_GEN_TARGETS = [
+    { label: "python", options: ["requests", "python3",], filext: ".py" },
+    { label: "node", options: ["fetch", "axios", "native", "request", "unirest"], filext: ".js" },
+    { label: "javascript", options: ["fetch", "axios", "jquery", "xhr"], filext: ".js" },
+    { label: "java", options: ["asynchttp", "nethttp", "okhttp", "unirest"], filext: ".java" },
+    { label: "csharp", options: ["httpclient", "restsharp"], filext: ".cs" },
+    { label: "shell", options: ["curl", "wget", "httpie"], filext: ".sh" },
+    { label: "ruby", filext: ".rb" },
+    { label: "kotlin", filext: ".kt" },
+    { label: "go", filext: ".go" },
     { label: "c", filext: ".c" },
     { label: "clojure", options: [], filext: ".js" },
-    { label: "csharp", options: ["httpclient", "restsharp"], filext: ".cs" },
-    { label: "go", filext: ".go" },
     { label: "http", filext: ".txt" },
-    { label: "java", options: ["asynchttp", "nethttp", "okhttp", "unirest"], filext: ".java" },
-    { label: "javascript", options: ["fetch", "axios", "jquery", "xhr"], filext: ".js" },
-    { label: "kotlin", filext: ".kt" },
-    { label: "node", options: ["fetch", "axios", "native", "request", "unirest"], filext: ".js" },
     { label: "objc", filext: ".mm" },
     { label: "ocaml", filext: ".ml" },
     { label: "php", options: ["curl",], filext: ".php" },
     { label: "powershell", filext: ".ps1" },
-    { label: "python", options: ["requests", "python3",], filext: ".py" },
     { label: "r", filext: ".r" },
-    { label: "ruby", filext: ".rb" },
-    { label: "shell", options: ["curl", "wget", "httpie"], filext: ".sh" },
     { label: "swift", filext: ".swift" }
 ];
 
