@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.0.11]
+- [**Feature**](https://github.com/cedric05/dothttp-runner/issues/47) multiline easy escape feature
+
 
 ## [0.0.10]
 - [**Featture**](https://github.com/cedric05/dothttp-runner/issues/41) generates/exports httpdef to few languages

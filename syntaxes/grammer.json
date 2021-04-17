@@ -151,6 +151,20 @@
                 }
             ]
         },
+        "quoted": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single",
+                    "begin": "'''",
+                    "end": "'''"
+                },
+                {
+                    "name": "string.quoted.single",
+                    "begin": "\"\"\"",
+                    "end": "\"\"\""
+                }
+            ]
+        },
         "number": {
             "patterns": [
                 {
@@ -239,6 +253,9 @@
                 },
                 {
                     "include": "#array"
+                },
+                {
+                    "include": "#quoted"
                 },
                 {
                     "include": "#string"
