@@ -408,7 +408,7 @@
 		"dateformat": "^4.5.1",
 		"httpsnippet": "^1.25.0",
 		"jsonc-parser": "^3.0.0",
-		"mime-types": "^2.1.29",
+		"mime-types": "^2.1.30",
 		"semver": "^7.3.4",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11"
