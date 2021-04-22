@@ -18,6 +18,7 @@ export interface IHistoryService {
     fetchMore(): Promise<history[]>
     fetchMore(skip: number): Promise<history[]>
     fetchMore(skip: number, limit: number): Promise<history[]>
+    fetchByFileName(filename: String): Promise<history[]>
 }
 
 export class TingoHistoryService implements IHistoryService {
@@ -30,6 +31,16 @@ export class TingoHistoryService implements IHistoryService {
         const db = new Db(location, {});
         this._collection = db.collection(TingoHistoryService.collectionName);
     }
+
+    async fetchByFileName(filename: String): Promise<history[]> {
+        return new Promise((resolve, reject) => {
+            this._collection.find({ filename }, (error: Error, results: history[]) => {
+                resolve(results);
+            })
+        })
+        
+    }
+
     getById(_id: number): Promise<history> {
         return new Promise((resolve, reject) => {
             this._collection.findOne({ _id }, (error: Error, results: history) => {

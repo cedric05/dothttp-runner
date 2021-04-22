@@ -1,4 +1,4 @@
-# dothttp-runner
+# Http Client for vscode (dothttp-runner)
 
 checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
 

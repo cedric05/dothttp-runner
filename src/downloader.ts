@@ -182,10 +182,15 @@ export async function setUp(context: ExtensionContext) {
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
         if (context.globalState.get("dothttp.downloadContentCompleted", false)) {
-            if (fs.existsSync(downloadLocation)) {
-                fs.rmdirSync(downloadLocation);
+            try{
+                if (fs.existsSync(downloadLocation)) {
+                    fs.rmdirSync(downloadLocation, {recursive: true});
+                }
+            } catch(ignored){
+                console.error(ignored);
             }
         }
+        context.globalState.update("dothttp.downloadContentCompleted", false)
         console.log('download directory ', downloadLocation);
         const acceptableVersion = await getVersion();
         const url = fetchDownloadUrl(acceptableVersion);

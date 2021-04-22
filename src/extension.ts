@@ -6,6 +6,7 @@ import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
+import { HttpCompletionItemProvider } from './services/dothttpCompletion';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
@@ -63,6 +64,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.languages.registerCodeActionsProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
 	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
 	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider());
+
+	vscode.languages.registerCompletionItemProvider(Constants.langCode, new HttpCompletionItemProvider());
 
 }
 
