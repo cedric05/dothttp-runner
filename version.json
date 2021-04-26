@@ -68,31 +68,31 @@
     ],
     "matrix": {
         "0.0.5": {
-            "maxVersion": "0.0.9",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.6": {
-            "maxVersion": "0.0.9",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.7": {
-            "maxVersion": "0.0.9",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.8": {
-            "maxVersion": "0.0.10",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.9": {
-            "maxVersion": "0.0.11",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.10": {
-            "maxVersion": "0.0.12",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.11": {
-            "maxVersion": "0.0.13",
+            "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
         },
         "0.0.12": {
