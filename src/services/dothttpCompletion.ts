@@ -79,6 +79,10 @@ export class HttpCompletionItemProvider implements CompletionItemProvider {
         const data = await readFileProm(path.join(path.dirname(fileName), ".dothttp.json"));
         const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
 
+
+        // add default environment properties
+        envList.push("*")
+
         const envProperties = envList.map(
             env => _.uniq(Object.keys(envFile[env]))
                 .map(this.variableCompletionItem
