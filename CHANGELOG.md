@@ -1,5 +1,10 @@
 # Change Log
 
+
+## [0.0.12]
+- [**Feature**] suggestions anywhere in the text editor
+
+
 ## [0.0.11]
 - [**Feature**](https://github.com/cedric05/dothttp-runner/issues/47) multiline easy escape feature
 
