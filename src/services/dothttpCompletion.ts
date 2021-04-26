@@ -13,7 +13,7 @@ const readFileProm = util.promisify(fs.readFile);
 
 export class HttpCompletionItemProvider implements CompletionItemProvider {
     historyService: import("../tingohelpers").IHistoryService;
-    fileStateService: import("/home/prasanth/cedric05/dothttp-runner/src/services/state").IFileState;
+    fileStateService: import("./state").IFileState;
 
     constructor() {
         this.historyService = ApplicationServices.get().getHistoryService();
