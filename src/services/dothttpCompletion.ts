@@ -12,12 +12,15 @@ const readFileProm = util.promisify(fs.readFile);
 
 
 export class HttpCompletionItemProvider implements CompletionItemProvider {
-    historyService: import("../tingohelpers").IHistoryService;
-    fileStateService: import("./state").IFileState;
+    private readonly historyService: import("../tingohelpers").IHistoryService;
+    private readonly fileStateService: import("./state").IFileState;
+
+    private readonly client;
 
     constructor() {
         this.historyService = ApplicationServices.get().getHistoryService();
         this.fileStateService = ApplicationServices.get().getFileStateService();
+        this.client = ApplicationServices.get().getClientHandler();
     }
 
     static readonly methods: ReadonlyArray<string> = ["GET", "POST", "OPTIONS"
@@ -66,7 +69,11 @@ export class HttpCompletionItemProvider implements CompletionItemProvider {
 
         result.push(...HttpCompletionItemProvider.randomSuggestions);
         // TODO
-        result.push(...await this.getEnvironmentProperties(fileName));
+        try {
+            result.push(...await this.getEnvironmentProperties(fileName));
+        } catch (error) {
+            console.error("unknown error", error);
+        }
         // TODO don't include for inbetween request (like before payload, in the payload or inbetween history)
         result.push(...HttpCompletionItemProvider.methodList);
         return result;
@@ -75,19 +82,25 @@ export class HttpCompletionItemProvider implements CompletionItemProvider {
 
 
     private async getEnvironmentProperties(fileName: string): Promise<Array<CompletionItem>> {
+        const dothttpJson = path.join(path.dirname(fileName), ".dothttp.json");
+        if (!fs.existsSync(dothttpJson)) {
+            return [];
+        }
         const envList = this.fileStateService.getEnv(fileName);
-        const data = await readFileProm(path.join(path.dirname(fileName), ".dothttp.json"));
+        const data = await readFileProm(dothttpJson);
         const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
 
 
         // add default environment properties
         envList.push("*")
 
-        const envProperties = envList.map(
-            env => _.uniq(Object.keys(envFile[env]))
-                .map(this.variableCompletionItem
-                )
-        )
+        const envProperties = envList
+            .filter(env => envFile[env] != null)
+            .map(
+                env => _.uniq(Object.keys(envFile[env]))
+                    .map(this.variableCompletionItem
+                    )
+            )
         const properties = _.uniq(this.fileStateService
             .getProperties(fileName)
             .filter(prop => prop.enabled)
@@ -107,11 +120,10 @@ export class HttpCompletionItemProvider implements CompletionItemProvider {
     }
 
     private async getHistoryUrls(fileName: string): Promise<CompletionItem[]> {
-        const history = await this.historyService.fetchByFileName(fileName);
-        return history
-            .filter(item => item.url != null && item.url !== "")
+        const targets = await this.client.getTargetsInHttpFile(fileName);
+        return targets.urls!
             .map(item => ({
-                insertText: item.url,
+                insertText: `${item.method} "${item.url}"`,
                 label: `"${item.url}"`,
                 kind: CompletionItemKind.Variable,
                 documentation: "url request",
