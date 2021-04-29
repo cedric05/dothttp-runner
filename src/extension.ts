@@ -6,7 +6,7 @@ import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
-import { HttpCompletionItemProvider } from './services/dothttpCompletion';
+import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
@@ -65,7 +65,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
 	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider());
 
-	vscode.languages.registerCompletionItemProvider(Constants.langCode, new HttpCompletionItemProvider());
+
+	vscode.languages.registerCompletionItemProvider(Constants.langCode, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters);
+	vscode.languages.registerCompletionItemProvider(Constants.langCode, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters);
+	vscode.languages.registerCompletionItemProvider(Constants.langCode, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters);
+
+	vscode.languages.registerCompletionItemProvider(Constants.langCode, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters);
+
+
+
+
+
+
 
 }
 
@@ -81,6 +92,6 @@ async function bootStrap(context: vscode.ExtensionContext) {
 export function deactivate(context: vscode.ExtensionContext): undefined {
 	const appServices = ApplicationServices.get();
 	appServices.getClientHandler().close();
-	
+
 	return;
 }
