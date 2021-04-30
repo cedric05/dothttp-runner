@@ -8,7 +8,7 @@
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
 	},
-	"icon": "dothttp-icon.png",
+	"icon": "rocket.png",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
