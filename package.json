@@ -1,13 +1,14 @@
 {
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
-	"description": "Run Dothttp files in vscode",
+	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
 	"version": "0.0.13",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
 	},
+	"icon": "dothttp-icon.png",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -324,16 +325,16 @@
 					"dothttp.conf.response.savedirectory": {
 						"type": "string",
 						"default": "./",
-						"description": "provide either absolute path or relative path to current file"
+						"description": "Provide either absolute path or relative path to current file"
 					},
 					"dothttp.conf.pythonpath": {
 						"type": "string",
-						"description": "python installation location for making requests"
+						"description": "Python installation location for making requests"
 					},
 					"dothttp.conf.runrecent": {
 						"type": "boolean",
 						"default": true,
-						"description": "set true to run most recent otherwise, it will ask with available targets",
+						"description": "Set true to run most recent otherwise, Target will be picked from quickpick dialogue",
 						"$comment": "true means recent"
 					},
 					"dothttp.conf.path": {
@@ -344,27 +345,27 @@
 					"dothttp.conf.experimental": {
 						"type": "boolean",
 						"default": false,
-						"description": "enables experimental features by setting to `ture`"
+						"description": "Enables experimental features by setting to `ture`"
 					},
 					"dothttp.conf.nocookie": {
 						"type": "boolean",
 						"default": false,
-						"description": "disables cookie save feature by setting to `ture`"
+						"description": "Disables cookie save feature by setting to `ture`"
 					},
 					"dothttp.conf.history": {
 						"type": "boolean",
 						"default": false,
-						"description": "save history of requests by setting to `ture`"
+						"description": "Save history of requests by setting to `ture`"
 					},
 					"dothttp.conf.curl": {
 						"type": "boolean",
 						"default": false,
-						"description": "genererate curl command only!"
+						"description": "Genererate curl command only!"
 					},
 					"dothttp.conf.showheaders": {
 						"type": "boolean",
 						"default": false,
-						"description": "show headers in seperate view"
+						"description": "Show headers in seperate view"
 					}
 				}
 			}
@@ -373,12 +374,12 @@
 			"explorer": [
 				{
 					"id": "dothttpEnvView",
-					"name": "Dothttp environment",
+					"name": "Dothttp Environment",
 					"when": "dothttpEnvViewEnabled"
 				},
 				{
 					"id": "dothttpPropView",
-					"name": "Dothttp properties",
+					"name": "Dothttp Properties",
 					"when": "dothttpPropViewEnabled"
 				},
 				{

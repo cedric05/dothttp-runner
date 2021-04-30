@@ -1,6 +1,14 @@
 # Http Client for vscode (dothttp-runner)
 
+
+Checkout [docs](https://docs.dothttp.dev)
+
 checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
+
+Checkout [playground](http://ghpage.dothttp.dev/)
+
+
+Support via product [here](https://www.producthunt.com/posts/dothttp)
 
 ## Features
 
