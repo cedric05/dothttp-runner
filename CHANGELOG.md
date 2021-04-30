@@ -1,6 +1,10 @@
 # Change Log
 
 
+## [0.0.13]
+- [**Feature**] Better auto completions for headers, urls, variables
+
+
 ## [0.0.12]
 - [**Feature**] suggestions anywhere in the text editor
 

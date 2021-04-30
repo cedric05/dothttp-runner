@@ -84,8 +84,8 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
 
     public resolveCodeLens(codeLens: DothttpPositions, token: vscode.CancellationToken) {
         codeLens.command = {
-            title: !codeLens.curl ? "Run http" : "generate curl",
-            tooltip: !codeLens.curl ? "Run http targets this definition" : "Generate curl targeting this def",
+            title: !codeLens.curl ? "Run http" : "Generate Curl",
+            tooltip: !codeLens.curl ? "Run http targets this definition" : "Generate curl targeting this definition",
             command: !codeLens.curl ? "dothttp.command.run" : "dothttp.command.gencurl",
             arguments: [{ "target": codeLens.target, "curl": codeLens.curl }]
         };

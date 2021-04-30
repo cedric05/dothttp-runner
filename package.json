@@ -1,13 +1,14 @@
 {
 	"name": "dothttp-code",
-	"displayName": "dothttp-code",
-	"description": "run dothttp files in vscode natively",
-	"version": "0.0.12",
+	"displayName": "Dothttp Http Client",
+	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
+	"version": "0.0.13",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
 	},
+	"icon": "dothttp-icon.png",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -94,43 +95,43 @@
 			},
 			{
 				"command": "dothttp.command.toggle.reuse",
-				"title": "toggles reuse tab setting",
+				"title": "Toggles Reuse Tab Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.runrecent",
-				"title": "toggles run recent setting",
+				"title": "Toggles Run Recent Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.experimental",
-				"title": "toggles experimental setting",
+				"title": "Toggles Experimental Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.showheaders",
-				"title": "toggles showheaders setting",
+				"title": "Toggles Showheaders Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.history",
-				"title": "toggles history setting",
+				"title": "Toggles History Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.toggle.nocookie",
-				"title": "toggles cookie setting",
+				"title": "Toggles Cookie Setting",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
 			{
 				"command": "dothttp.command.import.external",
-				"title": "import resource to http",
+				"title": "Import Resource To Http",
 				"category": "Dothttp",
 				"icon": "$(cloud-download)"
 			},
@@ -141,62 +142,62 @@
 			},
 			{
 				"command": "dothttpEnvView.enableenv",
-				"title": "enable environment",
+				"title": "Enable Environment",
 				"icon": "$(add)"
 			},
 			{
 				"command": "dothttpEnvView.disableenv",
-				"title": "disable environment",
+				"title": "Disable Environment",
 				"icon": "$(remove)"
 			},
 			{
 				"command": "dothttpPropView.add",
-				"title": "add property",
+				"title": "Add Property",
 				"icon": "$(new-file)"
 			},
 			{
 				"command": "dothttpPropView.enableproperty",
-				"title": "enable property",
+				"title": "Enable Property",
 				"icon": "$(add)"
 			},
 			{
 				"command": "dothttpPropView.disableproperty",
-				"title": "disable property",
+				"title": "Disable Property",
 				"icon": "$(remove)"
 			},
 			{
 				"command": "dothttpPropView.copyPropertyValue",
-				"title": "copy property value",
+				"title": "Copy Property Value",
 				"icon": "$(chrome-restore)"
 			},
 			{
 				"command": "dothttpPropView.updateproperty",
-				"title": "update property",
+				"title": "Update Property",
 				"icon": "$(edit)"
 			},
 			{
 				"command": "dothttpPropView.disableAllProperties",
-				"title": "disable all properties",
+				"title": "Disable All Properties",
 				"icon": "$(close-all)"
 			},
 			{
 				"command": "dothttpEnvView.disableAllEnv",
-				"title": "disable all environment",
+				"title": "Disable All Environment",
 				"icon": "$(close-all)"
 			},
 			{
 				"command": "dothttpPropView.removeproperty",
-				"title": "remove property",
+				"title": "Remove Property",
 				"icon": "$(trash)"
 			},
 			{
 				"command": "dothttpEnvView.opendothttpjson",
-				"title": "open",
+				"title": "Open",
 				"icon": "$(edit)"
 			},
 			{
 				"command": "dothttpEnvView.copyPropertyValue",
-				"title": "copy environment value",
+				"title": "Copy Environment Value",
 				"icon": "$(chrome-restore)"
 			},
 			{
@@ -319,21 +320,21 @@
 					"dothttp.conf.run.reuseold": {
 						"type": "boolean",
 						"default": false,
-						"description": "enable it if reusing old tab while runing requets is preferred"
+						"description": "Enable it if reusing old tab while running requests is preferred"
 					},
 					"dothttp.conf.response.savedirectory": {
 						"type": "string",
 						"default": "./",
-						"description": "provide either absolute path or relative path to current file"
+						"description": "Provide either absolute path or relative path to current file"
 					},
 					"dothttp.conf.pythonpath": {
 						"type": "string",
-						"description": "python installation location for making requests"
+						"description": "Python installation location for making requests"
 					},
 					"dothttp.conf.runrecent": {
 						"type": "boolean",
 						"default": true,
-						"description": "set true to run most recent otherwise, it will ask with available targets",
+						"description": "Set true to run most recent otherwise, Target will be picked from quickpick dialogue",
 						"$comment": "true means recent"
 					},
 					"dothttp.conf.path": {
@@ -344,27 +345,27 @@
 					"dothttp.conf.experimental": {
 						"type": "boolean",
 						"default": false,
-						"description": "enables experimental features by setting to `ture`"
+						"description": "Enables experimental features by setting to `ture`"
 					},
 					"dothttp.conf.nocookie": {
 						"type": "boolean",
 						"default": false,
-						"description": "disables cookie save feature by setting to `ture`"
+						"description": "Disables cookie save feature by setting to `ture`"
 					},
 					"dothttp.conf.history": {
 						"type": "boolean",
 						"default": false,
-						"description": "save history of requests by setting to `ture`"
+						"description": "Save history of requests by setting to `ture`"
 					},
 					"dothttp.conf.curl": {
 						"type": "boolean",
 						"default": false,
-						"description": "genererate curl command only!"
+						"description": "Genererate curl command only!"
 					},
 					"dothttp.conf.showheaders": {
 						"type": "boolean",
 						"default": false,
-						"description": "show headers in seperate view"
+						"description": "Show headers in seperate view"
 					}
 				}
 			}
@@ -373,12 +374,12 @@
 			"explorer": [
 				{
 					"id": "dothttpEnvView",
-					"name": "Dothttp environment",
+					"name": "Dothttp Environment",
 					"when": "dothttpEnvViewEnabled"
 				},
 				{
 					"id": "dothttpPropView",
-					"name": "Dothttp properties",
+					"name": "Dothttp Properties",
 					"when": "dothttpPropViewEnabled"
 				},
 				{
