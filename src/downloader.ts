@@ -212,6 +212,9 @@ function getExePath(exePath: string) {
     } else if (platform() === "linux") {
         exePath = path.join(exePath, 'cli');
         fs.chmodSync(exePath, 0o755);
+    } else {
+        exePath = path.join(exePath, 'cli');
+        fs.chmodSync(exePath, 0o755);
     }
     return exePath;
 }
