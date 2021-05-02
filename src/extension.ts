@@ -7,11 +7,22 @@ import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
+import { NotebookSerializer } from './services/notebook';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
 
 	const appServices = ApplicationServices.get();
+
+	const notebookSerializer = new NotebookSerializer();
+
+	vscode.notebook.registerNotebookSerializer('dothttp-book', notebookSerializer, {
+		transientOutputs: false,
+		transientCellMetadata: {
+			inputCollapsed: true,
+			outputCollapsed: true,
+		}
+	});
 
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);

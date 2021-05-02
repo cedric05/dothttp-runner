@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -10,10 +10,12 @@
 	},
 	"icon": "rocket.png",
 	"engines": {
-		"vscode": "^1.53.0"
+		"vscode": "^1.54.0"
 	},
+	"enableProposedApi": true,
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Notebooks"
 	],
 	"activationEvents": [
 		"onLanguage:dothttp-vscode",
@@ -48,6 +50,17 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"notebookProvider": [
+			{
+				"viewType": "dothttp-book",
+				"displayName": "DOTHTTP",
+				"selector": [
+					{
+						"filenamePattern": "*.httpbook"
+					}
+				]
+			}
+		],
 		"languages": [
 			{
 				"id": "dothttp-vscode",
@@ -433,6 +446,7 @@
 		"@types/httpsnippet": "^1.23.0",
 		"dateformat": "^4.5.1",
 		"httpsnippet": "^1.25.0",
+		"json-stringify-safe": "^5.0.1",
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.30",
 		"semver": "^7.3.4",
