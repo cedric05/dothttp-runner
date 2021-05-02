@@ -102,6 +102,10 @@
         "0.0.13": {
             "maxVersion": "0.0.14",
             "minVersion": "0.0.8"
+        },
+        "0.0.14": {
+            "maxVersion": "0.0.14",
+            "minVersion": "0.0.8"
         }
     }
 }
