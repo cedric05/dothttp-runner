@@ -20,6 +20,7 @@
 	"activationEvents": [
 		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
+		"workspaceContains:**/*.httpbook",
 		"onView:dothttpEnvView",
 		"onCommand:dothttp.command.run",
 		"onView:dothttpPropView",
@@ -223,12 +224,12 @@
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook",
 					"group": "navigation@1"
 				},
 				{
 					"command": "dothttp.command.gencurl",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook",
 					"group": "navigation@2"
 				}
 			],
@@ -241,7 +242,7 @@
 				},
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook"
 				},
 				{
 					"command": "dothttp.command.toggle.experimental"

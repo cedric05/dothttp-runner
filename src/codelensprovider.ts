@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
 import * as json from 'jsonc-parser';
+import { Constants } from './models/constants';
 
 
 class DothttpPositions extends vscode.CodeLens {
@@ -56,6 +57,11 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
     }
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
+        // vscode-notebook-cell
+        // if scheme is vscode-notebook-cell 
+        // then use content to provide code lens
+        if (document.uri.scheme === Constants.notebookscheme)
+            return [];
         return new Promise(async (resolve) => {
             const codeLenses: DothttpPositions[] = [];
             this.clientHandler.getTargetsInHttpFile(document.fileName).then((names) => {

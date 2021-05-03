@@ -174,6 +174,7 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.contentExecutecommand, {
             content: options.content,
             env: options.env,
+            file: options.file,
             properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,

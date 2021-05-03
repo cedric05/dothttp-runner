@@ -5,6 +5,10 @@ import fs = require('fs');
 import path = require('path');
 import { Constants } from "../models/constants";
 import { ApplicationServices } from "./global";
+import { ClientHandler } from "../lib/client";
+import { IFileState } from "./state";
+import DotHttpEditorView from "../views/editor";
+import { addHistory } from '../commands/run';
 
 interface RawNotebookCell {
     language: string;
@@ -37,7 +41,8 @@ export class NotebookKernel {
 
     private readonly _controller: vscode.NotebookController;
     private _executionOrder = 0;
-    client: import("/home/prasanth/cedric05/dothttp-runner/src/lib/client").ClientHandler;
+    client: ClientHandler;
+    fileStateService: IFileState;
 
     constructor() {
         this._controller = vscode.notebook.createNotebookController('dotbook-kernel',
@@ -51,6 +56,7 @@ export class NotebookKernel {
         this._controller.onDidReceiveMessage(this._handleMessage.bind(this));
 
         this.client = ApplicationServices.get().getClientHandler();
+        this.fileStateService = ApplicationServices.get().getFileStateService();
     }
 
     dispose(): void {
@@ -68,14 +74,19 @@ export class NotebookKernel {
         execution.executionOrder = ++this._executionOrder;
         execution.start({ startTime: Date.now() });
         const httpDef = cell.document.getText();
+        const filename = cell.document.fileName;
+        // TODO
+        // do we want to only execute first one?????
+        const target = '1';
         const out = await this.client.executeContent({
             content: httpDef,
             file: cell.document.fileName,
-            env: [],
-            properties: {},
-            target: '1',
+            env: this.fileStateService.getEnv(filename),
+            properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
+            target,
             curl: false,
         });
+        addHistory(out, filename + ".http", { target });
 
         if (out.error) {
             execution.replaceOutput([

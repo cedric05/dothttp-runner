@@ -123,10 +123,10 @@ async function getTargetFromQuickPick(arr: any[]) {
             // picked: !selectionDone && editor.visibleRanges[0].intersection(range) ? true : false,
         };
     });
-    if (items.length === 0){
+    if (items.length === 0) {
         throw new Error("no target available");
     }
-    if (items.length === 1){
+    if (items.length === 1) {
         return items[0].label;
     }
     const option = await vscode.window.showQuickPick(items,
@@ -205,7 +205,7 @@ function getBaseFileNameToSave(config: Configuration, filename: string) {
     return filename;
 }
 
-function addHistory(out: any, filename: string, options: { curl: boolean; target: string; }) {
+export function addHistory(out: any, filename: string, options: { target: string; }) {
     const history = {
         url: out.url as string,
         http: out.http as string,

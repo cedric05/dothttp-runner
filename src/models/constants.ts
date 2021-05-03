@@ -45,6 +45,8 @@ export enum Constants {
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 
 
+    notebookscheme = "vscode-notebook-cell",
+
     // proptree
     propTreeView = 'dothttpPropView',
 
