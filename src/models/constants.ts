@@ -61,6 +61,8 @@ export enum Constants {
     // download stuff
     extensionVersion = "0.0.15",
 
+    dothttpNotebook = "dothttp-book",
+
     dothttpVersion = "dothttp.version",
 
     versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json"

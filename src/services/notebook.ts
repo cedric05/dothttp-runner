@@ -1,7 +1,9 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode'
-var stringify = require('json-stringify-safe');
-
+import stringify = require('json-stringify-safe');
+import fs = require('fs');
+import path = require('path');
+import { Constants } from "../models/constants";
 
 interface RawNotebookCell {
     language: string;
@@ -16,6 +18,97 @@ interface RawCellOutput {
     value: any;
 }
 
+
+export interface ResponseRendererElements {
+    status: number,
+    statusText: string,
+    headers?: any | undefined,
+    config?: any | undefined,
+    request?: any | undefined,
+    data: any
+}
+
+
+export class NotebookKernel {
+    readonly id = 'dothttp-kernel';
+    readonly label = 'Dot Book Kernel';
+    readonly supportedLanguages = [Constants.dothttpNotebook];
+
+    private readonly _controller: vscode.NotebookController;
+    private _executionOrder = 0;
+
+    constructor() {
+        this._controller = vscode.notebook.createNotebookController('dotbook-kernel',
+            Constants.dothttpNotebook,
+            'Dothttp Book');
+
+        this._controller.supportedLanguages = ["dothttp-vscode"];
+        this._controller.hasExecutionOrder = true;
+        this._controller.description = 'A notebook for making http calls.';
+        this._controller.executeHandler = this._executeAll.bind(this);
+
+        this._controller.onDidReceiveMessage(this._handleMessage.bind(this));
+    }
+
+    dispose(): void {
+        this._controller.dispose();
+    }
+
+    private _executeAll(cells: vscode.NotebookCell[], _notebook: vscode.NotebookDocument, _controller: vscode.NotebookController): void {
+        for (let cell of cells) {
+            this._doExecution(cell);
+        }
+    }
+
+    private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
+        const execution = this._controller.createNotebookCellExecutionTask(cell);
+        execution.executionOrder = ++this._executionOrder;
+        execution.start({ startTime: Date.now() });
+
+        execution.replaceOutput([
+            new vscode.NotebookCellOutput([
+                new vscode.NotebookCellOutputItem("plain/text", "hai this is good")
+            ])
+        ]);
+        execution.end()
+
+    }
+
+    private async _handleMessage(event: any): Promise<any> {
+        switch (event.message.command) {
+            case 'save-response':
+                this._saveDataToFile(event.message.data);
+                return;
+            default: break;
+        }
+    }
+
+    private async _saveDataToFile(data: ResponseRendererElements) {
+        const workSpaceDir = path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath ?? '');
+        if (!workSpaceDir) { return; }
+
+        let name;
+        const url = data.request?.responseUrl;
+        if (url) {
+            let name = url;
+            name = name.replace(/^[A-Za-z0-9]+\./g, '');
+            name = name.replace(/\.[A-Za-z0-9]+$/g, '');
+            name = name.replace(/\./g, '-');
+        } else {
+            name = 'unknown-url';
+        }
+
+        let date = new Date().toDateString().replace(/\s/g, '-');
+
+        const defaultPath = vscode.Uri.file(path.join(workSpaceDir, `response-${name}-${date}.json`));
+        const location = await vscode.window.showSaveDialog({ defaultUri: defaultPath });
+        if (!location) { return; }
+
+        fs.writeFile(location?.fsPath, stringify(data, null, 4), { flag: 'w' }, (e) => {
+            vscode.window.showInformationMessage(e?.message || `Saved response to ${location}`);
+        });
+    };
+}
 
 
 export class NotebookSerializer implements vscode.NotebookSerializer {

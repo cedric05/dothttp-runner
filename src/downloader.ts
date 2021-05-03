@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { chmodSync } from 'fs';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 import { platform } from 'os';
