@@ -4,6 +4,7 @@ import stringify = require('json-stringify-safe');
 import fs = require('fs');
 import path = require('path');
 import { Constants } from "../models/constants";
+import { ApplicationServices } from "./global";
 
 interface RawNotebookCell {
     language: string;
@@ -36,6 +37,7 @@ export class NotebookKernel {
 
     private readonly _controller: vscode.NotebookController;
     private _executionOrder = 0;
+    client: import("/home/prasanth/cedric05/dothttp-runner/src/lib/client").ClientHandler;
 
     constructor() {
         this._controller = vscode.notebook.createNotebookController('dotbook-kernel',
@@ -46,8 +48,9 @@ export class NotebookKernel {
         this._controller.hasExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
-
         this._controller.onDidReceiveMessage(this._handleMessage.bind(this));
+
+        this.client = ApplicationServices.get().getClientHandler();
     }
 
     dispose(): void {
@@ -64,12 +67,32 @@ export class NotebookKernel {
         const execution = this._controller.createNotebookCellExecutionTask(cell);
         execution.executionOrder = ++this._executionOrder;
         execution.start({ startTime: Date.now() });
+        const httpDef = cell.document.getText();
+        const out = await this.client.executeContent({
+            content: httpDef,
+            file: cell.document.fileName,
+            env: [],
+            properties: {},
+            target: '1',
+            curl: false,
+        });
 
-        execution.replaceOutput([
-            new vscode.NotebookCellOutput([
-                new vscode.NotebookCellOutputItem("plain/text", "hai this is good")
-            ])
-        ]);
+        if (out.error) {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                ])
+            ]);
+
+        } else {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    new vscode.NotebookCellOutputItem("text/plain", out.body)
+                ])
+            ]);
+
+        }
+
         execution.end()
 
     }
