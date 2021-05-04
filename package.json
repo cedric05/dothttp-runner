@@ -94,6 +94,16 @@
 				"path": "./syntaxes/grammer.json"
 			}
 		],
+		"notebookOutputRenderer": [
+			{
+				"id": "rest-book",
+				"displayName": "REST Book Renderer",
+				"entrypoint": "./notebook/renderer.js",
+				"mimeTypes": [
+					"x-application/dotbook"
+				]
+			}
+		],
 		"commands": [
 			{
 				"command": "dothttp.command.run",
@@ -224,12 +234,12 @@
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp",
 					"group": "navigation@1"
 				},
 				{
 					"command": "dothttp.command.gencurl",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp",
 					"group": "navigation@2"
 				}
 			],
@@ -242,7 +252,7 @@
 				},
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp || resourceExtname == .httpbook"
+					"when": "resourceExtname == .http || resourceExtname == .dhttp"
 				},
 				{
 					"command": "dothttp.command.toggle.experimental"
