@@ -1,5 +1,6 @@
 
 export enum Constants {
+    // to notify, these all should be in caps
 
     langCode = 'dothttp-vscode',
 
@@ -59,6 +60,9 @@ export enum Constants {
     disableAllPropCommand = "dothttpPropView.disableAllProperties",
     // tree vars
     propViewEnabled = "dothttpPropViewEnabled",
+
+
+    NOTEBOOK_MIME_TYPE = "x-application/dotbook",
 
     // download stuff
     extensionVersion = "0.0.15",

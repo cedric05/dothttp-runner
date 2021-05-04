@@ -98,7 +98,7 @@
 			{
 				"id": "rest-book",
 				"displayName": "REST Book Renderer",
-				"entrypoint": "./notebook/renderer.js",
+				"entrypoint": "./renderer.js",
 				"mimeTypes": [
 					"x-application/dotbook"
 				]

@@ -9,6 +9,7 @@ import { ClientHandler } from "../lib/client";
 import { IFileState } from "./state";
 import DotHttpEditorView from "../views/editor";
 import { addHistory } from '../commands/run';
+import { ResponseParser } from "../models/response";
 
 interface RawNotebookCell {
     language: string;
@@ -88,6 +89,8 @@ export class NotebookKernel {
         });
         addHistory(out, filename + ".http", { target });
 
+        const response = new ResponseParser(out.response, out);
+
         if (out.error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
@@ -98,7 +101,9 @@ export class NotebookKernel {
         } else {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("text/plain", out.body)
+                    new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, response.renderer()),
+                    new vscode.NotebookCellOutputItem("text/html", response.html()),
+                    new vscode.NotebookCellOutputItem("application/json", response.json())
                 ])
             ]);
 
