@@ -34,7 +34,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
     }
 
 
-    provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
+    provideCompletionItems(document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
         return this.getHistoryUrls(document.fileName);
     }
 
@@ -90,7 +90,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     }
 
 
-    async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): Promise<CompletionItem[]> {
+    async provideCompletionItems(document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[]> {
         const result = [];
         result.push(...await this.infileCompletions(document));;
         result.push(...await this.getEnvironmentProperties(document.fileName));

@@ -1,0 +1,18 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"rootDir": ".",
+		"outDir": "../../out/extension",
+		"lib": [
+			"es6"
+		],
+		"sourceMap": true,
+		// "strict": true
+	},
+	"references": [
+		{
+			"path": "../common"
+		}
+	]
+}

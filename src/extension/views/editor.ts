@@ -40,6 +40,15 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         return existsSync(filename)
             && new Set([".dhttp", ".http"]).has(fileExtension);
     }
+
+
+
+    public static isHttpBook(filename: string) {
+        const fileExtension = extname(filename);
+        return existsSync(filename)
+            && new Set([".httpbook"]).has(fileExtension);
+    }
+
     static async runContent(options: { content: string; curl: boolean; target: string; }): Promise<any> {
         const app = ApplicationServices.get();
         const out = await app.getClientHandler().executeContent({ content: options.content, env: [], curl: options.curl, file: '' });

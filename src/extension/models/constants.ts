@@ -1,5 +1,6 @@
 
 export enum Constants {
+    // to notify, these all should be in caps
 
     langCode = 'dothttp-vscode',
 
@@ -45,6 +46,8 @@ export enum Constants {
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 
 
+    notebookscheme = "vscode-notebook-cell",
+
     // proptree
     propTreeView = 'dothttpPropView',
 
@@ -58,8 +61,13 @@ export enum Constants {
     // tree vars
     propViewEnabled = "dothttpPropViewEnabled",
 
+
+    NOTEBOOK_MIME_TYPE = "x-application/dotbook",
+
     // download stuff
-    extensionVersion = "0.0.14",
+    extensionVersion = "0.0.15",
+
+    dothttpNotebook = "dothttp-book",
 
     dothttpVersion = "dothttp.version",
 

@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { chmodSync } from 'fs';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 import { platform } from 'os';
@@ -161,7 +160,7 @@ async function downloadDothttp(downloadLocation: string, url: string) {
 }
 
 async function wait(time = 1000) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         setTimeout(() => {
             resolve(time);
         }, time);

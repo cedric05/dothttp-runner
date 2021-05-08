@@ -1,0 +1,21 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"lib": [
+			"ES2019",
+			"dom"
+		],
+		"jsx": "react",
+		"jsxFactory": "h",
+		"types": [
+			"vscode-notebook-renderer",
+			"node"
+		]
+	},
+	"references": [
+		{
+			"path": "../common"
+		}
+	]
+}

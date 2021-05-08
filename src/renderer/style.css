@@ -1,0 +1,141 @@
+.tab-bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tab-content[hidden] {
+    display: none;
+}
+
+.align-left {
+	float: left;
+}
+.align-right {
+	float: right;
+}
+
+table .sub-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+table .key {
+    font-weight: 500;
+}
+
+table .column {
+    width: 150px;
+}
+
+input {
+    border: 1px solid var(--vscode-input-focus-border-color);
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-placeholder-foreground);
+    padding: 10px;
+}
+
+input:active {
+    color: var(--vscode-input-foreground);
+}
+
+svg {
+    width: 20px;
+    padding-right: 5px;
+    transform: translateY(5px);
+}
+
+.save-button {
+    margin-left: 20px;
+    background-color: var(--vscode-input-background);
+    border: none;
+    padding: 2px 10px 10px 10px;
+    opacity: 0.6;
+    color: var(--vscode-editor-foreground);
+    border: 0.2px solid var(--vscode-editor-foreground);
+}
+
+.save-button:hover {
+    opacity: 1.0;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    padding: 0px 10px 10px 10px;
+    opacity: 0.6;
+    color: var(--vscode-editor-foreground);
+}
+
+.search-button:hover {
+    opacity: 1.0;
+}
+
+button.tab {
+    border: none;
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-input-background);
+    padding: 10px 30px 10px 30px;
+    border: 0.2px solid var(--vscode-input-border);
+}
+
+button:hover { 
+    color: var(--vscode-editor-foreground);
+    cursor: pointer;
+}
+
+button.tab[active] {
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-input-border);
+    border-bottom: 2px solid var(--vscode-editor-foreground);
+}
+
+#data-container {
+    max-height: 20em;
+    max-width: 100%;
+    overflow-y: scroll;
+    font-family: Menlo, Monaco, "Courier New", monospace;
+}
+
+.request-url {
+    opacity: 0.6;
+    padding-left: 5px;
+}
+
+.status-label {
+    padding: 2px 10px 2px 10px;
+    margin: 0 2px;
+    font-size: 1.15em;
+    font-weight: 500;
+}
+
+.status-label[statusType="info"] {
+    background-color: #CCCCCC;
+    color: #333333;
+}
+.status-label[statusType="success"] {
+    background-color: #CCFF99;
+    color: #006600;
+}
+.status-label[statusType="redirect"] {
+    background-color: #99CCCC;
+    color: #003366;
+}
+.status-label[statusType="client-err"] {
+    background-color: #FFCC66;
+    color: #663300;
+}
+.status-label[statusType="server-err"] {
+    background-color: #FF9999;
+    color:#990000;
+}
+
+.search-term {
+    background-color: yellow;
+}
+
+
+@media (max-width: 800px) {
+    button.tab {
+        padding: 10px 15px 10px 15px;
+    }
+}

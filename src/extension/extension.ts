@@ -7,11 +7,14 @@ import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import DotHttpEditorView from './views/editor';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
+import { NotebookKernel, NotebookSerializer } from './services/notebook';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
 
 	const appServices = ApplicationServices.get();
+
+	loadNoteBookControllerSafely();
 
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);
@@ -80,6 +83,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
 }
 
+function loadNoteBookControllerSafely() {
+	try {
+		const notebookSerializer = new NotebookSerializer();
+		const _notebookkernel = new NotebookKernel();
+		vscode.notebook.registerNotebookSerializer('dothttp-book', notebookSerializer, {
+			transientOutputs: false,
+			transientCellMetadata: {
+				inputCollapsed: true,
+				outputCollapsed: true,
+			}
+		});
+	} catch (error) {
+	}
+}
+
 async function bootStrap(context: vscode.ExtensionContext) {
 	const version = await setUp(context);
 	ApplicationServices.initialize(context);
@@ -89,7 +107,7 @@ async function bootStrap(context: vscode.ExtensionContext) {
 	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
 }
 
-export function deactivate(context: vscode.ExtensionContext): undefined {
+export function deactivate(_context: vscode.ExtensionContext): undefined {
 	const appServices = ApplicationServices.get();
 	appServices.getClientHandler().close();
 

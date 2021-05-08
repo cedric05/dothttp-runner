@@ -33,7 +33,7 @@ export class TingoHistoryService implements IHistoryService {
     }
 
     async fetchByFileName(filename: String): Promise<[{ url: string }]> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve, _reject) => {
             try {
                 const cursor = await this._collection
                     .find({ filename: filename }, { url: 1 })
@@ -51,8 +51,8 @@ export class TingoHistoryService implements IHistoryService {
     }
 
     getById(_id: number): Promise<history> {
-        return new Promise((resolve, reject) => {
-            this._collection.findOne({ _id }, (error: Error, results: history) => {
+        return new Promise((resolve, _reject) => {
+            this._collection.findOne({ _id }, (_error: Error, results: history) => {
                 resolve(results);
             })
         })
@@ -69,7 +69,7 @@ export class TingoHistoryService implements IHistoryService {
         })
     }
     async fetchMore(skip: number = 0, limit: number = 10): Promise<history[]> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             const cursor = this._collection.find({}, { time: 1, status_code: 1, filename: 1, target: 1, _id: 1 })
                 .sort({ time: -1 })
                 .skip(skip)

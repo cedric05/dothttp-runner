@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
 import * as json from 'jsonc-parser';
+import { Constants } from './models/constants';
 
 
 class DothttpPositions extends vscode.CodeLens {
@@ -29,7 +30,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
             this._onDidChangeCodeLenses.fire()
         });
     }
-    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
+    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, _context: vscode.CodeActionContext, _token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
         const text = document.getText(range);
         try {
             if (!(range.start.line === range.end.line && range.start.character === range.end.character)) {
@@ -55,7 +56,12 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         return [];
     }
 
-    public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
+    public provideCodeLenses(document: vscode.TextDocument, _token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
+        // vscode-notebook-cell
+        // if scheme is vscode-notebook-cell 
+        // then use content to provide code lens
+        if (document.uri.scheme === Constants.notebookscheme)
+            return [];
         return new Promise(async (resolve) => {
             const codeLenses: DothttpPositions[] = [];
             this.clientHandler.getTargetsInHttpFile(document.fileName).then((names) => {
@@ -82,7 +88,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         })
     }
 
-    public resolveCodeLens(codeLens: DothttpPositions, token: vscode.CancellationToken) {
+    public resolveCodeLens(codeLens: DothttpPositions, _token: vscode.CancellationToken) {
         codeLens.command = {
             title: !codeLens.curl ? "Run http" : "Generate Curl",
             tooltip: !codeLens.curl ? "Run http targets this definition" : "Generate curl targeting this definition",
@@ -93,7 +99,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
     }
 
 
-    async provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
+    async provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken): Promise<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
         const result = await this.clientHandler.getTargetsInHttpFile(document.fileName, 'symbol');
         if (!result.error) {
             this.diagnostics.clear();

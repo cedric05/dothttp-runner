@@ -2,12 +2,12 @@
 import * as child_process from 'child_process';
 import { once } from 'events';
 import { createInterface, Interface } from 'readline';
-import { URL } from 'url';
+import * as vscode from 'vscode';
+import { DothttpExecuteResponse } from '../../common/response';
 import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
-import EventEmitter = require('events');
-import * as vscode from 'vscode';
 import { HttpFileTargetsDef } from './lang-parse';
+import EventEmitter = require('events');
 
 interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
@@ -141,7 +141,7 @@ export class ClientHandler {
     static importPostman = "/import/postman";
     static generateLangHttp = "/file/parse";
 
-    constructor(clientOptions: { std: boolean }) {
+    constructor(_clientOptions: { std: boolean }) {
         const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[] };
         if (isDotHttpCorrect()) {
             options.pythonpath = Configuration.getDothttpPath();
@@ -159,7 +159,7 @@ export class ClientHandler {
         // }
     }
 
-    async executeFile(options: DothttpRunOptions) {
+    async executeFile(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {
         return await this.cli.request(ClientHandler.fileExecuteCommand, {
             file: options.file,
             env: options.env,
@@ -170,10 +170,11 @@ export class ClientHandler {
         })
     }
 
-    async executeContent(options: DothttpRunOptions & { content: string }) {
+    async executeContent(options: DothttpRunOptions & { content: string }): Promise<DothttpExecuteResponse> {
         return await this.cli.request(ClientHandler.contentExecutecommand, {
             content: options.content,
             env: options.env,
+            file: options.file,
             properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,
