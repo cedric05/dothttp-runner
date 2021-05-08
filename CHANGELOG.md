@@ -1,8 +1,11 @@
 # Change Log
 
+## [0.0.16]
+- [**Bug**] fast error reporting. (earlier there is bug which will not update error diagnostics right away)
+
 
 ## [0.0.15]
-- [**Feature**](https://github.com/cedric05/dothttp-runner/pull/60) dothttp notebook (like ipython notebook)
+- [**Preview Feature**](https://github.com/cedric05/dothttp-runner/pull/60) dothttp notebook (like ipython notebook)
 
 
 ## [0.0.13/0.0.14]
