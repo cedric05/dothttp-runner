@@ -12,7 +12,6 @@
 	"engines": {
 		"vscode": "^1.54.0"
 	},
-	"enableProposedApi": true,
 	"categories": [
 		"Programming Languages",
 		"Notebooks"
