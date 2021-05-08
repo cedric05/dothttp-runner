@@ -20,9 +20,16 @@ Support via product [here](https://www.producthunt.com/posts/dothttp)
 - change environments priority
 - open executed file in seperate tab with content-type
 - creates history entry for requests, can be viewable
+- http notebook, view requests & response in single pane itself(like repl)
 
 <img src="./demo.gif" >
 
+
+## dothttp notebook (preview)
+
+<img src="https://user-images.githubusercontent.com/11557066/117543419-6724f880-b03a-11eb-9b7b-d81db7938fd9.png">
+
+notebook feature is only available in vscode-insiders.
 
 example http file
 ```
@@ -94,3 +101,5 @@ data({
 
 
 ```
+
+support us via upvoting in [producthunt](https://www.producthunt.com/posts/dothttp) & starring in [github](https://github.com/cedric05/dothttp-runner)

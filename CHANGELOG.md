@@ -1,8 +1,12 @@
 # Change Log
 
 
-## [0.0.13]
-- [**Feature**] Better auto completions for headers, urls, variables
+## [0.0.15]
+- [**Feature**](https://github.com/cedric05/dothttp-runner/pull/60) dothttp notebook (like ipython notebook)
+
+
+## [0.0.13/0.0.14]
+- [**Feature**] Better auto completions for headers, urls, variables && macos installation fix
 
 
 ## [0.0.12]
