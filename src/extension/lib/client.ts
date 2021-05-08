@@ -138,6 +138,7 @@ export class ClientHandler {
     static fileExecuteCommand = "/file/execute";
     static contentExecutecommand = "/content/execute";
     static namescommand = "/file/names";
+    static CONTENT_TARGETS_COMMAND = "/content/names";
     static importPostman = "/import/postman";
     static generateLangHttp = "/file/parse";
 
@@ -188,6 +189,10 @@ export class ClientHandler {
 
     async getTargetsInHttpFile(filename: string, source?: string): Promise<DotTttpSymbol> {
         return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
+    }
+
+    async getTargetsInContent(content: string, source?: string): Promise<DotTttpSymbol> {
+        return await this.cli.request(ClientHandler.CONTENT_TARGETS_COMMAND, { file: "", content, source: source || 'default' })
     }
 
     async generateLangHttp(options: DothttpRunOptions & { content: string }): Promise<HttpFileTargetsDef> {

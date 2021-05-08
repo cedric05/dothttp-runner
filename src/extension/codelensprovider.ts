@@ -56,36 +56,45 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         return [];
     }
 
-    public provideCodeLenses(document: vscode.TextDocument, _token: vscode.CancellationToken): DothttpPositions[] | Thenable<DothttpPositions[]> {
+    public async provideCodeLenses(document: vscode.TextDocument, _token: vscode.CancellationToken): Promise<DothttpPositions[]> {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
         // vscode-notebook-cell
         // if scheme is vscode-notebook-cell 
         // then use content to provide code lens
-        if (document.uri.scheme === Constants.notebookscheme)
+
+        var names = null;
+        if (isNotebook) {
+            names = await this.clientHandler.getTargetsInContent(document.getText());
+            if (names.error) {
+                this.updateDiagnostics(names, document);
+            } else {
+                this.diagnostics.clear();
+            }
             return [];
-        return new Promise(async (resolve) => {
-            const codeLenses: DothttpPositions[] = [];
-            this.clientHandler.getTargetsInHttpFile(document.fileName).then((names) => {
-                if (names.names)
-                    names.names.forEach(name => {
-                        const runCommand = new DothttpPositions(new Range(
-                            document.positionAt(name.start),
-                            document.positionAt(name.end)),
-                            name.name,
-                            false
-                        );
-                        const curlCommand = new DothttpPositions(runCommand.range,
-                            name.name,
-                            true);
-                        codeLenses.push(runCommand);
-                        codeLenses.push(curlCommand);
-                        resolve(codeLenses);
-                    })
-                else {
-                    this.updateDiagnostics(names, document);
-                    resolve(codeLenses);
-                }
-            });
-        })
+        } else {
+            names = await this.clientHandler.getTargetsInHttpFile(document.fileName);
+
+        }
+        const codeLenses: DothttpPositions[] = [];
+        if (names.names) {
+            this.diagnostics.clear();
+            names.names.forEach(name => {
+                const runCommand = new DothttpPositions(new Range(
+                    document.positionAt(name.start),
+                    document.positionAt(name.end)),
+                    name.name,
+                    false
+                );
+                const curlCommand = new DothttpPositions(runCommand.range,
+                    name.name,
+                    true);
+                codeLenses.push(runCommand);
+                codeLenses.push(curlCommand);
+            })
+        } else {
+            this.updateDiagnostics(names, document);
+        }
+        return codeLenses;
     }
 
     public resolveCodeLens(codeLens: DothttpPositions, _token: vscode.CancellationToken) {

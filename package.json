@@ -2,12 +2,13 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.15",
+	"version": "0.0.16",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
 	},
+	"enableProposedApi": true,
 	"icon": "rocket.png",
 	"engines": {
 		"vscode": "^1.54.0"

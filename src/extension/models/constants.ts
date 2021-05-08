@@ -65,7 +65,7 @@ export enum Constants {
     NOTEBOOK_MIME_TYPE = "x-application/dotbook",
 
     // download stuff
-    extensionVersion = "0.0.15",
+    extensionVersion = "0.0.16",
 
     dothttpNotebook = "dothttp-book",
 
