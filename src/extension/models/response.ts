@@ -1,14 +1,5 @@
 import { ResponseHeaderField } from "./completiontypes";
 
-export interface ResponseRendererElements {
-    status: number,
-    statusText: string,
-    headers?: any | undefined,
-    config?: any | undefined,
-    request?: any | undefined,
-    data: any
-}
-
 export class ResponseParser {
     private status: number | undefined;
     private statusText: string | undefined;
