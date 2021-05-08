@@ -14,16 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const appServices = ApplicationServices.get();
 
-	const notebookSerializer = new NotebookSerializer();
-	const _notebookkernel = new NotebookKernel();
-
-	vscode.notebook.registerNotebookSerializer('dothttp-book', notebookSerializer, {
-		transientOutputs: false,
-		transientCellMetadata: {
-			inputCollapsed: true,
-			outputCollapsed: true,
-		}
-	});
+	loadNoteBookControllerSafely();
 
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);
@@ -90,6 +81,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
+}
+
+function loadNoteBookControllerSafely() {
+	try {
+		const notebookSerializer = new NotebookSerializer();
+		const _notebookkernel = new NotebookKernel();
+		vscode.notebook.registerNotebookSerializer('dothttp-book', notebookSerializer, {
+			transientOutputs: false,
+			transientCellMetadata: {
+				inputCollapsed: true,
+				outputCollapsed: true,
+			}
+		});
+	} catch (error) {
+	}
 }
 
 async function bootStrap(context: vscode.ExtensionContext) {

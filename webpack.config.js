@@ -33,6 +33,7 @@ const config = {
 					{
 						loader: 'ts-loader',
 						options: {
+							projectReferences: true,
 							configFile: path.resolve(__dirname, 'src/extension/tsconfig.json'),
 						}
 					}
@@ -46,7 +47,7 @@ const config = {
 
 const rendererConfig = {
 	target: 'web',
-	mode: "production",
+	mode: "development",
 	entry: './src/renderer/index.tsx',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -87,4 +88,4 @@ const rendererConfig = {
 
 
 
-module.exports = [config, rendererConfig];
+module.exports = [rendererConfig, config];

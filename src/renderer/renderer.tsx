@@ -2,12 +2,11 @@
 import { FunctionComponent, h } from 'preact';
 import { StateUpdater, useEffect, useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import { DothttpExecuteResponse } from '../common/response';
 var stringify = require('json-stringify-safe');
-import { ResponseRendererElements } from '../common/response';
-import * as Save from 'vscode-codicons/src/icons/save.svg';
-import * as Search from 'vscode-codicons/src/icons/search.svg';
+// import * as Search from 'vscode-codicons/src/icons/search.svg';
 
-export const Response: FunctionComponent<{ response: Readonly<ResponseRendererElements> }> = ({ response }) => {
+export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResponse> }> = ({ response }) => {
     const [activeIndex, setActive] = useState(0);
     const [searchKeyword, setSearchKeyword] = useState('');
     const uuid = uuidv4();
@@ -24,25 +23,31 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
         });
     });
 
+    var headersExists = false;
+    if (response.headers && Object.keys(response.headers).length != 0) {
+        headersExists = true;
+    }
+
     return <div>
-        <Status code={response.status} text={response.statusText} request={response.request} />
+        <Status code={response.status} url={response.url} />
         <br />
         <div class='tab-bar'>
-            <TabHeader activeTab={activeIndex} setActive={setActive} headersExist={response.headers} configExists={response.config} requestExists={response.request} darkMode={darkMode} />
+            <TabHeader activeTab={activeIndex} setActive={setActive} headersExist={headersExists} requestExists={response.http ? true : false} darkMode={darkMode} />
             <span class='tab-bar-tools'>
                 <input id={searchBarId} placeholder='Search for keyword'></input>
-                <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}><Icon name={Search} /></button>
+                <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
+                    {/* <Icon name={Search} /> */}
+                </button>
             </span>
         </div>
         <br />
-        <DataTab data={response.data} active={activeIndex === 0} searchKeyword={searchKeyword} />
+        <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} />
         <TableTab dict={response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
-        <TableTab dict={response.config} active={activeIndex === 2} searchKeyword={searchKeyword} />
-        <TableTab dict={response.request} active={activeIndex === 3} searchKeyword={searchKeyword} />
+        <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
     </div>;
 };
 
-const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) => void, headersExist: boolean, configExists: boolean, requestExists: boolean, darkMode: boolean }> = ({ activeTab, setActive, headersExist, configExists, requestExists, darkMode }) => {
+const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) => void, headersExist: boolean, requestExists: boolean, darkMode: boolean }> = ({ activeTab, setActive, headersExist, requestExists, darkMode }) => {
     const renderTabHeaders = () => {
         let result: h.JSX.Element[] = [];
 
@@ -52,11 +57,6 @@ const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) =
         if (headersExist) {
             //@ts-ignore
             result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(1)} active={activeTab === 1}>Headers</button>);
-        }
-
-        if (configExists) {
-            //@ts-ignore
-            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(2)} active={activeTab === 2}>Config</button>);
         }
 
         if (requestExists) {
@@ -73,7 +73,7 @@ const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) =
 };
 
 // reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-const Status: FunctionComponent<{ code: number, text: string, request?: any }> = ({ code, text, request }) => {
+const Status: FunctionComponent<{ code: number, url: string }> = ({ code, url }) => {
     let statusType: string;
     if (code < 200) {
         statusType = 'info';
@@ -89,11 +89,11 @@ const Status: FunctionComponent<{ code: number, text: string, request?: any }> =
 
     const generateCodeLabel = () => {
         //@ts-ignore
-        return <span class='status-label' statusType={statusType}>{request.method} {code} {text}</span>;
+        return <span class='status-label' statusType={statusType}>{code}</span>;
     };
 
     return <div>
-        {generateCodeLabel()}   <span class='request-url'>   {request.responseUrl}</span>
+        {generateCodeLabel()}   <span class='request-url'>   {url}</span>
     </div>;
 };
 
@@ -134,7 +134,9 @@ const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: st
     const dataStr = typeof data === 'string' ? data : stringify(data);
 
     return <div class='tab-content' id='data-container' hidden={!active}>
-        {searchForTermInText(dataStr, searchKeyword)}
+        <pre>
+            {searchForTermInText(dataStr, searchKeyword)}
+        </pre>
     </div>;
 };
 

@@ -1,15 +1,15 @@
 import { TextDecoder, TextEncoder } from "util";
-import * as vscode from 'vscode'
+import * as vscode from 'vscode';
+import { ResponseRendererElements } from '../../common/response';
+import { addHistory } from '../commands/run';
+import { ClientHandler } from "../lib/client";
+import { Constants } from "../models/constants";
+import DotHttpEditorView from "../views/editor";
+import { ApplicationServices } from "./global";
+import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
 import fs = require('fs');
 import path = require('path');
-import { Constants } from "../models/constants";
-import { ApplicationServices } from "./global";
-import { ClientHandler } from "../lib/client";
-import { IFileState } from "./state";
-import DotHttpEditorView from "../views/editor";
-import { addHistory } from '../commands/run';
-import { ResponseParser } from "../models/response";
 
 interface RawNotebookCell {
     language: string;
@@ -23,17 +23,6 @@ interface RawCellOutput {
     mime: string;
     value: any;
 }
-
-
-export interface ResponseRendererElements {
-    status: number,
-    statusText: string,
-    headers?: any | undefined,
-    config?: any | undefined,
-    request?: any | undefined,
-    data: any
-}
-
 
 export class NotebookKernel {
     readonly id = 'dothttp-kernel';
@@ -89,7 +78,6 @@ export class NotebookKernel {
         });
         addHistory(out, filename + ".http", { target });
 
-        const response = new ResponseParser(out.response, out);
 
         if (out.error) {
             execution.replaceOutput([
@@ -99,11 +87,12 @@ export class NotebookKernel {
             ]);
 
         } else {
+            const notebookOut = new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out);
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, response.renderer()),
-                    new vscode.NotebookCellOutputItem("text/html", response.html()),
-                    new vscode.NotebookCellOutputItem("application/json", response.json())
+                    notebookOut,
+                    // new vscode.NotebookCellOutputItem("text/html", out),
+                    // new vscode.NotebookCellOutputItem("application/json", out)
                 ])
             ]);
 
