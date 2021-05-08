@@ -141,7 +141,7 @@ export class ClientHandler {
     static importPostman = "/import/postman";
     static generateLangHttp = "/file/parse";
 
-    constructor(clientOptions: { std: boolean }) {
+    constructor(_clientOptions: { std: boolean }) {
         const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[] };
         if (isDotHttpCorrect()) {
             options.pythonpath = Configuration.getDothttpPath();

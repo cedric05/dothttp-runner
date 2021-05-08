@@ -160,7 +160,7 @@ async function downloadDothttp(downloadLocation: string, url: string) {
 }
 
 async function wait(time = 1000) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         setTimeout(() => {
             resolve(time);
         }, time);

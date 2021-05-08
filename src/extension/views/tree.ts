@@ -286,7 +286,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
                 this.tree = json.parse(bindata.toString());
                 this.filename = filename
                 this._onDidChangeTreeData.fire(null);
-            }, error => {
+            }, _error => {
                 vscode.commands.executeCommand('setContext', Constants.enableEnvViewVar, false);
 
             })

@@ -101,7 +101,7 @@ async function bootStrap(context: vscode.ExtensionContext) {
 	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
 }
 
-export function deactivate(context: vscode.ExtensionContext): undefined {
+export function deactivate(_context: vscode.ExtensionContext): undefined {
 	const appServices = ApplicationServices.get();
 	appServices.getClientHandler().close();
 

@@ -1,0 +1,18 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"composite": true,
+		"module": "commonjs",
+		"rootDir": ".",
+		"outDir": "../../out/extension",
+		"lib": [
+			"es6"
+		],
+		"sourceMap": true,
+		// "strict": true
+	},
+	"exclude": [
+		"node_modules",
+		".vscode-test"
+	]
+}
