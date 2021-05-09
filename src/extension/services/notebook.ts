@@ -1,6 +1,6 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { ResponseRendererElements } from '../../common/response';
+import { Response, ResponseRendererElements } from '../../common/response';
 import { addHistory } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
@@ -87,19 +87,30 @@ export class NotebookKernel {
             ]);
 
         } else {
-            const notebookOut = new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out);
+            const outs: Array<vscode.NotebookCellOutputItem> = [];
+            this.parseAndAdd(outs, out.response);
+            outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
             execution.replaceOutput([
-                new vscode.NotebookCellOutput([
-                    notebookOut,
-                    // new vscode.NotebookCellOutputItem("text/html", out),
-                    // new vscode.NotebookCellOutputItem("application/json", out)
-                ])
+                new vscode.NotebookCellOutput(outs)
             ]);
-
         }
 
         execution.end()
 
+    }
+    parseAndAdd(notebookDotOut: Array<vscode.NotebookCellOutputItem>, response: Response) {
+        if (response.headers) {
+            Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+                const mimeType = response.headers![key];
+                switch (mimeType) {
+                    case "application/json":
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
+                        break;
+                    default:
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, response.body));
+                }
+            })
+        }
     }
 
     private async _handleMessage(event: any): Promise<any> {
@@ -197,3 +208,4 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         return new TextEncoder().encode(stringify(contents));
     }
 }
+

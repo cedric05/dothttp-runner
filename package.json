@@ -96,8 +96,8 @@
 		],
 		"notebookOutputRenderer": [
 			{
-				"id": "rest-book",
-				"displayName": "REST Book Renderer",
+				"id": "dothttp-book",
+				"displayName": "dothttp Renderer",
 				"entrypoint": "./dist/renderer.js",
 				"mimeTypes": [
 					"x-application/dotbook"
