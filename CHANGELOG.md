@@ -3,6 +3,7 @@
 ## [0.0.16]
 - [**Bug**] fast error reporting. (earlier there is bug which will not update error diagnostics right away)
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience
+- [**Bug**] users running with pythonpath not able to start extension fixed
 
 
 ## [0.0.15]

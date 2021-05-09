@@ -9,6 +9,7 @@ import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState, VersionInfo } from "./state";
 import path = require('path');
 import { Configuration } from "../models/config";
+import * as fs from 'fs';
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -36,6 +37,9 @@ export class ApplicationServices {
         this.fileStateService = new FileState(this.storageService);
         this.envTree = new EnvTree();
         this.propTree = new PropertyTree();
+        if (!fs.existsSync(context.globalStorageUri.fsPath)) {
+            fs.mkdirSync(context.globalStorageUri.fsPath);
+        }
         this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
         this.historyTreeProvider = new HistoryTreeProvider();
         this.dotHttpEditorView = new DotHttpEditorView();

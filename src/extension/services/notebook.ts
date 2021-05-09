@@ -107,7 +107,7 @@ export class NotebookKernel {
                         notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
                         break;
                     default:
-                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, response.body));
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType.substring(0, mimeType.indexOf(';')), response.body));
                 }
             })
         }
