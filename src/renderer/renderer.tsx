@@ -24,7 +24,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
     });
 
     var headersExists = false;
-    if (response.headers && Object.keys(response.headers).length != 0) {
+    if (response.response.headers && Object.keys(response.response.headers).length != 0) {
         headersExists = true;
     }
 

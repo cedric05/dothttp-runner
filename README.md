@@ -10,6 +10,10 @@ Checkout [playground](http://ghpage.dothttp.dev/)
 
 Support via product [here](https://www.producthunt.com/posts/dothttp)
 
+## our moto
+
+Save and re-use later
+
 ## Features
 
 - Run http file in editor itself

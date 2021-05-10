@@ -69,6 +69,15 @@ export class NotebookKernel {
         // TODO
         // do we want to only execute first one?????
         const target = '1';
+        execution.token.onCancellationRequested(() => {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", "aborted")
+                ])
+            ]);
+            execution.end({ success: false, endTime: Date.now() })
+
+        });
         const out = await this.client.executeContent({
             content: httpDef,
             file: cell.document.fileName,
@@ -79,24 +88,36 @@ export class NotebookKernel {
         });
         addHistory(out, filename + ".http", { target });
 
-
-        if (out.error) {
+        try {
+            if (out.error) {
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([
+                        new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                    ])
+                ]);
+                execution.end({ success: true, endTime: Date.now() })
+            } else {
+                out.body = "";
+                out.headers = {};
+                const outs: Array<vscode.NotebookCellOutputItem> = [];
+                outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
+                this.parseAndAdd(outs, out.response);
+                // seems to be a bug,
+                // text/html is working only when any other builtin mimetype is available
+                outs.push(new vscode.NotebookCellOutputItem("text/plain", out.response.body));
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput(outs)
+                ]);
+                execution.end({ success: true, endTime: Date.now() })
+            }
+        } catch (error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", error.toString())
                 ])
             ]);
-
-        } else {
-            const outs: Array<vscode.NotebookCellOutputItem> = [];
-            outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
-            this.parseAndAdd(outs, out.response);
-            execution.replaceOutput([
-                new vscode.NotebookCellOutput(outs)
-            ]);
+            execution.end({ success: false, endTime: Date.now() })
         }
-
-        execution.end()
 
     }
     parseAndAdd(notebookDotOut: Array<vscode.NotebookCellOutputItem>, response: Response) {
