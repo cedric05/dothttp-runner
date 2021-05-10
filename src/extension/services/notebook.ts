@@ -10,6 +10,7 @@ import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
 import fs = require('fs');
 import path = require('path');
+var mime = require('mime-types');
 
 interface RawNotebookCell {
     language: string;
@@ -88,8 +89,8 @@ export class NotebookKernel {
 
         } else {
             const outs: Array<vscode.NotebookCellOutputItem> = [];
-            this.parseAndAdd(outs, out.response);
             outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
+            this.parseAndAdd(outs, out.response);
             execution.replaceOutput([
                 new vscode.NotebookCellOutput(outs)
             ]);
@@ -101,13 +102,14 @@ export class NotebookKernel {
     parseAndAdd(notebookDotOut: Array<vscode.NotebookCellOutputItem>, response: Response) {
         if (response.headers) {
             Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
-                const mimeType = response.headers![key];
+                const mimeType = mime.lookup(mime.extension(response.headers![key]))
                 switch (mimeType) {
                     case "application/json":
                         notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
                         break;
-                    default:
-                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType.substring(0, mimeType.indexOf(';')), response.body));
+                    default: {
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, response.body));
+                    }
                 }
             })
         }
