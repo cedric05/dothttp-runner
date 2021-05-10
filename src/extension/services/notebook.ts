@@ -126,6 +126,10 @@ export class NotebookKernel {
                 const mimeType = mime.lookup(mime.extension(response.headers![key]))
                 switch (mimeType) {
                     case "application/json":
+                        // REMOVE ME
+                        // FORMATTING HERE IS BAD
+                        // IT SHOULD BE DONE AS PER USER REQUEST
+                        response.body = JSON.stringify(JSON.parse(response.body), null, 1)
                         notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
                         break;
                     default: {
