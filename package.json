@@ -58,6 +58,9 @@
 				"selector": [
 					{
 						"filenamePattern": "*.httpbook"
+					},
+					{
+						"filenamePattern": "*.hnbk"
 					}
 				]
 			}

@@ -63,9 +63,9 @@ export class UrlCompletionProvider implements CompletionItemProvider {
 
 
 export class VariableCompletionProvider implements CompletionItemProvider {
-    static readonly triggerCharacters = ["{"]
+    static readonly triggerCharacters = ["{", "{{"]
 
-    private static readonly INFILE_VAR_FINDER = /{{.*?}}/gm;
+    private static readonly INFILE_VAR_FINDER = /{{(.*?)(=.*)?}}/gm;
 
 
     private readonly fileStateService: import("./state").IFileState;
@@ -77,7 +77,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     static readonly randomSuggestions: ReadonlyArray<CompletionItem> = VariableCompletionProvider.randomSuggesstionsList.map(item => ({
         label: `${item}`,
         insertText: new SnippetString()
-            .appendText(`{${item}}`)
+            .appendText(`${item}}}`)
         ,
         documentation: "generate random construct",
         kind: CompletionItemKind.Variable,
@@ -102,11 +102,10 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
     public async infileCompletions(document: TextDocument): Promise<CompletionItem[]> {
         const text = document.getText();
-        const infileVars = VariableCompletionProvider
-            .INFILE_VAR_FINDER.exec(text);
+        const infileVars = (VariableCompletionProvider
+            .INFILE_VAR_FINDER.exec(text) ?? []).filter((_match, index) => index === 1);
         return _.uniq((infileVars ?? [])
-            .map((i: string) => i.substr(2, i.length - 4)))
-            .map(this.variableCompletionItem)
+            .map(this.variableCompletionItem("From Infile")));
     }
 
 
@@ -128,23 +127,25 @@ export class VariableCompletionProvider implements CompletionItemProvider {
             .filter(env => envFile[env] != null)
             .map(
                 env => _.uniq(Object.keys(envFile[env]))
-                    .map(this.variableCompletionItem
+                    .map(this.variableCompletionItem(`From Environment \`${env}\``)
                     )
             )
         const properties = _.uniq(this.fileStateService
             .getProperties(fileName)
             .filter(prop => prop.enabled)
             .map(prop => prop.key))
-            .map(this.variableCompletionItem)
+            .map(this.variableCompletionItem("From Properties"))
         return _.concat([], ...envProperties, ...properties);
     }
 
-    private variableCompletionItem(item: string): CompletionItem {
-        return ({
+    private variableCompletionItem(detail: string): (item: string) => CompletionItem {
+        return (item: string) =>
+        ({
             label: `"${item}"`,
             insertText: `{${item}}`,
+            commitCharacters: ["{"],
             kind: CompletionItemKind.Variable,
-            detail: `{{${item}}}`,
+            detail: item + " " + detail,
             keepWhitespace: true,
         } as CompletionItem);
     }
@@ -174,6 +175,13 @@ export class HeaderCompletionItemProvider implements CompletionItemProvider {
 
 export class KeywordCompletionItemProvider implements CompletionItemProvider {
     static readonly triggerCharacters = [];
+    static payloadkeywords = ["data",
+        "urlencoded",
+        "fileinput",
+        "json",
+        "files",
+        "basicauth",
+        "form"];
 
     provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
         const result: CompletionItem[] = [];
@@ -206,6 +214,23 @@ export class KeywordCompletionItemProvider implements CompletionItemProvider {
                     kind: CompletionItemKind.Field
                 });
             }
+            for (const field of KeywordCompletionItemProvider.payloadkeywords) {
+                result.push({
+                    label: field,
+                    insertText: `${field}(`,
+                    detail: `${field} Payload for POST/PUT/PATCH methods`,
+                    kind: CompletionItemKind.Keyword
+                });
+            }
+        }
+
+        if (position.line == 0) {
+            result.push({
+                label: "@name",
+                insertText: "@name",
+                detail: 'name http target',
+                kind: CompletionItemKind.Keyword
+            });
         }
 
         return result;

@@ -1,8 +1,10 @@
 # Change Log
 
 ## [0.0.16]
-- [**Bug**] fast error reporting. (earlier there is bug which will not update error diagnostics right away)
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience
+- [**Improvement**] notebooks will be serialized with formatted, for better reading
+- [**Improvement**] Better completion for infile variables, completes language keywords, better details for environment/properties/infile variable information
+- [**Bug**] fast error reporting. (earlier there is bug which will not update error diagnostics right away)
 - [**Bug**] users running with pythonpath not able to start extension fixed
 
 
