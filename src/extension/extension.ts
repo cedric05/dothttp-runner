@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
 import { generateLang } from "./commands/generate";
+import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
-import { ApplicationServices } from './services/global';
-import DotHttpEditorView from './views/editor';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
+import { ApplicationServices } from './services/global';
 import { NotebookKernel, NotebookSerializer } from './services/notebook';
+import DotHttpEditorView from './views/editor';
 
 export async function activate(context: vscode.ExtensionContext) {
 	await bootStrap(context);
@@ -87,7 +87,7 @@ function loadNoteBookControllerSafely() {
 	try {
 		const notebookSerializer = new NotebookSerializer();
 		const _notebookkernel = new NotebookKernel();
-		vscode.notebook.registerNotebookSerializer('dothttp-book', notebookSerializer, {
+		vscode.notebook.registerNotebookSerializer(Constants.NOTEBOOK_ID, notebookSerializer, {
 			transientOutputs: false,
 			transientCellMetadata: {
 				inputCollapsed: true,

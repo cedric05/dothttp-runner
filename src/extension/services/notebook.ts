@@ -1,6 +1,6 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { Response, ResponseRendererElements } from '../../common/response';
+import { Response } from '../../common/response';
 import { addHistory } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
@@ -8,8 +8,6 @@ import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
-import fs = require('fs');
-import path = require('path');
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -26,7 +24,8 @@ interface RawCellOutput {
 }
 
 export class NotebookKernel {
-    readonly id = 'dothttp-kernel';
+    static id = 'dothttp-kernel';
+    readonly id = NotebookKernel.id;
     readonly label = 'Dot Book Kernel';
     readonly supportedLanguages = [Constants.dothttpNotebook];
 
@@ -36,15 +35,14 @@ export class NotebookKernel {
     fileStateService: IFileState;
 
     constructor() {
-        this._controller = vscode.notebook.createNotebookController('dotbook-kernel',
+        this._controller = vscode.notebook.createNotebookController(NotebookKernel.id,
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = ["dothttp-vscode"];
+        this._controller.supportedLanguages = [Constants.langCode];
         this._controller.hasExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
-        this._controller.onDidReceiveMessage(this._handleMessage.bind(this));
 
         this.client = ApplicationServices.get().getClientHandler();
         this.fileStateService = ApplicationServices.get().getFileStateService();
@@ -86,7 +84,7 @@ export class NotebookKernel {
             target,
             curl: false,
         });
-        addHistory(out, filename + ".http", { target });
+        addHistory(out, filename + "-notebook-cell.http", { target });
 
         try {
             if (out.error) {
@@ -140,40 +138,6 @@ export class NotebookKernel {
         }
     }
 
-    private async _handleMessage(event: any): Promise<any> {
-        switch (event.message.command) {
-            case 'save-response':
-                this._saveDataToFile(event.message.data);
-                return;
-            default: break;
-        }
-    }
-
-    private async _saveDataToFile(data: ResponseRendererElements) {
-        const workSpaceDir = path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath ?? '');
-        if (!workSpaceDir) { return; }
-
-        let name;
-        const url = data.request?.responseUrl;
-        if (url) {
-            let name = url;
-            name = name.replace(/^[A-Za-z0-9]+\./g, '');
-            name = name.replace(/\.[A-Za-z0-9]+$/g, '');
-            name = name.replace(/\./g, '-');
-        } else {
-            name = 'unknown-url';
-        }
-
-        let date = new Date().toDateString().replace(/\s/g, '-');
-
-        const defaultPath = vscode.Uri.file(path.join(workSpaceDir, `response-${name}-${date}.json`));
-        const location = await vscode.window.showSaveDialog({ defaultUri: defaultPath });
-        if (!location) { return; }
-
-        fs.writeFile(location?.fsPath, stringify(data, null, 4), { flag: 'w' }, (e) => {
-            vscode.window.showInformationMessage(e?.message || `Saved response to ${location}`);
-        });
-    };
 }
 
 
@@ -225,8 +189,8 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         for (const cell of data.cells) {
             contents.push({
                 kind: cell.kind,
-                language: cell.language,
-                value: cell.source,
+                language: cell.languageId,
+                value: cell.value,
                 outputs: asRawOutput(cell)
             });
         }
