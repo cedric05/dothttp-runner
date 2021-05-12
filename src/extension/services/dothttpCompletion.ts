@@ -12,6 +12,7 @@ import * as path from 'path';
 import * as util from 'util';
 import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../models/completiontypes';
+import { UrlStore } from './UrlStorage';
 
 
 const readFileProm = util.promisify(fs.readFile);
@@ -19,7 +20,9 @@ const readFileProm = util.promisify(fs.readFile);
 
 
 export class UrlCompletionProvider implements CompletionItemProvider {
-    static readonly triggerCharacters = ["GET", "POST", "OPTIONS"
+    static readonly triggerCharacters = [
+        "https://", "http://",
+        "GET", "POST", "OPTIONS"
         , "DELETE", "CONNECT", "PUT"
         , "HEAD", "TRACE", "PATCH"
         , "COPY", "LINK", "UNLINK"
@@ -28,9 +31,12 @@ export class UrlCompletionProvider implements CompletionItemProvider {
     ]
 
     private readonly client;
+    store: UrlStore;
 
     constructor() {
-        this.client = ApplicationServices.get().getClientHandler();
+        const appContext = ApplicationServices.get();
+        this.client = appContext.getClientHandler();
+        this.store = appContext.getUrlStore();
     }
 
 
@@ -39,11 +45,19 @@ export class UrlCompletionProvider implements CompletionItemProvider {
     }
 
     private async getHistoryUrls(fileName: string): Promise<CompletionItem[]> {
+        const historyUrls = this.store.fetchUrls().map(item => ({
+            insertText: item.url,
+            label: item.url,
+            kind: CompletionItemKind.Unit,
+            documentation: "recent request",
+            detail: `${item.url}`,
+            keepWhitespace: true,
+        }));
         const targets = await this.client.getTargetsInHttpFile(fileName);
         if (targets.error) {
-            return [];
+            return historyUrls;
         }
-        return _.uniqBy(targets.urls!
+        return _.concat(_.uniqBy(targets.urls!
             .map(item => ({
                 ...item,
                 label: `${item.method ?? "GET"} "${item.url}"`
@@ -55,7 +69,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
                 documentation: "url request",
                 detail: `${item.url}`,
                 keepWhitespace: true,
-            }));
+            })), historyUrls);
     }
 
 }

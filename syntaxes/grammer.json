@@ -137,6 +137,15 @@
             },
             "name": "dothttp.query"
         },
+        "varstring": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double",
+                    "begin": "\\{\\{",
+                    "end": "\\}\\}"
+                }
+            ]
+        },
         "string": {
             "patterns": [
                 {
@@ -155,13 +164,8 @@
             "patterns": [
                 {
                     "name": "string.quoted.single",
-                    "begin": "'''",
-                    "end": "'''"
-                },
-                {
-                    "name": "string.quoted.single",
-                    "begin": "\"\"\"",
-                    "end": "\"\"\""
+                    "begin": "^(?=\\s*[rR]?(\\'\\'\\'|\\\"\\\"\\\"|\\'|\\\"))",
+                    "end": "((?<=\\1)|^)(?!\\s*[rR]?(\\'\\'\\'|\\\"\\\"\\\"|\\'|\\\"))"
                 }
             ]
         },
@@ -175,6 +179,10 @@
         },
         "language_keyword": {
             "patterns": [
+                {
+                    "match": "json",
+                    "name": "keyword.other"
+                },
                 {
                     "match": "header",
                     "name": "support.class"
@@ -216,8 +224,7 @@
                     "name": "keyword.other"
                 },
                 {
-                    "match": "json",
-                    "name": "keyword.other"
+                    "include": "#varstring"
                 },
                 {
                     "match": "files",

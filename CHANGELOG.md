@@ -4,8 +4,11 @@
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience
 - [**Improvement**] notebooks will be serialized with formatted, for better reading
 - [**Improvement**] Better completion for infile variables, completes language keywords, better details for environment/properties/infile variable information
+- [**Improvement**] Now completes past ran request urls (past 100 entries) (earlier it used to be from current file)
+- [**Improvement**] History entry will now have urls for easy filtering
 - [**Bug**] fast error reporting. (earlier there is bug which will not update error diagnostics right away)
 - [**Bug**] users running with pythonpath not able to start extension fixed
+- [**Bug**] multiline string with quotes is not highlighted fixed
 
 
 ## [0.0.15]
