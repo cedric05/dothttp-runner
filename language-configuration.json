@@ -7,7 +7,7 @@
     },
     // symbols used as brackets
     "indentationRules": {
-        "increaseIndentPattern": "^.*json\\(\\{|^.*data\\(\\{|^.*files\\(|",
+        "increaseIndentPattern": "^.*json\\(\\{|^.*data\\(\\{|^.*files\\(",
 		"decreaseIndentPattern": "^\\s*((\\})|(\\)))"
     },
     "brackets": [
