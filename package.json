@@ -51,7 +51,7 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
-		"notebookProvider": [
+		"notebooks": [
 			{
 				"viewType": "dothttp-book",
 				"displayName": "DOTHTTP",
