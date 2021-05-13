@@ -14,7 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const appServices = ApplicationServices.get();
 
-	loadNoteBookControllerSafely();
+	loadNoteBookControllerSafely(context);
 
 	let runCommandDisp = vscode.commands.registerTextEditorCommand(Constants.runFileCommand, runFileCommand);
 	let genCurlDisp = vscode.commands.registerTextEditorCommand(Constants.genCurlForFileCommand, genCurlCommand);
@@ -83,7 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 }
 
-function loadNoteBookControllerSafely() {
+function loadNoteBookControllerSafely(context: vscode.ExtensionContext) {
 	try {
 		const notebookSerializer = new NotebookSerializer();
 		const _notebookkernel = new NotebookKernel();

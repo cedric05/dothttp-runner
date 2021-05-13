@@ -73,7 +73,7 @@ export class NotebookKernel {
                     new vscode.NotebookCellOutputItem("application/x.notebook.stderr", "aborted")
                 ])
             ]);
-            execution.end({ success: false, endTime: Date.now() })
+            execution.end({ success: false, endTime: Date.now(), })
 
         });
         const out = await this.client.executeContent({
@@ -111,7 +111,8 @@ export class NotebookKernel {
         } catch (error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", error.toString())
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", error.toString()),
+                    new vscode.NotebookCellOutputItem("text/plain", error.toString())
                 ])
             ]);
             execution.end({ success: false, endTime: Date.now() })
