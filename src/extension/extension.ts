@@ -83,7 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 }
 
-function loadNoteBookControllerSafely(context: vscode.ExtensionContext) {
+function loadNoteBookControllerSafely(_context: vscode.ExtensionContext) {
 	try {
 		const notebookSerializer = new NotebookSerializer();
 		const _notebookkernel = new NotebookKernel();
