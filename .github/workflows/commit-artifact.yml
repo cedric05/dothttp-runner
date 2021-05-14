@@ -10,7 +10,7 @@ on:
       - dev
       - main
 
-    push:
+jobs:
     build:
         name: Publish Stable
         runs-on: ubuntu-latest
