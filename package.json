@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.16",
+	"version": "0.0.17",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -12,6 +12,7 @@
 	"engines": {
 		"vscode": "^1.54.0"
 	},
+	"enableProposedApi": true,
 	"categories": [
 		"Programming Languages",
 		"Notebooks"
