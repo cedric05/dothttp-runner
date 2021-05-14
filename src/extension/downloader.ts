@@ -76,7 +76,7 @@ export async function getJSON<T>(api: string): Promise<T> {
 
 export async function getVersion(): Promise<version> {
     var resp = await getJSON<versionResponse>(Constants.versionApi);
-    const compatibleMat = resp.matrix[Constants.extensionVersion];
+    const compatibleMat = resp.matrix[Constants.EXTENSION_VERSION];
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
             .filter(mat => semver.lte(compatibleMat.minVersion, mat.version)

@@ -1,5 +1,7 @@
 const Db = require('tingodb')().Db;
 import fs = require('fs');
+import { ApplicationServices } from './services/global';
+import { UrlStore } from './services/UrlStorage';
 
 export interface history {
     http: string,
@@ -24,6 +26,12 @@ export interface IHistoryService {
 export class TingoHistoryService implements IHistoryService {
     static readonly collectionName = 'history';
     private _collection: any;
+    // adding here is bad.
+    // TODO FIXME
+
+    private get urlStore(): UrlStore {
+        return ApplicationServices.get().getUrlStore();
+    }
     constructor(location: string) {
         if (!fs.existsSync(location)) {
             fs.mkdirSync(location);
@@ -66,11 +74,12 @@ export class TingoHistoryService implements IHistoryService {
                 }
                 resolve();
             });
+            this.urlStore.addUrl(history.url);
         })
     }
     async fetchMore(skip: number = 0, limit: number = 10): Promise<history[]> {
         return new Promise((resolve, _reject) => {
-            const cursor = this._collection.find({}, { time: 1, status_code: 1, filename: 1, target: 1, _id: 1 })
+            const cursor = this._collection.find({}, { url: 1, time: 1, status_code: 1, filename: 1, target: 1, _id: 1 })
                 .sort({ time: -1 })
                 .skip(skip)
                 .limit(limit);

@@ -4,9 +4,6 @@
     "scopeName": "source.dothttp-vscode",
     "patterns": [
         {
-            "include": "source.json"
-        },
-        {
             "include": "#comment"
         },
         {
@@ -23,17 +20,32 @@
         },
         {
             "include": "#variables"
+        },
+        {
+            "include": "#string-quoted-single-multiline"
+        },
+        {
+            "include": "#string-quoted-double-multiline"
+        },
+        {
+            "include": "#object"
+        },
+        {
+            "include": "#string"
+        },
+        {
+            "include": "source.json"
         }
     ],
     "repository": {
         "comment": {
             "patterns": [
                 {
-                    "match": "#.*$",
+                    "match": "#.*",
                     "name": "comment.line"
                 },
                 {
-                    "match": "//.*$",
+                    "match": "//.*",
                     "name": "comment.line"
                 },
                 {
@@ -137,6 +149,15 @@
             },
             "name": "dothttp.query"
         },
+        "varstring": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double",
+                    "begin": "\\{\\{",
+                    "end": "\\}\\}"
+                }
+            ]
+        },
         "string": {
             "patterns": [
                 {
@@ -151,19 +172,17 @@
                 }
             ]
         },
-        "quoted": {
-            "patterns": [
-                {
-                    "name": "string.quoted.single",
-                    "begin": "'''",
-                    "end": "'''"
-                },
-                {
-                    "name": "string.quoted.single",
-                    "begin": "\"\"\"",
-                    "end": "\"\"\""
-                }
-            ]
+        "string-quoted-single-multiline": {
+            "begin": "'''",
+            "end": "'''",
+            "name": "string.quoted.triple",
+            "patterns": []
+        },
+        "string-quoted-double-multiline": {
+            "begin": "\"\"\"",
+            "end": "\"\"\"",
+            "name": "string.quoted.triple",
+            "patterns": []
         },
         "number": {
             "patterns": [
@@ -175,6 +194,10 @@
         },
         "language_keyword": {
             "patterns": [
+                {
+                    "match": "json",
+                    "name": "keyword.other"
+                },
                 {
                     "match": "header",
                     "name": "support.class"
@@ -216,8 +239,7 @@
                     "name": "keyword.other"
                 },
                 {
-                    "match": "json",
-                    "name": "keyword.other"
+                    "include": "#varstring"
                 },
                 {
                     "match": "files",
@@ -247,18 +269,6 @@
                 },
                 {
                     "include": "#query"
-                },
-                {
-                    "include": "#object"
-                },
-                {
-                    "include": "#array"
-                },
-                {
-                    "include": "#quoted"
-                },
-                {
-                    "include": "#string"
                 }
             ]
         },

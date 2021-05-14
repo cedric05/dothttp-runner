@@ -1,10 +1,11 @@
 import * as path from 'path';
+import { URL } from 'url';
 import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { history, IHistoryService } from "../tingohelpers";
+import transform from '../utils/text-colors';
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
-import transform from '../utils/text-colors';
 
 enum TreeType {
     recent,
@@ -90,7 +91,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
 
             const tree = {
-                label: transform(`${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
+                label: transform(`${item.url ? new URL(item.url).hostname : ""} ${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
                 command: command,
                 iconPath: iconType,
                 tooltip: `${item.status_code} ${item.url ?? ''}`,

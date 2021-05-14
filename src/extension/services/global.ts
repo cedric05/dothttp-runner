@@ -9,6 +9,8 @@ import { EnvTree, PropertyTree } from "../views/tree";
 import { FileState, IFileState, VersionInfo } from "./state";
 import path = require('path');
 import { Configuration } from "../models/config";
+import * as fs from 'fs';
+import { UrlStorageService, UrlStore } from "./UrlStorage";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -26,6 +28,7 @@ export class ApplicationServices {
     private globalstorageService: LocalStorageService;
     private versionInfo: VersionInfo;
     private config: Configuration;
+    private urlStore: UrlStore;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -36,6 +39,10 @@ export class ApplicationServices {
         this.fileStateService = new FileState(this.storageService);
         this.envTree = new EnvTree();
         this.propTree = new PropertyTree();
+        if (!fs.existsSync(context.globalStorageUri.fsPath)) {
+            fs.mkdirSync(context.globalStorageUri.fsPath);
+        }
+        this.urlStore = new UrlStorageService(this.storageService);
         this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
         this.historyTreeProvider = new HistoryTreeProvider();
         this.dotHttpEditorView = new DotHttpEditorView();
@@ -145,6 +152,14 @@ export class ApplicationServices {
     }
     public setCconfig(value: Configuration) {
         this.config = value;
+    }
+
+
+    public getUrlStore(): UrlStore {
+        return this.urlStore;
+    }
+    public setUrlStore(value: UrlStore) {
+        this.urlStore = value;
     }
 
 }

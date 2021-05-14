@@ -1,6 +1,6 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { ResponseRendererElements } from '../../common/response';
+import { Response } from '../../common/response';
 import { addHistory } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
@@ -8,8 +8,7 @@ import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
-import fs = require('fs');
-import path = require('path');
+var mime = require('mime-types');
 
 interface RawNotebookCell {
     language: string;
@@ -25,7 +24,8 @@ interface RawCellOutput {
 }
 
 export class NotebookKernel {
-    readonly id = 'dothttp-kernel';
+    static id = 'dothttp-kernel';
+    readonly id = NotebookKernel.id;
     readonly label = 'Dot Book Kernel';
     readonly supportedLanguages = [Constants.dothttpNotebook];
 
@@ -35,15 +35,14 @@ export class NotebookKernel {
     fileStateService: IFileState;
 
     constructor() {
-        this._controller = vscode.notebook.createNotebookController('dotbook-kernel',
+        this._controller = vscode.notebook.createNotebookController(NotebookKernel.id,
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = ["dothttp-vscode"];
+        this._controller.supportedLanguages = [Constants.langCode];
         this._controller.hasExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
-        this._controller.onDidReceiveMessage(this._handleMessage.bind(this));
 
         this.client = ApplicationServices.get().getClientHandler();
         this.fileStateService = ApplicationServices.get().getFileStateService();
@@ -68,6 +67,15 @@ export class NotebookKernel {
         // TODO
         // do we want to only execute first one?????
         const target = '1';
+        execution.token.onCancellationRequested(() => {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", "aborted")
+                ])
+            ]);
+            execution.end({ success: false, endTime: Date.now(), })
+
+        });
         const out = await this.client.executeContent({
             content: httpDef,
             file: cell.document.fileName,
@@ -76,66 +84,61 @@ export class NotebookKernel {
             target,
             curl: false,
         });
-        addHistory(out, filename + ".http", { target });
+        addHistory(out, filename + "-notebook-cell.http", { target });
 
-
-        if (out.error) {
+        try {
+            if (out.error) {
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([
+                        new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                    ])
+                ]);
+                execution.end({ success: true, endTime: Date.now() })
+            } else {
+                out.body = "";
+                out.headers = {};
+                const outs: Array<vscode.NotebookCellOutputItem> = [];
+                outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
+                this.parseAndAdd(outs, out.response);
+                // seems to be a bug,
+                // text/html is working only when any other builtin mimetype is available
+                outs.push(new vscode.NotebookCellOutputItem("text/plain", out.response.body));
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput(outs)
+                ]);
+                execution.end({ success: true, endTime: Date.now() })
+            }
+        } catch (error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", error.toString()),
+                    new vscode.NotebookCellOutputItem("text/plain", error.toString())
                 ])
             ]);
-
-        } else {
-            const notebookOut = new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out);
-            execution.replaceOutput([
-                new vscode.NotebookCellOutput([
-                    notebookOut,
-                    // new vscode.NotebookCellOutputItem("text/html", out),
-                    // new vscode.NotebookCellOutputItem("application/json", out)
-                ])
-            ]);
-
+            execution.end({ success: false, endTime: Date.now() })
         }
-
-        execution.end()
 
     }
-
-    private async _handleMessage(event: any): Promise<any> {
-        switch (event.message.command) {
-            case 'save-response':
-                this._saveDataToFile(event.message.data);
-                return;
-            default: break;
+    parseAndAdd(notebookDotOut: Array<vscode.NotebookCellOutputItem>, response: Response) {
+        if (response.headers) {
+            Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+                const mimeType = mime.lookup(mime.extension(response.headers![key]))
+                switch (mimeType) {
+                    case "application/json":
+                        // REMOVE ME
+                        // FORMATTING HERE IS BAD
+                        // IT SHOULD BE DONE AS PER USER REQUEST
+                        response.body = JSON.stringify(JSON.parse(response.body), null, 1)
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
+                        break;
+                    default: {
+                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, response.body));
+                    }
+                }
+            })
         }
     }
 
-    private async _saveDataToFile(data: ResponseRendererElements) {
-        const workSpaceDir = path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath ?? '');
-        if (!workSpaceDir) { return; }
-
-        let name;
-        const url = data.request?.responseUrl;
-        if (url) {
-            let name = url;
-            name = name.replace(/^[A-Za-z0-9]+\./g, '');
-            name = name.replace(/\.[A-Za-z0-9]+$/g, '');
-            name = name.replace(/\./g, '-');
-        } else {
-            name = 'unknown-url';
-        }
-
-        let date = new Date().toDateString().replace(/\s/g, '-');
-
-        const defaultPath = vscode.Uri.file(path.join(workSpaceDir, `response-${name}-${date}.json`));
-        const location = await vscode.window.showSaveDialog({ defaultUri: defaultPath });
-        if (!location) { return; }
-
-        fs.writeFile(location?.fsPath, stringify(data, null, 4), { flag: 'w' }, (e) => {
-            vscode.window.showInformationMessage(e?.message || `Saved response to ${location}`);
-        });
-    };
 }
 
 
@@ -187,13 +190,17 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         for (const cell of data.cells) {
             contents.push({
                 kind: cell.kind,
-                language: cell.language,
-                value: cell.source,
+                // TODO removeme once code-insiders picksup latest
+                // @ts-ignore
+                language: cell.language || cell.languageId,
+                // @ts-ignore
+                value: cell.value || cell.source,
                 outputs: asRawOutput(cell)
             });
         }
 
         // Give a string of all the data to save and VS Code will handle the rest 
-        return new TextEncoder().encode(stringify(contents));
+        return new TextEncoder().encode(stringify(contents, null, 1));
     }
 }
+

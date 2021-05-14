@@ -24,7 +24,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
     });
 
     var headersExists = false;
-    if (response.headers && Object.keys(response.headers).length != 0) {
+    if (response.response.headers && Object.keys(response.response.headers).length != 0) {
         headersExists = true;
     }
 
@@ -42,7 +42,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
         </div>
         <br />
         <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} />
-        <TableTab dict={response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
+        <TableTab dict={response.response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
         <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
     </div>;
 };
