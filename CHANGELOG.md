@@ -1,4 +1,6 @@
 # Change Log
+## [0.0.17]
+- [**Improvement**] auto installation of dothttp-req, incase of using with pythonpath
 
 ## [0.0.16]
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience
