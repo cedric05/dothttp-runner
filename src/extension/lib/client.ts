@@ -98,9 +98,9 @@ export class StdoutClient extends BaseSpanClient {
 
 
     async healInstallation(options: { pythonpath: string, stdargs: string[], type: RunType }) {
-        if (!
+        if (
             // @ts-ignore
-            this.proc.stdin.connecting
+            !this.proc.pid
         ) {
             if (options.type === RunType.python) {
                 // install

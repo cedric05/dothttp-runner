@@ -1,6 +1,8 @@
 # Change Log
 ## [0.0.17]
 - [**Improvement**] auto installation of dothttp-req, incase of using with pythonpath
+- [**Bug**] integers are sent as float in json type fixed
+- [**Bug**] pure data payload with chineese not working fixed
 
 ## [0.0.16]
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience
