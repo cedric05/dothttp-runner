@@ -27,7 +27,7 @@ jobs:
             - name: Publish Extension
               run: |
                 npx vsce package
-                yarn vsce publish --yarn --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
+                vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
                 npx ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
             - name: Create GitHub release
               id: create_release
