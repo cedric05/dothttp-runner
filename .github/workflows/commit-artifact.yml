@@ -25,7 +25,6 @@ jobs:
             - name: Install
               run: |
                 npm install
-                npm install vsce
             - name: Package
               run: npx vsce package
             - name: 'Upload Artifact'
