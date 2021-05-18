@@ -21,6 +21,7 @@
 		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
 		"workspaceContains:**/*.httpbook",
+		"workspaceContains:**/*.hnbk",
 		"onView:dothttpEnvView",
 		"onCommand:dothttp.command.run",
 		"onView:dothttpPropView",
