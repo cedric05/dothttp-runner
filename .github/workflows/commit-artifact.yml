@@ -32,4 +32,4 @@ jobs:
               with:
                 path: ./*.vsix
                 name: dothttp-runner-preview-notebook.vsix
-                retention-days: 30
+                retention-days: 3
