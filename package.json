@@ -5,6 +5,7 @@
 	"version": "0.0.18",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
+	"enableProposedApi": true,
 	"repository": {
 		"url": "https://github.com/cedric05/dothttp-runner"
 	},
