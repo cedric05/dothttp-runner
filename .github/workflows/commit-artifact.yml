@@ -25,7 +25,6 @@ jobs:
             - name: Install
               run: |
                 npm install
-                npm install vsce
             - name: Package
               run: npx vsce package
             - name: 'Upload Artifact'
@@ -33,4 +32,4 @@ jobs:
               with:
                 path: ./*.vsix
                 name: dothttp-runner-preview-notebook.vsix
-                retention-days: 30
+                retention-days: 3

@@ -80,7 +80,7 @@ export async function getVersion(): Promise<version> {
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
             .filter(mat => semver.lte(compatibleMat.minVersion, mat.version)
-            && semver.lte(mat.version, compatibleMat.maxVersion))
+                && semver.lte(mat.version, compatibleMat.maxVersion))
             .sort((a, b) => {
                 if (semver.gte(a.version, b.version)) {
                     return -1;
@@ -181,11 +181,11 @@ export async function setUp(context: ExtensionContext) {
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
         if (context.globalState.get("dothttp.downloadContentCompleted", false)) {
-            try{
+            try {
                 if (fs.existsSync(downloadLocation)) {
-                    fs.rmdirSync(downloadLocation, {recursive: true});
+                    fs.rmdirSync(downloadLocation, { recursive: true });
                 }
-            } catch(ignored){
+            } catch (ignored) {
                 console.error(ignored);
             }
         }
@@ -223,16 +223,13 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
     const versionData = await getVersion();
     if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
-            'new version available', 'upgrade', 'leave')
+            '$(milestone) Dothttp New version Available', 'Upgrade', 'Cancel')
         if (accepted === 'upgrade') {
             // ApplicationServices.get().clientHanler.close();
             if (isPythonConfigured()) {
                 // using exec is better in this scenario,
                 // but need to check
-                child_process.spawn(Configuration.getPath(),
-                    ["-m", "pip", "install", `dothttp-req==${versionData.version}`, '--upgrade'],
-                    { stdio: ["pipe", "pipe", "inherit"] }
-                );
+                await runSync(Configuration.getPath(), ["-m", "pip", "install", `dothttp-req==${versionData.version}`, '--upgrade']);
             } else if (isDothttpConfigured()) {
                 const downloadLocation = path.join(globalStorageDir, `cli-${versionData.version}`);
                 const url = fetchDownloadUrl(versionData)
@@ -253,4 +250,18 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
             }
         }
     }
+}
+
+export async function runSync(path: string, args: Array<string>) {
+    return new Promise<void>((_resolve, _reject) => {
+        const proc = child_process.spawn(path,
+            args
+        );
+        proc.stdout.on('data', (data) => console.log(new String(data)));
+        proc.stderr.on('data', (data) => console.error(new String(data)));
+        proc.on('exit', function () {
+            _resolve();
+        })
+    })
+
 }

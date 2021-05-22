@@ -10,4 +10,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 .git
+test-resources
 demo.gif
+.github
+.idea
+eslint.js

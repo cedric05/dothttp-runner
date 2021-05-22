@@ -1,4 +1,9 @@
 # Change Log
+## [0.0.17]
+- [**Improvement**] auto installation of dothttp-req, incase of using with pythonpath
+- [**Bug**] integers are sent as float in json type fixed
+- [**Bug**] pure data payload with chineese not working fixed
+- [**Bug**] extension package file has included unwanted files(js libraries), which increased size from 2.5 MB to 4.5 MB fixed
 
 ## [0.0.16]
 - [**Improvement**] curl generated for json data types will formatted for better viewing experience

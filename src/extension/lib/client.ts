@@ -4,6 +4,7 @@ import { once } from 'events';
 import { createInterface, Interface } from 'readline';
 import * as vscode from 'vscode';
 import { DothttpExecuteResponse } from '../../common/response';
+import { runSync } from '../downloader';
 import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions } from '../models/dotoptions';
 import { HttpFileTargetsDef } from './lang-parse';
@@ -32,7 +33,7 @@ class CmdClientError extends Error {
 
 
 abstract class BaseSpanClient implements ICommandClient {
-    readonly proc: child_process.ChildProcess;
+    proc: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
     channel: vscode.OutputChannel;
 
@@ -41,6 +42,7 @@ abstract class BaseSpanClient implements ICommandClient {
             options.stdargs,
             { stdio: ["pipe", "pipe", "inherit"] }
         );
+
         this.channel = vscode.window.createOutputChannel('dothttp-code');
     }
 
@@ -64,11 +66,15 @@ abstract class BaseSpanClient implements ICommandClient {
 }
 
 export class StdoutClient extends BaseSpanClient {
-    rl: Interface;
+    rl!: Interface;
     eventS: EventEmitter = new EventEmitter();
 
-    constructor(options: { pythonpath: string, stdargs: string[] }) {
+    constructor(options: { pythonpath: string, stdargs: string[], type: RunType }) {
         super(options);
+        this.setup();
+        this.healInstallation(options);
+    }
+    private setup() {
         this.rl = createInterface({
             input: this.proc.stdout!,
             terminal: false
@@ -77,8 +83,9 @@ export class StdoutClient extends BaseSpanClient {
         this.rl.on("line", (line) => {
             const result: IResult = JSON.parse(line);
             this.eventS.emit(result.id + '', result);
-        })
+        });
     }
+
     async call(command: ICommand): Promise<IResult> {
         const commandInString = JSON.stringify(command) + '\n';
         this.proc.stdin!.write(commandInString);
@@ -88,6 +95,23 @@ export class StdoutClient extends BaseSpanClient {
         if (results.length > 1) throw new CmdClientError("inconsistant state");
         return results[0] as unknown as IResult;
     }
+
+
+    async healInstallation(options: { pythonpath: string, stdargs: string[], type: RunType }) {
+        if (
+            // @ts-ignore
+            !this.proc.pid
+        ) {
+            if (options.type === RunType.python) {
+                // install
+                await runSync(options.pythonpath, ["-m", "pip", "install", 'dothttp-req']);
+                this.proc = child_process.spawn(options.pythonpath, options.stdargs,
+                    { stdio: ["pipe", "pipe", "inherit"] });
+                this.setup();
+            }
+        }
+    }
+
 }
 
 
@@ -131,7 +155,10 @@ export interface DotTttpSymbol {
     error_message?: string,
 }
 
-
+enum RunType {
+    binary,
+    python
+}
 
 export class ClientHandler {
     cli: BaseSpanClient;
@@ -143,13 +170,15 @@ export class ClientHandler {
     static generateLangHttp = "/file/parse";
 
     constructor(_clientOptions: { std: boolean }) {
-        const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[] };
+        const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[], type: RunType };
         if (isDotHttpCorrect()) {
             options.pythonpath = Configuration.getDothttpPath();
+            options.type = RunType.binary
         } else {
             options.pythonpath = Configuration.getPath();
             options.stdargs.push('-m');
             options.stdargs.push('dotextensions.server');
+            options.type = RunType.python
         }
         console.log("launch params", JSON.stringify(options));
         // if (clientOptions.std) {

@@ -126,24 +126,25 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
     private async getEnvironmentProperties(fileName: string): Promise<Array<CompletionItem>> {
         const dothttpJson = path.join(path.dirname(fileName), ".dothttp.json");
-        if (!fs.existsSync(dothttpJson)) {
-            return [];
+        var envProperties: CompletionItem[][] = [];
+        if (fs.existsSync(dothttpJson)) {
+            const envList = this.fileStateService.getEnv(fileName);
+            const data = await readFileProm(dothttpJson);
+            const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
+
+
+            // add default environment properties
+            envList.push("*")
+
+            envProperties = _.uniq(envList)
+                .filter(env => envFile[env] != null)
+                .map(
+                    env => _.uniq(Object.keys(envFile[env]))
+                        .map(this.variableCompletionItem(`From Environment \`${env}\``)
+                        )
+                )
         }
-        const envList = this.fileStateService.getEnv(fileName);
-        const data = await readFileProm(dothttpJson);
-        const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
 
-
-        // add default environment properties
-        envList.push("*")
-
-        const envProperties = _.uniq(envList)
-            .filter(env => envFile[env] != null)
-            .map(
-                env => _.uniq(Object.keys(envFile[env]))
-                    .map(this.variableCompletionItem(`From Environment \`${env}\``)
-                    )
-            )
         const properties = _.uniq(this.fileStateService
             .getProperties(fileName)
             .filter(prop => prop.enabled)
