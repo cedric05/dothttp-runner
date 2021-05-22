@@ -84,63 +84,73 @@
             "latest": false,
             "stable": true,
             "version": "0.0.17"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.18/dotextensions-0.0.18-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.18/dotextensions-0.0.18-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.18/dotextensions-0.0.18-darwin.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.18"
         }
     ],
     "matrix": {
         "0.0.5": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.6": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.7": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.8": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.9": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.10": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.11": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.12": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.13": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.14": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.15": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.16": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.17": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         },
         "0.0.18": {
-            "maxVersion": "0.0.17",
+            "maxVersion": "0.0.18",
             "minVersion": "0.0.8"
         }
     }
