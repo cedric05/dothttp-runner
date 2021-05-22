@@ -10,7 +10,7 @@ Checkout [playground](http://ghpage.dothttp.dev/)
 
 Support via product [here](https://www.producthunt.com/posts/dothttp)
 
-## our moto
+## OUR MOTO
 
 Save and re-use later
 
@@ -33,7 +33,11 @@ Save and re-use later
 
 <img src="https://user-images.githubusercontent.com/11557066/117543419-6724f880-b03a-11eb-9b7b-d81db7938fd9.png">
 
-notebook feature is only available in vscode-insiders.
+## Preview noteboook
+Users can try notebook feature by installing extension from vsix file in these [github actions](https://github.com/cedric05/dothttp-runner/actions/workflows/commit-artifact.yml) for example [preview](https://github.com/cedric05/dothttp-runner/suites/2803281233/artifacts/62337942)
+
+
+notebook feature is only available in vscode-insiders
 
 example http file
 ```

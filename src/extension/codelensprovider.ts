@@ -142,12 +142,12 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
 
     public updateDiagnostics(result: { error?: boolean | undefined; error_message?: string | undefined; }, document: vscode.TextDocument) {
         const matches = result.error_message!.match(DothttpNameSymbolProvider.regex);
+        this.diagnostics.clear();
         if (matches?.groups) {
             const line = Number.parseInt(matches.groups.line) - 1;
             const column = Number.parseInt(matches.groups.column) - 1;
             const diagnostics = [new vscode.Diagnostic(new Range(line, column, line, column + 2),
                 result.error_message!, vscode.DiagnosticSeverity.Error)];
-            this.diagnostics.clear();
             this.diagnostics.set(document.uri, diagnostics);
         }
     }
