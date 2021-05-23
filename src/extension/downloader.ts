@@ -224,7 +224,7 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
     if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
             '$(milestone) Dothttp New version Available', 'Upgrade', 'Cancel')
-        if (accepted === 'upgrade') {
+        if (accepted === 'Upgrade') {
             // ApplicationServices.get().clientHanler.close();
             if (isPythonConfigured()) {
                 // using exec is better in this scenario,
