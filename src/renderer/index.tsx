@@ -5,8 +5,8 @@ import './style.css';
 
 
 export const activate: ActivationFunction = () => ({
-	renderCell(_id: any, { value, element }) {
-		render(<Response response={value as any} />, element);
+	renderCell(_id: any, data) {
+		render(<Response response={data.json() as any} />, data.element);
 	}
 
 });

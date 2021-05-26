@@ -98,7 +98,7 @@
 				"path": "./syntaxes/grammer.json"
 			}
 		],
-		"notebookOutputRenderer": [
+		"notebookRenderer": [
 			{
 				"id": "dothttp-book",
 				"displayName": "dothttp Renderer",
