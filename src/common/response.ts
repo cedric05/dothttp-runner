@@ -4,6 +4,7 @@ export interface Headers {
 }
 
 export interface Response {
+    contentType?: string;
     headers: Headers | undefined;
     body: string;
     status: number;

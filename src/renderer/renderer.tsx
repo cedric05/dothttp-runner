@@ -28,6 +28,13 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
         headersExists = true;
     }
 
+    // this is hack.
+    // sender should set it.
+    if (response.response.contentType === "application/json") {
+        response.response.body = JSON.stringify(JSON.parse(response.response.body), null, 1)
+    }
+
+
     return <div>
         <Status code={response.status} url={response.url} />
         <br />
