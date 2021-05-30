@@ -36,7 +36,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
 
     const testResult: { [key: string]: any } = {}
     response.script_result?.tests?.forEach(key => {
-        testResult[key.name] = `success: ${key.success}   result: ${key.result}`;
+        testResult[key.name] = { success: key.success ? "true" : "false", result: key.result }
     });
 
 
@@ -61,7 +61,15 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
         <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} />
         <TableTab dict={response.response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
         <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
-        <TableTab dict={testResult} active={activeIndex === 4} searchKeyword={searchKeyword} />
+        <div>
+            <TableTab dict={testResult} active={activeIndex === 4} searchKeyword={searchKeyword} />
+            <div class='tab-content' hidden={!(activeIndex === 4)}>
+                <strong><span class='key'>Script Log</span></strong>
+            </div>
+            <div>
+                <DataTab data={response.script_result.stdout} active={activeIndex === 4} searchKeyword={searchKeyword} />
+            </div>
+        </div>
         <TableTab dict={response.script_result.properties} active={activeIndex === 5} searchKeyword={searchKeyword} />
     </div>;
 };

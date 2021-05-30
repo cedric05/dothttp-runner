@@ -1,4 +1,11 @@
 # Change Log
+
+## [0.0.18]
+- [**Bug**] REGRESSSION fixed dotextensions client not getting updated
+- [**Bug**]fixes issue with curl import (few)
+- [**Feature**] provides ability create and test via programming languages in javascript
+- [**improvement**] text/xml payload can be broken down, one can insert useful comments (comment/uncomment few parts)
+
 ## [0.0.17]
 - [**Improvement**] auto installation of dothttp-req, incase of using with pythonpath
 - [**Bug**] integers are sent as float in json type fixed
