@@ -7,8 +7,7 @@ checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
 
 Checkout [playground](http://ghpage.dothttp.dev/)
 
-
-Support via product [here](https://www.producthunt.com/posts/dothttp)
+view product post [here](https://www.producthunt.com/posts/dothttp)
 
 ## OUR MOTO
 

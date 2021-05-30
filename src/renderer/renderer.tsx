@@ -28,11 +28,28 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
         headersExists = true;
     }
 
+    // this is hack.
+    // sender should set it.
+    if (response.response.contentType === "application/json") {
+        response.response.body = JSON.stringify(JSON.parse(response.response.body), null, 1)
+    }
+
+    const testResult: { [key: string]: any } = {}
+    response.script_result?.tests?.forEach(key => {
+        testResult[key.name] = { success: key.success ? "true" : "false", result: key.result }
+    });
+
+
     return <div>
         <Status code={response.status} url={response.url} />
         <br />
         <div class='tab-bar'>
-            <TabHeader activeTab={activeIndex} setActive={setActive} headersExist={headersExists} requestExists={response.http ? true : false} darkMode={darkMode} />
+            <TabHeader activeTab={activeIndex} setActive={setActive}
+                headersExist={headersExists}
+                requestExists={response.http ? true : false}
+                darkMode={darkMode}
+                scriptResultExists={response.script_result.stdout ? true : false}
+                generatedProperties={response.script_result && response.script_result.properties ? true : false} />
             <span class='tab-bar-tools'>
                 <input id={searchBarId} placeholder='Search for keyword'></input>
                 <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
@@ -44,10 +61,26 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
         <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} />
         <TableTab dict={response.response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
         <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
+        <div>
+            <TableTab dict={testResult} active={activeIndex === 4} searchKeyword={searchKeyword} />
+            <div class='tab-content' hidden={!(activeIndex === 4)}>
+                <strong><span class='key'>Script Log</span></strong>
+            </div>
+            <div>
+                <DataTab data={response.script_result.stdout} active={activeIndex === 4} searchKeyword={searchKeyword} />
+            </div>
+        </div>
+        <TableTab dict={response.script_result.properties} active={activeIndex === 5} searchKeyword={searchKeyword} />
     </div>;
 };
 
-const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) => void, headersExist: boolean, requestExists: boolean, darkMode: boolean }> = ({ activeTab, setActive, headersExist, requestExists, darkMode }) => {
+const TabHeader: FunctionComponent<{
+    activeTab: number, setActive: (i: number) => void,
+    headersExist: boolean, requestExists: boolean,
+    darkMode: boolean,
+    scriptResultExists: boolean,
+    generatedProperties: boolean
+}> = ({ activeTab, setActive, headersExist, requestExists, darkMode, scriptResultExists, generatedProperties }) => {
     const renderTabHeaders = () => {
         let result: h.JSX.Element[] = [];
 
@@ -62,6 +95,16 @@ const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) =
         if (requestExists) {
             //@ts-ignore
             result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(3)} active={activeTab === 3}>Request Sent</button>);
+        }
+
+        if (scriptResultExists) {
+            //@ts-ignore
+            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(4)} active={activeTab === 4}>Test Result</button>);
+        }
+
+        if (generatedProperties) {
+            //@ts-ignore
+            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(5)} active={activeTab === 5}>Generated Properties</button>);
         }
 
         return result;
