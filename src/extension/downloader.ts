@@ -223,7 +223,7 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
     const versionData = await getVersion();
     if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
-            '$(milestone) Dothttp New version Available', 'Upgrade', 'Cancel')
+            'Dothttp Client New version Available', 'Upgrade', 'Cancel')
         if (accepted === 'Upgrade') {
             // ApplicationServices.get().clientHanler.close();
             if (isPythonConfigured()) {
