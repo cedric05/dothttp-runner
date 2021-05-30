@@ -27,7 +27,7 @@ export interface DothttpExecuteResponse {
 export interface ScriptResult {
     stdout: string;
     error: string;
-    properties: Properties;
+    properties: { [propname: string]: string };
     tests: Test[];
     compiled: boolean;
 }
@@ -38,8 +38,4 @@ export interface Test {
     name: string;
     success: boolean;
     result: string;
-}
-
-export interface Properties {
-    [propname: string]: string
 }

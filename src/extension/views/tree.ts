@@ -106,6 +106,16 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             })
     }
 
+    public addProperties(filename: string, properties: { [prop: string]: string }) {
+        if (properties) {
+            Object.keys(properties).forEach(key => {
+                this.fileStateService!.addProperty(filename, key, properties[key]);
+            })
+            this.refresh();
+        }
+
+    }
+
     enableProperty(pos: PropertyTreeItem) {
         this.fileStateService?.enableProperty(this.filename!?.toString(), pos.key, pos.value);
         this.refresh();

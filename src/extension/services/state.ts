@@ -36,7 +36,7 @@ export class VersionInfo {
     setVersionDothttpInfo(version: string) {
         this.storage.setValue(VersionInfo.versionKey, version);
     }
-    getVersionDothttpInfo(){
+    getVersionDothttpInfo() {
         return this.storage.getValue(VersionInfo.versionKey, '0.0.8');
     }
 

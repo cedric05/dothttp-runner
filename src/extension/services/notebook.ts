@@ -87,6 +87,7 @@ export class NotebookKernel {
             target,
             curl: false,
         });
+        ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
 
         try {
