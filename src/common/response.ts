@@ -21,4 +21,25 @@ export interface DothttpExecuteResponse {
     http: string;
     error?: boolean;
     error_message?: string;
+    script_result: ScriptResult
+}
+
+export interface ScriptResult {
+    stdout: string;
+    error: string;
+    properties: Properties;
+    tests: Test[];
+    compiled: boolean;
+}
+
+
+
+export interface Test {
+    name: string;
+    success: boolean;
+    result: string;
+}
+
+export interface Properties {
+    [propname: string]: string
 }
