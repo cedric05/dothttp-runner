@@ -95,7 +95,10 @@
 			{
 				"language": "dothttp-vscode",
 				"scopeName": "source.dothttp-vscode",
-				"path": "./syntaxes/grammer.json"
+				"path": "./syntaxes/grammer.json",
+				"embeddedLanguages": {
+					"source.js": "javascript"
+				}
 			}
 		],
 		"notebookRenderer": [
