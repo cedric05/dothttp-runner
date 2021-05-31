@@ -40,6 +40,13 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
     });
 
 
+    const scriptResultExists = (response.script_result && response.script_result.tests.length > 0) ? true : false;
+    const propertiesGenerated = response.script_result && response.script_result.properties && Object.keys(response.script_result.properties).length > 0 ? true : false;
+    if (response.script_result) {
+        if (response.script_result.stdout === "") {
+            response.script_result.stdout = "no log";
+        }
+    }
     return <div>
         <Status code={response.status} url={response.url} />
         <br />
@@ -48,8 +55,8 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
                 headersExist={headersExists}
                 requestExists={response.http ? true : false}
                 darkMode={darkMode}
-                scriptResultExists={response.script_result.stdout ? true : false}
-                generatedProperties={response.script_result && response.script_result.properties ? true : false} />
+                scriptResultExists={scriptResultExists}
+                generatedProperties={propertiesGenerated} />
             <span class='tab-bar-tools'>
                 <input id={searchBarId} placeholder='Search for keyword'></input>
                 <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
@@ -65,9 +72,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
             <TableTab dict={testResult} active={activeIndex === 4} searchKeyword={searchKeyword} />
             <div class='tab-content' hidden={!(activeIndex === 4)}>
                 <strong><span class='key'>Script Log</span></strong>
-            </div>
-            <div>
-                <DataTab data={response.script_result.stdout} active={activeIndex === 4} searchKeyword={searchKeyword} />
+                <DataTab data={response.script_result.stdout ?? "no log"} active={activeIndex === 4} searchKeyword={searchKeyword} />
             </div>
         </div>
         <TableTab dict={response.script_result.properties} active={activeIndex === 5} searchKeyword={searchKeyword} />
