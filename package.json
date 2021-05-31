@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -94,10 +94,13 @@
 			{
 				"language": "dothttp-vscode",
 				"scopeName": "source.dothttp-vscode",
-				"path": "./syntaxes/grammer.json"
+				"path": "./syntaxes/grammer.json",
+				"embeddedLanguages": {
+					"source.js": "javascript"
+				}
 			}
 		],
-		"notebookOutputRenderer": [
+		"notebookRenderer": [
 			{
 				"id": "dothttp-book",
 				"displayName": "dothttp Renderer",
@@ -447,7 +450,7 @@
 		"@types/unzipper": "^0.10.3",
 		"@types/uuid": "^8.3.0",
 		"@types/vscode": "^1.53.0",
-		"@types/vscode-notebook-renderer": "^1.57.0",
+		"@types/vscode-notebook-renderer": "^1.57.2",
 		"@typescript-eslint/eslint-plugin": "^4.14.1",
 		"@typescript-eslint/parser": "^4.14.1",
 		"css-loader": "^5.1.3",

@@ -34,7 +34,7 @@
             "include": "#string"
         },
         {
-            "include": "source.json"
+            "include": "source.js"
         }
     ],
     "repository": {

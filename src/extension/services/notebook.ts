@@ -8,6 +8,7 @@ import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
+import { Script } from "vm";
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -59,7 +60,7 @@ export class NotebookKernel {
     }
 
     private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
-        const execution = this._controller.createNotebookCellExecutionTask(cell);
+        const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
         execution.start({ startTime: Date.now() });
         const httpDef = cell.document.getText();
@@ -68,11 +69,14 @@ export class NotebookKernel {
         // do we want to only execute first one?????
         const target = '1';
         execution.token.onCancellationRequested(() => {
-            execution.replaceOutput([
-                new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", "aborted")
-                ])
-            ]);
+            // incase of cancellation, there is no need to replace out.
+            // may appending could help
+
+            // execution.replaceOutput([
+            //     new vscode.NotebookCellOutput([
+            //         // vscode.NotebookCellOutputItem.error("aborted")
+            //     ])
+            // ]);
             execution.end({ success: false, endTime: Date.now(), })
 
         });
@@ -84,13 +88,15 @@ export class NotebookKernel {
             target,
             curl: false,
         });
+        if (out.script_result && out.script_result.properties)
+            ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
 
         try {
             if (out.error) {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([
-                        new vscode.NotebookCellOutputItem("application/x.notebook.stderr", out.error_message)
+                        vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
                     ])
                 ]);
                 execution.end({ success: true, endTime: Date.now() })
@@ -98,11 +104,9 @@ export class NotebookKernel {
                 out.body = "";
                 out.headers = {};
                 const outs: Array<vscode.NotebookCellOutputItem> = [];
-                outs.push(new vscode.NotebookCellOutputItem(Constants.NOTEBOOK_MIME_TYPE, out));
-                this.parseAndAdd(outs, out.response);
-                // seems to be a bug,
-                // text/html is working only when any other builtin mimetype is available
-                outs.push(new vscode.NotebookCellOutputItem("text/plain", out.response.body));
+                const nativeContentTypes = this.parseAndAdd(out.response);
+                outs.push(vscode.NotebookCellOutputItem.json(out, Constants.NOTEBOOK_MIME_TYPE));
+                outs.push(...nativeContentTypes);
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput(outs)
                 ]);
@@ -111,32 +115,28 @@ export class NotebookKernel {
         } catch (error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    new vscode.NotebookCellOutputItem("application/x.notebook.stderr", error.toString()),
-                    new vscode.NotebookCellOutputItem("text/plain", error.toString())
+                    vscode.NotebookCellOutputItem.stderr(error),
+                    vscode.NotebookCellOutputItem.stdout(error),
+                    vscode.NotebookCellOutputItem.text(error)
                 ])
             ]);
             execution.end({ success: false, endTime: Date.now() })
         }
 
     }
-    parseAndAdd(notebookDotOut: Array<vscode.NotebookCellOutputItem>, response: Response) {
+    parseAndAdd(response: Response): Array<vscode.NotebookCellOutputItem> {
         if (response.headers) {
-            Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+            return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').map(key => {
                 const mimeType = mime.lookup(mime.extension(response.headers![key]))
-                switch (mimeType) {
-                    case "application/json":
-                        // REMOVE ME
-                        // FORMATTING HERE IS BAD
-                        // IT SHOULD BE DONE AS PER USER REQUEST
-                        response.body = JSON.stringify(JSON.parse(response.body), null, 1)
-                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, JSON.parse(response.body)));
-                        break;
-                    default: {
-                        notebookDotOut.push(new vscode.NotebookCellOutputItem(mimeType, response.body));
-                    }
-                }
+                // this is a hack
+                // unless its called, it will not be available
+                // and its not customary to call this function
+                response.contentType = mimeType;
+                const ret = vscode.NotebookCellOutputItem.text(response.body, mimeType);
+                return ret;
             })
         }
+        return [];
     }
 
 }
@@ -160,7 +160,9 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
             item.kind,
             item.value,
             item.language,
-            item.outputs ? [new vscode.NotebookCellOutput(item.outputs.map(raw => new vscode.NotebookCellOutputItem(raw.mime, raw.value)))] : [],
+            item.outputs ? [new vscode.NotebookCellOutput(
+                item.outputs.map(raw =>
+                    vscode.NotebookCellOutputItem.text(raw.value, raw.mime)))] : [],
             new vscode.NotebookCellMetadata()
         ));
 
@@ -173,12 +175,20 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
 
     async serializeNotebook(data: vscode.NotebookData, _token: vscode.CancellationToken): Promise<Uint8Array> {
         // function to take output renderer data to a format to save to the file
+        const decoder = new TextDecoder("utf-8");
         function asRawOutput(cell: vscode.NotebookCellData): RawCellOutput[] {
             let result: RawCellOutput[] = [];
             for (let output of cell.outputs ?? []) {
-                for (let item of output.outputs) {
-                    result.push({ mime: item.mime, value: item.value });
+                var outputs: any;
+                if (output.outputs) {
+                    outputs = output.outputs
+                } else {
+                    outputs = output.items
                 }
+                if (outputs)
+                    for (let item of outputs) {
+                        result.push({ mime: item.mime, value: decoder.decode(item.data) });
+                    }
             }
             return result;
         }
