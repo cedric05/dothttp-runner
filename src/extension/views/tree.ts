@@ -108,6 +108,12 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
 
     public addProperties(filename: string, properties: { [prop: string]: string }) {
         if (properties) {
+            // TODO
+            // as a workaround, going in crude way!!!
+            const enabledProperties = this.fileStateService?.getProperties(filename);
+            enabledProperties?.forEach(prop => {
+                this.fileStateService?.disableProperty(filename, prop.key, prop.value);
+            })
             Object.keys(properties).forEach(key => {
                 this.fileStateService!.addProperty(filename, key, properties[key]);
             })

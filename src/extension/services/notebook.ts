@@ -8,6 +8,7 @@ import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
+import { Script } from "vm";
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -87,7 +88,8 @@ export class NotebookKernel {
             target,
             curl: false,
         });
-        ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
+        if (out.script_result && out.script_result.properties)
+            ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
 
         try {

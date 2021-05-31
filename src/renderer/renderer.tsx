@@ -36,7 +36,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
 
     const testResult: { [key: string]: any } = {}
     response.script_result?.tests?.forEach(key => {
-        testResult[key.name] = { success: key.success ? "true" : "false", result: key.result }
+        testResult[key.name] = { success: key.success ? "true" : "false", result: key.result || key.error }
     });
 
 
@@ -148,6 +148,12 @@ const Status: FunctionComponent<{ code: number, url: string }> = ({ code, url })
 const TableTab: FunctionComponent<{ dict?: any, active: boolean, searchKeyword: string }> = ({ dict, active, searchKeyword }) => {
     const renderFields = () => {
         return Object.keys(dict).map((key) => {
+            if (dict[key] === null) {
+                return <tr>
+                    <td class='key column'>{key}</td>
+                    <td>null</td>
+                </tr>
+            }
             if (typeof dict[key] === 'object') {
                 return <tr>
                     <td class='key column'>{key}</td>

@@ -38,4 +38,5 @@ export interface Test {
     name: string;
     success: boolean;
     result: string;
+    error: string,
 }
