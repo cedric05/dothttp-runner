@@ -74,7 +74,6 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             const out = await clientHandler.executeFile(options);
             if (out.script_result && out.script_result.properties)
                 ApplicationServices.get().getPropTreeProvider().addProperties(kwargs.filename, out.script_result.properties);
-            (kwargs.filename, out.script_result.properties);
             DotHttpEditorView.attachFileExtension(out);
             return out;
         } else {
