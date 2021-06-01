@@ -28,15 +28,9 @@ Save and re-use later
 <img src="./demo.gif" >
 
 
-## dothttp notebook (preview)
+## dothttp notebook
 
 <img src="https://user-images.githubusercontent.com/11557066/117543419-6724f880-b03a-11eb-9b7b-d81db7938fd9.png">
-
-## Preview noteboook
-Users can try notebook feature by installing extension from vsix file in these [github actions](https://github.com/cedric05/dothttp-runner/actions/workflows/commit-artifact.yml) for example [preview](https://github.com/cedric05/dothttp-runner/suites/2803281233/artifacts/62337942)
-
-
-notebook feature is only available in vscode-insiders
 
 example http file
 ```
