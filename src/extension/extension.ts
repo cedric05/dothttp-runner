@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { UrlExpander } from './codelensprovider';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLang } from "./commands/generate";
 import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
@@ -65,6 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
 	vscode.languages.registerCodeActionsProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
+	vscode.languages.registerCodeActionsProvider(Constants.langCode, new UrlExpander());
 	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());
 	vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider());
 
