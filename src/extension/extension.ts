@@ -89,7 +89,7 @@ function loadNoteBookControllerSafely(_context: vscode.ExtensionContext) {
 	try {
 		const notebookSerializer = new NotebookSerializer();
 		const _notebookkernel = new NotebookKernel();
-		vscode.notebook.registerNotebookSerializer(Constants.NOTEBOOK_ID, notebookSerializer, {
+		vscode.workspace.registerNotebookSerializer(Constants.NOTEBOOK_ID, notebookSerializer, {
 			transientOutputs: false,
 			transientCellMetadata: {
 				inputCollapsed: true,

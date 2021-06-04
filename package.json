@@ -54,6 +54,7 @@
 		"notebooks": [
 			{
 				"viewType": "dothttp-book",
+				"type": "dothttp-book",
 				"displayName": "DOTHTTP",
 				"selector": [
 					{
