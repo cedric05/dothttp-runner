@@ -1,5 +1,9 @@
 # Change Log
 
+
+## [0.0.20/0.0.21]
+- [**Feature**] release notebook changes
+- Sync Pull latest changes for notebook
 ## [0.0.19]
 - [**Feature**] provides ability create and test via programming languages in javascript
 - [**Feature**] property updates
