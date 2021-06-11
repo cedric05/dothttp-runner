@@ -3,7 +3,8 @@ import { EndOfLine, Range, SymbolInformation } from 'vscode';
 import { ClientHandler } from './lib/client';
 import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';
-
+import { parseURL } from 'whatwg-url';
+import { parse as parseQueryString } from 'querystring';
 
 class DothttpPositions extends vscode.CodeLens {
     target!: string;
@@ -13,6 +14,41 @@ class DothttpPositions extends vscode.CodeLens {
         this.target = target;
         this.curl = curl;
     }
+}
+
+
+export class UrlExpander implements vscode.CodeActionProvider {
+    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, _context: vscode.CodeActionContext, _token: vscode.CancellationToken)
+        : Promise<(vscode.Command | vscode.CodeAction)[]> {
+        const text = document.getText(range);
+        const urlParsed = parseURL(text);
+        if (!urlParsed) {
+            return []
+        }
+        if (urlParsed.query) {
+            const path = urlParsed.path.join("/");
+            var baseUrl = `${urlParsed.scheme}://${urlParsed.host}${urlParsed.port ? ':' + urlParsed.port : ''}/${path}`;
+            const queryObj = parseQueryString(urlParsed.query);
+            const generatedQuery = Object.keys(queryObj).map(key => {
+                if (Array.isArray(queryObj[key])) {
+                    return (queryObj[key] as string[])
+                        .map(value => `? "${key}" = ${value}`)
+                        .join("\n");
+                } else {
+                    return `? "${key}" = "${queryObj[key]}"`;
+                }
+            }).join("\n");
+            const genereatedDef = baseUrl + "\n" + generatedQuery;
+            const action = new vscode.CodeAction("expand url", vscode.CodeActionKind.QuickFix);
+            const edit = new vscode.WorkspaceEdit();
+            edit.replace(document.uri, range, genereatedDef);
+            action.edit = edit;
+            return [action]
+        }
+
+        return []
+    }
+
 }
 
 

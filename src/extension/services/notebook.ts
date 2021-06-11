@@ -8,7 +8,6 @@ import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
-import { Script } from "vm";
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -36,12 +35,12 @@ export class NotebookKernel {
     fileStateService: IFileState;
 
     constructor() {
-        this._controller = vscode.notebook.createNotebookController(NotebookKernel.id,
+        this._controller = vscode.notebooks.createNotebookController(NotebookKernel.id,
             Constants.dothttpNotebook,
             'Dothttp Book');
 
         this._controller.supportedLanguages = [Constants.langCode];
-        this._controller.hasExecutionOrder = true;
+        this._controller.supportsExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
 
@@ -62,7 +61,7 @@ export class NotebookKernel {
     private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
-        execution.start({ startTime: Date.now() });
+        execution.start(Date.now());
         const httpDef = cell.document.getText();
         const filename = cell.document.fileName;
         // TODO
@@ -77,7 +76,7 @@ export class NotebookKernel {
             //         // vscode.NotebookCellOutputItem.error("aborted")
             //     ])
             // ]);
-            execution.end({ success: false, endTime: Date.now(), })
+            execution.end(false, Date.now())
 
         });
         const out = await this.client.executeContent({
@@ -99,7 +98,7 @@ export class NotebookKernel {
                         vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
                     ])
                 ]);
-                execution.end({ success: true, endTime: Date.now() })
+                execution.end(false, Date.now());
             } else {
                 out.body = "";
                 out.headers = {};
@@ -110,7 +109,7 @@ export class NotebookKernel {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput(outs)
                 ]);
-                execution.end({ success: true, endTime: Date.now() })
+                execution.end(true, Date.now())
             }
         } catch (error) {
             execution.replaceOutput([
@@ -120,7 +119,7 @@ export class NotebookKernel {
                     vscode.NotebookCellOutputItem.text(error)
                 ])
             ]);
-            execution.end({ success: false, endTime: Date.now() })
+            execution.end(false, Date.now())
         }
 
     }
@@ -156,20 +155,21 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         }
 
         // Create array of Notebook cells for the VS Code API from file contents
-        const cells = raw.map(item => new vscode.NotebookCellData(
-            item.kind,
-            item.value,
-            item.language,
-            item.outputs ? [new vscode.NotebookCellOutput(
-                item.outputs.map(raw =>
-                    vscode.NotebookCellOutputItem.text(raw.value, raw.mime)))] : [],
-            new vscode.NotebookCellMetadata()
-        ));
+        const cells = raw.map(item => {
+            const cell = new vscode.NotebookCellData(
+                item.kind,
+                item.value,
+                item.language
+            );
+            cell.outputs = item.outputs ? [new vscode.NotebookCellOutput(
+                item.outputs.map(output => vscode.NotebookCellOutputItem.text(output.value, output.mime))
+            )] : [];
 
+            return cell;
+        });
         // Pass read and formatted Notebook Data to VS Code to display Notebook with saved cells
         return new vscode.NotebookData(
             cells,
-            new vscode.NotebookDocumentMetadata()
         );
     }
 
@@ -179,14 +179,8 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         function asRawOutput(cell: vscode.NotebookCellData): RawCellOutput[] {
             let result: RawCellOutput[] = [];
             for (let output of cell.outputs ?? []) {
-                var outputs: any;
-                if (output.outputs) {
-                    outputs = output.outputs
-                } else {
-                    outputs = output.items
-                }
-                if (outputs)
-                    for (let item of outputs) {
+                if (output.items)
+                    for (let item of output.items) {
                         result.push({ mime: item.mime, value: decoder.decode(item.data) });
                     }
             }
