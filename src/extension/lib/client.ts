@@ -168,25 +168,36 @@ export class ClientHandler {
     static CONTENT_TARGETS_COMMAND = "/content/names";
     static importPostman = "/import/postman";
     static generateLangHttp = "/file/parse";
+    options: { pythonpath: string; stdargs: string[]; type: RunType; };
 
     constructor(_clientOptions: { std: boolean }) {
-        const options = { stdargs: [] } as unknown as { pythonpath: string, stdargs: string[], type: RunType };
-        if (isDotHttpCorrect()) {
-            options.pythonpath = Configuration.getDothttpPath();
-            options.type = RunType.binary
-        } else {
-            options.pythonpath = Configuration.getPath();
-            options.stdargs.push('-m');
-            options.stdargs.push('dotextensions.server');
-            options.type = RunType.python
-        }
-        console.log("launch params", JSON.stringify(options));
+        this.options = this.getOptions();
         // if (clientOptions.std) {
-        this.cli = new StdoutClient(options);
+        this.cli = new StdoutClient(this.options);
         // } else {
         //     options.stdargs.push('http');
         //     this.cli = new HttpClient(options);
         // }
+    }
+
+    restart() {
+        this.cli.stop();
+        this.cli = new StdoutClient(this.options);
+    }
+
+    private getOptions() {
+        const options = { stdargs: [] } as unknown as { pythonpath: string; stdargs: string[]; type: RunType; };
+        if (isDotHttpCorrect()) {
+            options.pythonpath = Configuration.getDothttpPath();
+            options.type = RunType.binary;
+        } else {
+            options.pythonpath = Configuration.getPath();
+            options.stdargs.push('-m');
+            options.stdargs.push('dotextensions.server');
+            options.type = RunType.python;
+        }
+        console.log("launch params", JSON.stringify(options));
+        return options;
     }
 
     async executeFile(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {

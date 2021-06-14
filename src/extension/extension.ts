@@ -33,6 +33,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
 	vscode.commands.registerCommand(Constants.importCommand, importRequests)
 	vscode.commands.registerCommand(Constants.generateLangCommand, generateLang);
+	vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
+		appServices.getClientHandler().restart();
+	});
 
 
 

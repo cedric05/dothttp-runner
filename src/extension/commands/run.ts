@@ -52,12 +52,11 @@ export async function importRequests() {
         if (folder) {
             if (pickType === importoptions.postman) {
                 await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
-
             }
         }
 
     } catch (err) {
-        console.log('could be cancelled');
+        vscode.window.showInformationMessage(`import postman failed with error ${err}. raise bug`);
     }
 }
 
@@ -148,6 +147,12 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
 
     const document = vscode.window.activeTextEditor?.document!;
     const filename = document.fileName!;
+    if (document.isDirty) {
+        // as file is not saved,
+        // execute http def on last saved file, which gives us 
+        // unwanted results
+        await document.save();
+    }
 
     if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
