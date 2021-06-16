@@ -51,7 +51,13 @@ export async function importRequests() {
         await vscode.workspace.fs.createDirectory(folder);
         if (folder) {
             if (pickType === importoptions.postman) {
-                await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
+                const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
+                if (result.error == true) {
+                    vscode.window.showErrorMessage(`import postman failed with error ${result.error_message}. 
+this usually happens for postman schema 1.0.0,
+follow https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#converting-postman-collections-from-v1-to-v2
+or raise bug`);
+                }
             }
         }
 
