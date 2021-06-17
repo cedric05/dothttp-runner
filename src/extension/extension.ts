@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
-import { UrlExpander } from './codelensprovider';
+import {
+	DothttpClickDefinitionProvider,
+	UrlExpander
+} from './editorIntellisense';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLang } from "./commands/generate";
 import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
@@ -33,6 +36,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
 	vscode.commands.registerCommand(Constants.importCommand, importRequests)
 	vscode.commands.registerCommand(Constants.generateLangCommand, generateLang);
+	vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
+		appServices.getClientHandler().restart();
+	});
 
 
 
@@ -65,6 +71,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
+	const clickProvider = new DothttpClickDefinitionProvider();
+	vscode.languages.registerDefinitionProvider(Constants.langCode, clickProvider);
+	vscode.languages.registerHoverProvider(Constants.langCode, clickProvider);
+
 	vscode.languages.registerCodeActionsProvider(Constants.langCode, appServices.getDothttpSymbolProvier());
 	vscode.languages.registerCodeActionsProvider(Constants.langCode, new UrlExpander());
 	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier());

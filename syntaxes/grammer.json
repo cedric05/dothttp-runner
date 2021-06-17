@@ -84,10 +84,6 @@
             "name": "entity.name.method",
             "patterns": [
                 {
-                    "match": ".*",
-                    "name": "support.type.property-name"
-                },
-                {
                     "begin": "\"",
                     "end": "\"",
                     "name": "support.type.property-name"

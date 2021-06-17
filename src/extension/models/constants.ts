@@ -28,6 +28,7 @@ export enum Constants {
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     importCommand = "dothttp.command.import.external",
     generateLangCommand = "dothttp.command.generatelang",
+    RESTART_CLI_COMMAND = "dothttp.command.restartcli",
 
     //    env tree
     envTreeView = 'dothttpEnvView',
@@ -68,7 +69,7 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.20",
+    EXTENSION_VERSION = "0.0.22",
 
     dothttpNotebook = "dothttp-book",
 

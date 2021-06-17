@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { DothttpNameSymbolProvider } from "../codelensprovider";
+import { DothttpNameSymbolProvider } from "../editorIntellisense";
 import { ClientHandler } from "../lib/client";
 import { LocalStorageService } from "../services/storage";
 import { IHistoryService, TingoHistoryService } from "../tingohelpers";

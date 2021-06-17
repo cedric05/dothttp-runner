@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -235,6 +235,11 @@
 				"command": "dothttp.command.generatelang",
 				"title": "Dothttp generate request Programming Languages",
 				"icon": "$(extensions)"
+			},
+			{
+				"command": "dothttp.command.restartcli",
+				"title": "Dothttp restart cli server",
+				"icon": "$(debug-restart)"
 			}
 		],
 		"menus": {

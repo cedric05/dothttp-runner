@@ -24,18 +24,47 @@ export async function importRequests() {
         // const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger2, importoptions.swagger3]) as importoptions;
         const pickType = importoptions.postman;
         if (!pickType) { return }
-        const link = await vscode.window.showInputBox({
-            prompt: "postman link",
-            ignoreFocusOut: true,
-            // validateInput: (value) => {
-            // if (value.startsWith("https://www.getpostman.com/collections") ||
-            //     value.startsWith("https://www.postman.com/collections")) {
-            //     return null;
-            // } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
-            // },
-            placeHolder: "https://getpostman.com/collections"
-        });
-        if (!link) { return }
+        const linkOrFile = await vscode.window.showQuickPick([{
+            label: "link",
+            description: "postman collection link",
+            picked: true,
+            alwaysShow: true,
+        }, {
+            label: "file",
+            description: "file exists in local system",
+            picked: false,
+            alwaysShow: true,
+        }]);
+        var filenameToimport: string | undefined;
+        if (linkOrFile) {
+            if (linkOrFile['label'] === 'link') {
+                filenameToimport = await vscode.window.showInputBox({
+                    prompt: "postman link",
+                    ignoreFocusOut: true,
+                    // validateInput: (value) => {
+                    // if (value.startsWith("https://www.getpostman.com/collections") ||
+                    //     value.startsWith("https://www.postman.com/collections")) {
+                    //     return null;
+                    // } else return "link should start with https://www.getpostman.com/collections/ or https://postman.com/collections";
+                    // },
+                    placeHolder: "https://getpostman.com/collections"
+                });
+            } else if (linkOrFile['label'] === 'file') {
+                const importUri = await vscode.window.showOpenDialog({
+                    canSelectFolders: false,
+                    canSelectFiles: true,
+                    title: "select file to import resource",
+                    filters: { "Postman Collection": ["json", "postman_collection.json"] },
+                    canSelectMany: false,
+                });
+                if (importUri && importUri.length > 0) {
+                    filenameToimport = importUri[0].fsPath;
+                }
+            }
+        } else { return }
+        if (!filenameToimport) {
+            return;
+        }
         const importUri = await vscode.window.showOpenDialog({
             canSelectFolders: true,
             canSelectFiles: false,
@@ -51,13 +80,18 @@ export async function importRequests() {
         await vscode.workspace.fs.createDirectory(folder);
         if (folder) {
             if (pickType === importoptions.postman) {
-                await ApplicationServices.get().clientHanler.importPostman({ directory, link, save: true });
-
+                const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true });
+                if (result.error == true) {
+                    vscode.window.showErrorMessage(`import postman failed with error ${result.error_message}. 
+this usually happens for postman schema 1.0.0,
+follow https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#converting-postman-collections-from-v1-to-v2
+or raise bug`);
+                }
             }
         }
 
     } catch (err) {
-        console.log('could be cancelled');
+        vscode.window.showInformationMessage(`import postman failed with error ${err}. raise bug`);
     }
 }
 
@@ -104,7 +138,7 @@ async function getTargetFromQuickPick(arr: any[]) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
-    const names = await ApplicationServices.get().getClientHandler().getTargetsInHttpFile(filename);
+    const names = await ApplicationServices.get().getClientHandler().getDocumentSymbols(filename);
     if (names.error) {
         return '1';
     }
@@ -148,6 +182,12 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
 
     const document = vscode.window.activeTextEditor?.document!;
     const filename = document.fileName!;
+    if (document.isDirty) {
+        // as file is not saved,
+        // execute http def on last saved file, which gives us 
+        // unwanted results
+        await document.save();
+    }
 
     if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');

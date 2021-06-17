@@ -53,7 +53,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
             detail: `${item.url}`,
             keepWhitespace: true,
         }));
-        const targets = await this.client.getTargetsInHttpFile(fileName);
+        const targets = await this.client.getDocumentSymbols(fileName);
         if (targets.error) {
             return historyUrls;
         }
