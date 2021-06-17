@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { DothttpExecuteResponse } from '../../common/response';
 import { runSync } from '../downloader';
 import { Configuration, isDotHttpCorrect } from '../models/config';
-import { DothttpRunOptions } from '../models/dotoptions';
+import { DothttpRunOptions, DothttpTypes } from '../models/misc';
 import { HttpFileTargetsDef } from './lang-parse';
 import EventEmitter = require('events');
 
@@ -155,6 +155,13 @@ export interface DotTttpSymbol {
     error_message?: string,
 }
 
+export interface TypeResult {
+    "type": DothttpTypes,
+    "target": string | null,
+    "target_base": string | null,
+    "base_start": number | null
+}
+
 enum RunType {
     binary,
     python
@@ -162,12 +169,15 @@ enum RunType {
 
 export class ClientHandler {
     cli: BaseSpanClient;
-    static fileExecuteCommand = "/file/execute";
-    static contentExecutecommand = "/content/execute";
-    static namescommand = "/file/names";
+
+    static FILE_EXECUTE_COMMAND = "/file/execute";
+    static CONTENT_EXECUTE_COMMAND = "/content/execute";
+    static GET_FILE_TARGETS_COMMAND = "/file/names";
     static CONTENT_TARGETS_COMMAND = "/content/names";
-    static importPostman = "/import/postman";
-    static generateLangHttp = "/file/parse";
+    static IMPORT_POSTMAN_COMMAND = "/import/postman";
+    static GET_HAR_FORMAT_COMMAND = "/file/parse";
+    static CONTENT_TYPE_COMMAND = "/content/type";
+
     options: { pythonpath: string; stdargs: string[]; type: RunType; };
 
     constructor(_clientOptions: { std: boolean }) {
@@ -201,7 +211,7 @@ export class ClientHandler {
     }
 
     async executeFile(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {
-        return await this.cli.request(ClientHandler.fileExecuteCommand, {
+        return await this.cli.request(ClientHandler.FILE_EXECUTE_COMMAND, {
             file: options.file,
             env: options.env,
             properties: options.properties,
@@ -212,7 +222,7 @@ export class ClientHandler {
     }
 
     async executeContent(options: DothttpRunOptions & { content: string }): Promise<DothttpExecuteResponse> {
-        return await this.cli.request(ClientHandler.contentExecutecommand, {
+        return await this.cli.request(ClientHandler.CONTENT_EXECUTE_COMMAND, {
             content: options.content,
             env: options.env,
             file: options.file,
@@ -224,19 +234,32 @@ export class ClientHandler {
     }
 
     async importPostman(options: { link: string, directory: string, save: boolean }) {
-        return await this.cli.request(ClientHandler.importPostman, options)
+        return await this.cli.request(ClientHandler.IMPORT_POSTMAN_COMMAND, options)
     }
 
-    async getTargetsInHttpFile(filename: string, source?: string): Promise<DotTttpSymbol> {
-        return await this.cli.request(ClientHandler.namescommand, { file: filename, source: source || 'default' })
+    async getDocumentSymbols(filename: string, source?: string): Promise<DotTttpSymbol> {
+        return await this.cli.request(ClientHandler.GET_FILE_TARGETS_COMMAND, { file: filename, source: source || 'default' })
     }
 
-    async getTargetsInContent(content: string, source?: string): Promise<DotTttpSymbol> {
+    async getVirtualDocumentSymbols(content: string, source?: string): Promise<DotTttpSymbol> {
         return await this.cli.request(ClientHandler.CONTENT_TARGETS_COMMAND, { file: "", content, source: source || 'default' })
     }
 
+
+    async getTypeFromFilePosition(position: number, filename: string | null, source?: string): Promise<TypeResult> {
+        return await this.cli.request(ClientHandler.CONTENT_TYPE_COMMAND, {
+            filename, position: position, source
+        }) as TypeResult
+    }
+
+    async getTypeFromContentPosition(position: number, content: string, source?: string): Promise<TypeResult> {
+        return await this.cli.request(ClientHandler.CONTENT_TYPE_COMMAND, {
+            content, position: position, source
+        }) as TypeResult
+    }
+
     async generateLangHttp(options: DothttpRunOptions & { content: string }): Promise<HttpFileTargetsDef> {
-        return await this.cli.request(ClientHandler.generateLangHttp, {
+        return await this.cli.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
             content: options.content,
             env: options.env,
             file: options.file,

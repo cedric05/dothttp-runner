@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import { extname } from 'path';
 import * as vscode from 'vscode';
 import { Configuration, isDotHttpCorrect, isPythonConfigured } from '../models/config';
-import { DothttpRunOptions } from '../models/dotoptions';
+import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
 import { IHistoryService } from '../tingohelpers';
 import querystring = require('querystring');

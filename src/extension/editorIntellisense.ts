@@ -5,6 +5,8 @@ import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';
 import { parseURL } from 'whatwg-url';
 import { parse as parseQueryString } from 'querystring';
+import { ApplicationServices } from './services/global';
+import { DotHovers, DothttpTypes } from './models/misc';
 
 class DothttpPositions extends vscode.CodeLens {
     target!: string;
@@ -51,6 +53,31 @@ export class UrlExpander implements vscode.CodeActionProvider {
 
 }
 
+export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider, vscode.HoverProvider {
+    clientHandler: ClientHandler;
+    constructor() {
+        this.clientHandler = ApplicationServices.get().getClientHandler();
+    }
+    async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover> {
+        const result = await this.getTypeResult(document, position);
+        return new vscode.Hover(DotHovers[result.type]);
+    }
+    async provideDefinition(document: vscode.TextDocument, position: vscode.Position):
+        Promise<vscode.Definition | vscode.LocationLink[]> {
+        const result = await this.getTypeResult(document, position);
+        if (result.type === DothttpTypes.NAME) {
+            return new vscode.Location(document.uri, document.positionAt(result.base_start!));
+        }
+        return [];
+    }
+
+
+    private async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
+        const offset = document.offsetAt(position);
+        const result = await this.clientHandler.getTypeFromFilePosition(offset, document.fileName);
+        return result;
+    }
+}
 
 export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<DothttpPositions>, vscode.DocumentSymbolProvider, vscode.CodeActionProvider {
 
@@ -100,7 +127,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
 
         var names = null;
         if (isNotebook) {
-            names = await this.clientHandler.getTargetsInContent(document.getText());
+            names = await this.clientHandler.getVirtualDocumentSymbols(document.getText());
             if (names.error) {
                 this.updateDiagnostics(names, document);
             } else {
@@ -108,7 +135,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
             }
             return [];
         } else {
-            names = await this.clientHandler.getTargetsInHttpFile(document.fileName);
+            names = await this.clientHandler.getDocumentSymbols(document.fileName);
 
         }
         const codeLenses: DothttpPositions[] = [];
@@ -145,7 +172,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
 
 
     async provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken): Promise<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
-        const result = await this.clientHandler.getTargetsInHttpFile(document.fileName, 'symbol');
+        const result = await this.clientHandler.getDocumentSymbols(document.fileName, 'symbol');
         if (!result.error) {
             this.diagnostics.clear();
             if (document.eol == EndOfLine.CRLF) {
