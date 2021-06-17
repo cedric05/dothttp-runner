@@ -7,6 +7,7 @@
 - [**Bug**] import postman shows error message in case of failure
 - [**Feature**] supports vscode hovers(shows informational message on hovering in dothttp)
 - [**Feature**] supports vscode definition(on clicking name, it will direct you to base definition)
+- [**Improvement**] postman import with file(earlier it used to be link, now supports import via locally downloaded file)
 - [**Improvement**] Bump dothttp-cli to 0.0.24
   - [**Improvement**] import postman now supports 2.1.0 postman collection (also lot of bug fixes with import)
 
