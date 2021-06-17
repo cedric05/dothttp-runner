@@ -59,17 +59,32 @@ visit extend [extend](https://docs.dothttp.dev/docs/extend)
 \`@clear\` : clears session
 
 visit [docs](https://docs.dothttp.dev/docs/flags)`),
-    "url": new MarkdownString("Url of httpdef"),
+    "url": new MarkdownString(`Url of httpdef
+
+1. name (Opitonal)
+1. flags(@insecure/@clear) (Optional)
+1. Url (required)
+1. basicauth/digestauth (Optional)
+1. certificate (Optional)
+1. urlparams (Optional)
+1. payload (Optional)
+1. script (Optional)
+    
+`),
     "basic_auth": new MarkdownString(`Configured with HttpDef Basic authentication mechanism
 
 example:
 \`basicauth("<username>", "<password>")\`
+
+visit [docs](https://docs.dothttp.dev/docs/auth#basic-authentication)
 
 `),
     "digest_auth": new MarkdownString(`Configured with HttpDef Digest authentication mechanism
 
 example:
 \`digestauth("<username>", "<password>")\`
+
+visit [docs](https://docs.dothttp.dev/docs/auth#digest-authentication)
 `),
     "certificate": new MarkdownString(`Configured to use Certificate while making requests
 
@@ -77,7 +92,13 @@ example: \`certificate(cert="<certificate path>",key= "<privatekey path>")\`
 
 visit [docs](https://docs.dothttp.dev/docs/certificates)
 `),
-    "header": new MarkdownString("Header defined for httpdef"),
+    "header": new MarkdownString(`Header defined for httpdef
+
+Syntax:
+\`content-type: application/json\`
+
+visit [docs](https://docs.dothttp.dev/docs/request-basics#headers)
+`),
     "urlparams": new MarkdownString(`Urlparams of the request
 
 example: 
@@ -92,14 +113,14 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#url-params)`),
 example:
 
 \`data("this is payload")\`
-visit [docs](https://docs.dothttp.dev/docs/request-basics#example-2-text-payload)`),
+visit [docs](https://docs.dothttp.dev/docs/request-basics#text-payload)`),
     "payload_urlencoded": new MarkdownString(`UrlEncoded payload (sets content-type to urlformencoded)
 
 example:
 
 \`urlencoded({"key": "value"})\`
 
-visit [docs](https://docs.dothttp.dev/docs/request-basics#example-4-urlencode)
+visit [docs](https://docs.dothttp.dev/docs/request-basics#urlencode)
 `),
     "payload_file_input": new MarkdownString(`FileInput for the payload (sets content-type according to file type)
 
@@ -114,7 +135,7 @@ example:
 
 \`json({"key": "value"})\`
 
-visit [docs](https://docs.dothttp.dev/docs/request-basics#example-3-json-payload)`),
+visit [docs](https://docs.dothttp.dev/docs/request-basics#json-payload)`),
     "payload_multipart": new MarkdownString(`Multipart payload
 
 example:
