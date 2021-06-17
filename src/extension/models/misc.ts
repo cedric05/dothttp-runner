@@ -40,42 +40,94 @@ export const DotHovers = {
     // TODO add documentation link
     "name": new MarkdownString(`Unique Identifier incase of multiple httpdef in single file
 
-visit https://docs.dothttp.dev/docs/multidef#definenaming`
-),
+visit naming [docs](https://docs.dothttp.dev/docs/multidef#definenaming)
+
+extend targets like below
+
+\`@name('auth')\`
+
+\`@name('getdata'): 'auth'\`
+
+visit extend [extend](https://docs.dothttp.dev/docs/extend)
+
+`
+    ),
     "extra_args": new MarkdownString(`Extra request modifier, such allow insecure, clear session after request
 
-visit https://docs.dothttp.dev/docs/flags`),
+\`@insecure\` : allows self signed certificates
+
+\`@clear\` : clears session
+
+visit [docs](https://docs.dothttp.dev/docs/flags)`),
     "url": new MarkdownString("Url of httpdef"),
-    "basic_auth": new MarkdownString("Configured with HttpDef Basic authentication mechanism"),
-    "digest_auth": new MarkdownString("Configured with HttpDef Digest authentication mechanism"),
+    "basic_auth": new MarkdownString(`Configured with HttpDef Basic authentication mechanism
+
+example:
+\`basicauth("<username>", "<password>")\`
+
+`),
+    "digest_auth": new MarkdownString(`Configured with HttpDef Digest authentication mechanism
+
+example:
+\`digestauth("<username>", "<password>")\`
+`),
     "certificate": new MarkdownString(`Configured to use Certificate while making requests
 
-visit https://docs.dothttp.dev/docs/certificates
+example: \`certificate(cert="<certificate path>",key= "<privatekey path>")\`
+
+visit [docs](https://docs.dothttp.dev/docs/certificates)
 `),
     "header": new MarkdownString("Header defined for httpdef"),
     "urlparams": new MarkdownString(`Urlparams of the request
 
-visit https://docs.dothttp.dev/docs/request-basics#url-params`),
-    "payload_data": new MarkdownString(`Text Payload of the request
-    
-visit https://docs.dothttp.dev/docs/request-basics#example-2-text-payload`),
-    "payload_urlencoded": new MarkdownString(`UrlEncoded payload
-    
-visit https://docs.dothttp.dev/docs/request-basics#example-4-urlencode
-`),
-    "payload_file_input": new MarkdownString(`FileInput for the payload
- 
-visit https://docs.dothttp.dev/docs/request-basics#binary
-`),
-    "payload_json": new MarkdownString(`JsonPayload for the requset
+example: 
+\`\`\`
+? key=value
+? key2=value2
+\`\`\`
 
-visit https://docs.dothttp.dev/docs/request-basics#example-3-json-payload`),
+visit [docs](https://docs.dothttp.dev/docs/request-basics#url-params)`),
+    "payload_data": new MarkdownString(`Text Payload of the request (sets content-type to text/plain)
+
+example:
+
+\`data("this is payload")\`
+visit [docs](https://docs.dothttp.dev/docs/request-basics#example-2-text-payload)`),
+    "payload_urlencoded": new MarkdownString(`UrlEncoded payload (sets content-type to urlformencoded)
+
+example:
+
+\`urlencoded({"key": "value"})\`
+
+visit [docs](https://docs.dothttp.dev/docs/request-basics#example-4-urlencode)
+`),
+    "payload_file_input": new MarkdownString(`FileInput for the payload (sets content-type according to file type)
+
+example:
+
+\`fileinput("<path to upload>")\`
+    
+visit [docs](https://docs.dothttp.dev/docs/request-basics#binary)
+`),
+    "payload_json": new MarkdownString(`JsonPayload for the requset (sets content-type to application/json)
+example:
+
+\`json({"key": "value"})\`
+
+visit [docs](https://docs.dothttp.dev/docs/request-basics#example-3-json-payload)`),
     "payload_multipart": new MarkdownString(`Multipart payload
 
-visit https://docs.dothttp.dev/docs/request-basics#multipart`),
+example:
+\`\`\`
+files(
+    ("<key>", "<path to file or data>"),
+    ("<key>", "<path to file or data>", "<optional content-type>")
+)
+\`\`\`
+visit [docs](https://docs.dothttp.dev/docs/request-basics#multipart)`),
     "output": new MarkdownString("save Output in output filename"),
     "script": new MarkdownString(`Run Javascript script after execution of httpdef
 
-visit https://docs.dothttp.dev/docs/scripts`),
+visit [docs](https://docs.dothttp.dev/docs/scripts)`),
     "comment": new MarkdownString("Comment"),
 };
