@@ -58,9 +58,13 @@ export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider
     constructor() {
         this.clientHandler = ApplicationServices.get().getClientHandler();
     }
-    async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover> {
+    async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover | null> {
         const result = await this.getTypeResult(document, position);
-        return new vscode.Hover(DotHovers[result.type]);
+        const typeAtPos = result.type;
+        if (typeAtPos !== DothttpTypes.COMMENT) {
+            return new vscode.Hover(DotHovers[typeAtPos]);
+        }
+        return null;
     }
     async provideDefinition(document: vscode.TextDocument, position: vscode.Position):
         Promise<vscode.Definition | vscode.LocationLink[]> {
