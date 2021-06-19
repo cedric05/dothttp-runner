@@ -34,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.toggleHeadersCommand, toggleExperimentalFlag(Constants.toggleHeadersCommand));
 	vscode.commands.registerCommand(Constants.toggleReuseTabCommand, toggleExperimentalFlag(Constants.toggleReuseTabCommand));
 	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
-	vscode.commands.registerCommand(Constants.importCommand, importRequests)
+	vscode.commands.registerCommand(Constants.IMPORT_RESOURCE_COMMAND, importRequests)
 	vscode.commands.registerCommand(Constants.generateLangCommand, generateLang);
 	vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
 		appServices.getClientHandler().restart();

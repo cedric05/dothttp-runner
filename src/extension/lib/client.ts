@@ -177,6 +177,7 @@ export class ClientHandler {
     static IMPORT_POSTMAN_COMMAND = "/import/postman";
     static GET_HAR_FORMAT_COMMAND = "/file/parse";
     static CONTENT_TYPE_COMMAND = "/content/type";
+    static HAR_IMPORT_COMMAND = "/export/har2http";
 
     options: { pythonpath: string; stdargs: string[]; type: RunType; };
 
@@ -256,6 +257,19 @@ export class ClientHandler {
         return await this.cli.request(ClientHandler.CONTENT_TYPE_COMMAND, {
             content, position: position, source
         }) as TypeResult
+    }
+
+
+    async importHarFromLink(filename: number, save_directory: string): Promise<any> {
+        return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
+            filename, save_directory
+        })
+    }
+
+    async importHarToFromHar(har: {}, save_directory: string, save_filename: string): Promise<any> {
+        return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
+            har, save_directory, save_filename
+        })
     }
 
     async generateLangHttp(options: DothttpRunOptions & { content: string }): Promise<HttpFileTargetsDef> {

@@ -26,7 +26,7 @@ export enum Constants {
     toggleHeadersCommand = "dothttp.command.toggle.showheaders",
     toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
-    importCommand = "dothttp.command.import.external",
+    IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
     generateLangCommand = "dothttp.command.generatelang",
     RESTART_CLI_COMMAND = "dothttp.command.restartcli",
 
