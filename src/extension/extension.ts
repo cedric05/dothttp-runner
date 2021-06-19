@@ -5,7 +5,7 @@ import {
 } from './editorIntellisense';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLang } from "./commands/generate";
-import { genCurlCommand, importRequests, runFileCommand } from './commands/run';
+import { exportToPostman, genCurlCommand, importRequests, runFileCommand } from './commands/run';
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
@@ -35,6 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand(Constants.toggleReuseTabCommand, toggleExperimentalFlag(Constants.toggleReuseTabCommand));
 	vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand));
 	vscode.commands.registerCommand(Constants.IMPORT_RESOURCE_COMMAND, importRequests)
+	vscode.commands.registerCommand(Constants.EXPORT_RESOURCE_COMMAND, exportToPostman)
 	vscode.commands.registerCommand(Constants.generateLangCommand, generateLang);
 	vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
 		appServices.getClientHandler().restart();

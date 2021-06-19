@@ -1,6 +1,12 @@
 # Change Log
 
 
+## [0.0.23]
+- [**Feature**] Import Single Curl Request
+- [**Feature**] Import Swagger (2.0 & 3.0, versions more than 3.0 might work not guaranteed )
+- [**Feature**] Export http file to postman collection for easy sharing with peers
+- [**Improvement**] Bump dothttp-cli to 0.0.25
+
 ## [0.0.22]
 - [**Feature**] Restart dothttp-cli command
 - [**Improvement**] save file before running (for http file, for notebook it will not try to save)

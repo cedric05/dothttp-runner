@@ -64,6 +64,23 @@ async function pickDirectoryToImport() {
     return directory;
 }
 
+export async function exportToPostman() {
+    const doc = vscode.window.activeTextEditor?.document!;
+    const directory = await pickDirectoryToImport();
+    if (directory) {
+        const result = await ApplicationServices.get().getClientHandler().exportToPostman(doc.fileName);
+        if (result.error) {
+            vscode.window.showErrorMessage(`export postman failed with error, ${result}`)
+            return;
+        }
+        const collection = result.collection;
+        const uri = vscode.Uri.parse("untitled:" + doc.fileName + ".json");
+        const collectionDoc = await vscode.workspace.openTextDocument(uri);
+        showEditor(collectionDoc, JSON.stringify(collection));
+    }
+    return;
+}
+
 
 export async function importRequests() {
     const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger, importoptions.curl]) as importoptions;

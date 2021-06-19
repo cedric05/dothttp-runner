@@ -24,6 +24,13 @@ Save and re-use later
 - open executed file in seperate tab with content-type
 - creates history entry for requests, can be viewable
 - http notebook, view requests & response in single pane itself(like repl)
+- import postman collection
+- import swagger collection
+- import curl
+- export to postman collection
+- export to most well known programming languages
+- InLine show errors
+- InLine suggestion
 
 <img src="./demo.gif" >
 

@@ -185,6 +185,7 @@ export class ClientHandler {
     static GET_HAR_FORMAT_COMMAND = "/file/parse";
     static CONTENT_TYPE_COMMAND = "/content/type";
     static HAR_IMPORT_COMMAND = "/export/har2http";
+    static POSTMAN_EXPORT_COMMAND = "/export/http2postman";
 
     options: { pythonpath: string; stdargs: string[]; type: RunType; };
 
@@ -276,6 +277,12 @@ export class ClientHandler {
     async importHarToFromHar(har: {}, save_directory: string, save_filename?: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
             har, save_directory, save_filename
+        })
+    }
+
+    async exportToPostman(filename: string) {
+        return await this.cli.request(ClientHandler.POSTMAN_EXPORT_COMMAND, {
+            filename
         })
     }
 
