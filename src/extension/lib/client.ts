@@ -167,6 +167,13 @@ enum RunType {
     python
 }
 
+export type ImportHarResult = {
+    error?: boolean;
+    error_message?: string;
+    filename: string;
+    http: string;
+};
+
 export class ClientHandler {
     cli: BaseSpanClient;
 
@@ -260,13 +267,13 @@ export class ClientHandler {
     }
 
 
-    async importHarFromLink(filename: number, save_directory: string): Promise<any> {
+    async importHarFromLink(filename: number, save_directory: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
             filename, save_directory
         })
     }
 
-    async importHarToFromHar(har: {}, save_directory: string, save_filename: string): Promise<any> {
+    async importHarToFromHar(har: {}, save_directory: string, save_filename?: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
             har, save_directory, save_filename
         })

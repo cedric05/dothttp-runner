@@ -1,8 +1,13 @@
-import { existsSync, fstat, lstatSync } from 'fs';
+import axios from 'axios';
+import { existsSync, lstatSync, readFile as fsreadFile } from 'fs';
+import { load as loadYaml } from "js-yaml";
 import { zip } from 'lodash';
 import { platform } from 'os';
+// @ts-expect-error
+import { swagger2har } from 'swagger2har';
+import { promisify } from 'util';
 import * as vscode from 'vscode';
-import { TargetSymbolInfo } from '../lib/client';
+import { ImportHarResult, TargetSymbolInfo } from '../lib/client';
 import { Configuration } from '../models/config';
 import { Constants } from '../models/constants';
 import { ApplicationServices } from '../services/global';
@@ -10,12 +15,8 @@ import { getUnSaved } from '../utils/fileUtils';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 import path = require('path');
-// @ts-expect-error
-import { swagger2har } from 'swagger2har';
-import { load as loadYaml } from "js-yaml"
-import axios from 'axios';
-import { readFile as fsreadFile } from 'fs';
-import { promisify } from 'util';
+var curlToHar = require('curl-to-har');
+
 
 enum importoptions {
     postman = 'postman',
@@ -28,11 +29,51 @@ enum importoptions {
 const readFile = promisify(fsreadFile);
 
 
+async function importCurl() {
+    const curlStatement = await vscode.window.showInputBox({
+        title: "paste curl here",
+        ignoreFocusOut: true,
+        placeHolder: "curl -X <link>",
+    });
+    const harType = curlToHar(curlStatement);
+    const directory = await pickDirectoryToImport();
+    if (directory) {
+        const result = await ApplicationServices.get().getClientHandler().importHarToFromHar([harType], directory)
+        if (result.error) {
+            vscode.window.showErrorMessage(`import curl failed with error, ${result}`)
+            return;
+        }
+        const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(result.filename));
+        vscode.window.showTextDocument(doc);
+    }
+}
+async function pickDirectoryToImport() {
+    const importUri = await vscode.window.showOpenDialog({
+        canSelectFolders: true,
+        canSelectFiles: false,
+        title: "select folder to import resource",
+        canSelectMany: false,
+        openLabel: "select folder to import"
+
+    });
+    if (importUri?.length === 0) { return; }
+    const folder = importUri![0];
+    if (!folder?.fsPath) { return }
+    const directory = folder.fsPath!;
+    await vscode.workspace.fs.createDirectory(folder);
+    return directory;
+}
+
+
 export async function importRequests() {
-    const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger]) as importoptions;
+    const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger, importoptions.curl]) as importoptions;
     try {
         // const pickType = importoptions.postman;
         if (!pickType) { return }
+        if (pickType === importoptions.curl) {
+            importCurl();
+            return
+        }
         const linkOrFile = await vscode.window.showQuickPick([{
             label: "link",
             description: "postman collection link",
@@ -80,20 +121,8 @@ export async function importRequests() {
         if (!filenameToimport) {
             return;
         }
-        const importUri = await vscode.window.showOpenDialog({
-            canSelectFolders: true,
-            canSelectFiles: false,
-            title: "select folder to import resource",
-            canSelectMany: false,
-            openLabel: "select folder to import"
-
-        });
-        if (importUri?.length === 0) { return; }
-        const folder = importUri![0];
-        if (!folder?.fsPath) { return }
-        const directory = folder.fsPath!;
-        await vscode.workspace.fs.createDirectory(folder);
-        if (folder) {
+        const directory = await pickDirectoryToImport();
+        if (directory) {
             if (pickType === importoptions.postman) {
                 const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true });
                 if (result.error == true) {
@@ -105,9 +134,8 @@ or raise bug`);
                 await vscode.window.showInformationMessage(`checkout ${directory} !! import from postman completed successfully`);
             } else if (pickType === importoptions.swagger) {
                 try {
-                    var hardata;
-                    hardata = await getFileOrLink(linkOrFile, filenameToimport, hardata);
-                    const result = await importSwagger(hardata, filenameToimport, directory);
+                    const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
+                    const result = await importSwagger(swaggerInStr, filenameToimport, directory);
                     if (result.error === true) {
                         throw new Error(result.error_message)
                     }
@@ -128,7 +156,7 @@ or raise bug`);
 }
 
 
-async function getFileOrLink(linkOrFile: { label: string; description: string; picked: true; alwaysShow: true; } | { label: string; description: string; picked: false; alwaysShow: true; }, filenameToimport: string, hardata: any) {
+async function getFileOrLink(linkOrFile: { label: string; description: string; picked: true; alwaysShow: true; } | { label: string; description: string; picked: false; alwaysShow: true; }, filenameToimport: string) {
     if (linkOrFile['label'] === 'link') {
         const out = await axios.get(filenameToimport);
         return out.data;
@@ -137,12 +165,7 @@ async function getFileOrLink(linkOrFile: { label: string; description: string; p
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: string): Promise<{
-    error?: boolean,
-    error_message?: string,
-    filename: string,
-    http: string
-}> {
+async function importSwagger(data: any, filename: string, directory: string): Promise<ImportHarResult> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
