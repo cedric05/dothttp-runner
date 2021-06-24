@@ -106,9 +106,16 @@
 				"id": "dothttp-book",
 				"displayName": "dothttp Renderer",
 				"entrypoint": "./dist/renderer.js",
+				"requiresMessaging": "always",
 				"mimeTypes": [
 					"x-application/dotbook"
 				]
+			}
+		],
+		"jsonValidation": [
+			{
+				"fileMatch": ".dothttp.json",
+				"url": "./schemas/dothttp-env.schema.json"
 			}
 		],
 		"commands": [

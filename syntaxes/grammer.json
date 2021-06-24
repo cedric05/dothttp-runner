@@ -1,8 +1,38 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "name": "dothttp-vscode",
+    "fileTypes": [
+        "http",
+        "rest",
+        "dhttp"
+    ],
     "scopeName": "source.dothttp-vscode",
     "patterns": [
+        {
+            "begin": "^\\s*>\\s{1}{%?\\s*",
+            "name": "http.request.body.javascript",
+            "end": "^\\s*%}\\s*",
+            "patterns": [
+                {
+                    "include": "source.js"
+                }
+            ]
+        },
+        {
+            "begin": "\\s*(?=(\\[|{[^{]))",
+            "name": "http.request.body.json",
+            "end": "^\\s*(\\#{3,}.*?)?\\s*$",
+            "endCaptures": {
+                "0": {
+                    "name": "comment.line.sharp.http"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.json"
+                }
+            ]
+        },
         {
             "include": "#comment"
         },
@@ -32,9 +62,6 @@
         },
         {
             "include": "#string"
-        },
-        {
-            "include": "source.js"
         }
     ],
     "repository": {
