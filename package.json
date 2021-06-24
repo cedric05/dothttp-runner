@@ -95,7 +95,7 @@
 			{
 				"language": "dothttp-vscode",
 				"scopeName": "source.dothttp-vscode",
-				"path": "./syntaxes/grammer.json",
+				"path": "./syntaxes/dothttp.tmLanguage.json",
 				"embeddedLanguages": {
 					"source.js": "javascript"
 				}
