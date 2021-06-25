@@ -164,87 +164,105 @@
             "latest": false,
             "stable": true,
             "version": "0.0.25"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.26/dotextensions-0.0.26-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.26/dotextensions-0.0.26-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.26/dotextensions-0.0.26-darwin.zip"
+            },
+            "latest": false,
+            "stable": true,
+            "version": "0.0.26"
         }
     ],
     "matrix": {
         "0.0.5": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.6": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.7": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.8": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.9": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.10": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.11": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.12": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.13": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.14": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.15": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.16": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.17": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.18": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.19": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.20": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.21": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.22": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.23": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         },
         "0.0.24": {
-            "maxVersion": "0.0.25",
+            "maxVersion": "0.0.26",
+            "minVersion": "0.0.8"
+        },
+        "0.0.25": {
+            "maxVersion": "0.0.26",
+            "minVersion": "0.0.8"
+        },
+        "0.0.26": {
+            "maxVersion": "0.0.26",
             "minVersion": "0.0.8"
         }
     }
