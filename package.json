@@ -95,7 +95,7 @@
 			{
 				"language": "dothttp-vscode",
 				"scopeName": "source.dothttp-vscode",
-				"path": "./syntaxes/grammer.json",
+				"path": "./syntaxes/dothttp.tmLanguage.json",
 				"embeddedLanguages": {
 					"source.js": "javascript"
 				}
@@ -106,9 +106,16 @@
 				"id": "dothttp-book",
 				"displayName": "dothttp Renderer",
 				"entrypoint": "./dist/renderer.js",
+				"requiresMessaging": "always",
 				"mimeTypes": [
 					"x-application/dotbook"
 				]
+			}
+		],
+		"jsonValidation": [
+			{
+				"fileMatch": ".dothttp.json",
+				"url": "./schemas/dothttp-env.schema.json"
 			}
 		],
 		"commands": [

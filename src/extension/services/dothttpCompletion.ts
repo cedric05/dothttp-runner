@@ -85,7 +85,8 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     private readonly fileStateService: import("./state").IFileState;
 
 
-    static readonly randomSuggesstionsList: ReadonlyArray<string> = ["$randomStr", "$randomInt", "$randomBool"]
+    static readonly randomSuggesstionsList: ReadonlyArray<string> = ["$randomStr",
+        "$randomInt", "$randomBool", "$randomSlug", "$uuid", "$timestamp"]
 
 
     static readonly randomSuggestions: ReadonlyArray<CompletionItem> = VariableCompletionProvider.randomSuggesstionsList.map(item => ({
