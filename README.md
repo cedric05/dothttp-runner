@@ -113,13 +113,13 @@ data({
 support us via upvoting in [producthunt](https://www.producthunt.com/posts/dothttp) & starring in [github](https://github.com/cedric05/dothttp-runner)
 
 -----------
-There few differences between current project below mentioned alternatives. 
+### Vscode alternatives
 
 - [rest-client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) written in typescript
 - [httpYac](https://marketplace.visualstudio.com/items?itemName=anweber.vscode-httpyac)  written in typescript
 - [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client) closed source
 
 ---------
-Non Vscode alternatives
+### Non Vscode alternatives
 - [http-client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html)  closed source
 - [dothttp](https://github.com/tonsV2/dothttp)  written in python
