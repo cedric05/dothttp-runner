@@ -61,13 +61,14 @@ visit extend [extend](https://docs.dothttp.dev/docs/extend)
 visit [docs](https://docs.dothttp.dev/docs/flags)`),
     "url": new MarkdownString(`Url of httpdef
 
-1. name (Opitonal)
-1. flags(@insecure/@clear) (Optional)
+1. name (Opitonal) \`@name\`
+1. flags(@insecure/@clear) (Optional) \`@insecure\`, \`@clear\`
 1. Url (required)
-1. basicauth/digestauth (Optional)
-1. certificate (Optional)
-1. urlparams (Optional)
-1. payload (Optional)
+1. basicauth/digestauth (Optional) \`basicauth\`, \`digestauth\`
+1. certificate (Optional) \`certificate(cert="", key="")\` or \`certificate(cert="")\` or  \`p12(file="", password="")\`
+1. headers (Optional) \`Authorization: "secretkey"\`
+1. urlparams (Optional) \`? page = 20\`
+1. payload (Optional)  \`data("some")\`, \`json({"a":"b"})\` , \`urlencode({"a":"b"})\`, \`files( (key, value), ..)\`, \`fileinput("path to file")\`
 1. script (Optional)
     
 `),
@@ -89,6 +90,8 @@ visit [docs](https://docs.dothttp.dev/docs/auth#digest-authentication)
     "certificate": new MarkdownString(`Configured to use Certificate while making requests
 
 example: \`certificate(cert="<certificate path>",key= "<privatekey path>")\`
+\`or\`
+p12(file="<certificate path>",password= "<password>")\`
 
 visit [docs](https://docs.dothttp.dev/docs/certificates)
 `),

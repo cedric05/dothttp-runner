@@ -1,7 +1,14 @@
 # Change Log
 
+## [0.0.26]
 
-## [0.0.24]
+- [**Improvement**] dothttp completions
+- Bump dothttp version to 0.0.26
+  - [**Bug**] Fix curl url query params not getting generated
+  - [**Improvement**] basicauth header is not getting generated for httptohar(used for generate programming languages for all requests)
+
+
+## [0.0.25]
 
 - [**Feature**] Better distinction between json and javascript
 - [**Feature**] editor will show suggestions in `.dothttp.json`
@@ -15,7 +22,7 @@
   - [**Bug**] Curl/har with basic auth, adding authentication header fixed
   - [**Bug**] postman with urlencode not working fixed
 
-## [0.0.23]
+## [0.0.23] & [0.0.24]
 - [**Feature**] Import Single Curl Request
 - [**Feature**] Import Swagger (2.0 & 3.0, versions more than 3.0 might work not guaranteed )
 - [**Feature**] Export http file to postman collection for easy sharing with peers

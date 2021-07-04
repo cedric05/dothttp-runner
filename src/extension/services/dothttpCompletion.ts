@@ -191,13 +191,26 @@ export class HeaderCompletionItemProvider implements CompletionItemProvider {
 
 export class KeywordCompletionItemProvider implements CompletionItemProvider {
     static readonly triggerCharacters = [];
-    static payloadkeywords = ["data",
-        "urlencoded",
-        "fileinput",
-        "json",
-        "files",
+    static payloadkeywords = [
         "basicauth",
-        "form"];
+        "data",
+        "json",
+        "urlencoded",
+        "files",
+        "form",
+        "fileinput",
+        "digestauth",
+        "cert",
+        "p12",
+        "certificate",
+        "cert",
+        "file",
+        "password",
+        "@insecure",
+        "@name(",
+        "@clear"
+
+    ];
 
     provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
         const result: CompletionItem[] = [];
