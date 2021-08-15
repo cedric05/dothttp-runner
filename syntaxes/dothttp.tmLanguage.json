@@ -262,6 +262,46 @@
                     "name": "keyword.other"
                 },
                 {
+                    "match": "insecure",
+                    "name": "keyword.control"
+                },
+                {
+                    "match": "clear",
+                    "name": "keyword.control"
+                },
+                {
+                    "match": "certificate",
+                    "name": "keyword.operator"
+                },
+                {
+                    "match": "p12",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "cert",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "password",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "digestauth",
+                    "name": "keyword.operator"
+                },
+                {
+                    "match": "basicauth",
+                    "name": "keyword.operator"
+                },
+                {
+                    "match": "file",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "key",
+                    "name": "keyword.other"
+                },
+                {
                     "include": "#varstring"
                 },
                 {

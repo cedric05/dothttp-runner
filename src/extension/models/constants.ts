@@ -70,7 +70,7 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.25",
+    EXTENSION_VERSION = "0.0.26",
 
     dothttpNotebook = "dothttp-book",
 

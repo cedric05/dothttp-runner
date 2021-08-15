@@ -49,11 +49,20 @@ export function isDotHttpCorrect() {
 
 export class Configuration {
     static getConfiguredValue(key: string) {
-        return vscode.workspace.getConfiguration().get(key);
+        if (vscode.env.remoteName) {
+            return vscode.workspace.getConfiguration().get(key, vscode.ConfigurationTarget.Workspace) || vscode.workspace.getConfiguration().get(key, vscode.ConfigurationTarget.WorkspaceFolder);
+        } else {
+            return vscode.workspace.getConfiguration().get(key) as string;
+        }
     }
 
     static setGlobalValue(key: string, value: string) {
-        return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
+        if (vscode.env.remoteName) {
+            vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Workspace);
+            return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.WorkspaceFolder);
+        } else {
+            return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
+        }
     }
 
     // isConfiguredPathCorrect?
