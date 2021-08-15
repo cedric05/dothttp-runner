@@ -3,9 +3,17 @@
 ## [0.0.26]
 
 - [**Improvement**] dothttp completions
-- Bump dothttp version to 0.0.26
+- [**Upgrade**](https://github.com/cedric05/dothttp/releases/tag/v0.0.31) Bump dothttp version to 0.0.31
+  - [**Feature**] support unix domain docket
+  - [**Bug**](https://github.com/cedric05/dothttp/pull/107) export to postman fails
+  - [**BUG**] Intuitive url extend from base
+  - [**BUG**] Fix for export to postman, http file with json payload is not including content-type header to `application/json`
+  - [**BUG**] Fix for export to postman, http exporting collection with url having ports failing with error
+  - [**BUG**] Fix for Basic auth not getting generated for http2har
   - [**Bug**] Fix curl url query params not getting generated
+  - [**BUG**] Fix generate curl not including query
   - [**Improvement**] basicauth header is not getting generated for httptohar(used for generate programming languages for all requests)
+- [**Bug**](https://github.com/cedric05/dothttp-runner/pull/83/commits/e3b7b7eb146cdc6885e4cf3780c6b346d0dbbc77) Fix remote containers path is getting updated while switching from container to local
 
 
 ## [0.0.25]
