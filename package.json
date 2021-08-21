@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.26",
+	"version": "0.0.27",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -169,7 +169,7 @@
 			},
 			{
 				"command": "dothttp.command.import.external",
-				"title": "Import Resource To Http",
+				"title": "Dothttp Import Resource To Http",
 				"category": "Dothttp",
 				"icon": "$(cloud-download)"
 			},
@@ -240,17 +240,17 @@
 			},
 			{
 				"command": "dothttp.command.generatelang",
-				"title": "Dothttp generate request Programming Languages",
+				"title": "Dothttp Generate General Programming Languages For Request",
 				"icon": "$(extensions)"
 			},
 			{
 				"command": "dothttp.command.restartcli",
-				"title": "Dothttp restart cli server",
+				"title": "Dothttp Restart Cli Server",
 				"icon": "$(debug-restart)"
 			},
 			{
 				"command": "dothttp.command.export.postman",
-				"title": "Dothttp export http to postman",
+				"title": "Dothttp Export Http To Postman",
 				"icon": "$(extensions)"
 			}
 		],
@@ -271,7 +271,26 @@
 				{
 					"command": "dothttp.command.export.postman",
 					"title": "Dothttp export http to postman",
+					"group": "Dothttp",
 					"icon": "$(extensions)"
+				},
+				{
+					"command": "dothttp.command.import.external",
+					"title": "Dothttp Import Resource To Http",
+					"group": "Dothttp",
+					"icon": "$(cloud-download)"
+				},
+				{
+					"command": "dothttp.command.generatelang",
+					"title": "Dothttp Generate General Programming Languages For Request",
+					"group": "Dothttp",
+					"icon": "$(extensions)"
+				},
+				{
+					"command": "dothttp.command.run",
+					"title": "Dothttp Run Target",
+					"icon": "$(rocket)",
+					"category": "Dothttp"
 				}
 			],
 			"commandPalette": [
@@ -497,7 +516,7 @@
 	"dependencies": {
 		"axios": "^0.21.1",
 		"curl-to-har": "^1.0.1",
-		"@types/vscode": "^1.57.0",
+		"@types/vscode": "^1.59.0",
 		"dateformat": "^4.5.1",
 		"httpsnippet": "^1.25.0",
 		"json-stringify-safe": "^5.0.1",

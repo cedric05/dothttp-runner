@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.0.27]
+
+This is a minor update
+
+- [**Improvement**] Editor commands now more approachable (now available in editor context)
+- [**Improvement**] Generate request programming language is including "gen..py" fix
+
+
 ## [0.0.26]
 
 - [**Improvement**] dothttp completions
