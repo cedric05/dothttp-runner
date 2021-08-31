@@ -514,9 +514,10 @@
 		"webpack-cli": "^4.5.0"
 	},
 	"dependencies": {
+		"@types/vscode": "^1.59.0",
 		"axios": "^0.21.1",
 		"curl-to-har": "^1.0.1",
-		"@types/vscode": "^1.59.0",
+		"curl-to-postmanv2": "^0.5.1",
 		"dateformat": "^4.5.1",
 		"httpsnippet": "^1.25.0",
 		"json-stringify-safe": "^5.0.1",

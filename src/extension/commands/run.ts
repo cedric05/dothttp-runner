@@ -15,30 +15,102 @@ import { getUnSaved } from '../utils/fileUtils';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 import path = require('path');
+import stringify = require('json-stringify-safe');
+import * as querystring from 'querystring';
 var curlToHar = require('curl-to-har');
-
+const curl2Postman = require('curl-to-postmanv2/src/lib')
 
 enum importoptions {
     postman = 'postman',
     // swagger2 = 'swagger2.0',
     // swagger3 = 'swagger3.0',
     swagger = "swagger",
-    curl = 'curl'
+    curl = 'curl',
+    curlv2 = "curlv2"
 }
 
 const readFile = promisify(fsreadFile);
 
+function curltoHarUsingpostmanconverter(statmenet: string) {
+    const obj = curl2Postman.convertCurlToRequest(statmenet);
+    let postData: {
+        mimeType: null | string,
+        text: string | null,
+        params: {}
+    } | null = null;
+    if (obj.body && obj.body.mode) {
+        // @ts-ignore
+        postData = {}
+        switch (obj.body.mode) {
+            case "urlencoded":
+                postData!.mimeType = "application/x-www-form-urlencoded"
+                const urlencodedpostobj: { [key: string]: string } = {}
+                obj.body.urlencoded.forEach((a: { key: any; value: any; }) => {
+                    urlencodedpostobj[a.key] = a.value
+                });
+                postData!.text = querystring.stringify(urlencodedpostobj);
+                break;
+            case "raw":
+                const headers: { [key: string]: string } = {}
+                obj.header.forEach((element: { key: string; value: string; }) => {
+                    headers[element.key.toLowerCase()] = element.value.toLowerCase();
+                });
+                if (headers['content-type'].indexOf("application/json"))
+                    postData!.mimeType = "application/json"
+                else
+                    postData!.mimeType = "text/plain"
+                postData!.text = obj.body.raw;
+                break;
+            case "formdata":
+                const formpostdata = obj.body.formdata.map((element: { key: any; value: any; type: any; }) => {
+                    const dat = {
+                        name: element.key,
+                        value: element.value,
+                        contentType: element.type,
+                        fileName: null
+                    };
+                    if (dat.value[0] === '@') {
+                        dat.value = dat.value.substr(1);
+                        // @ts-ignore
+                        dat.fileName = path.basename(dat.value);
+                    }
+                    return dat;
 
-async function importCurl() {
-    const curlStatement = await vscode.window.showInputBox({
+                });
+                postData!.mimeType = "multipart/form-data"
+                postData!.params = formpostdata
+                break;
+        }
+    }
+    return {
+        method: obj.method,
+        name: obj.name,
+        url: obj.url,
+        headers: obj.header ? obj.header.map((val: { key: any; value: any; }) => ({ name: val.key, value: val.value })) : [],
+        postData: postData
+
+    }
+}
+
+
+
+async function importCurl(version: string) {
+    let curlStatement = await vscode.window.showInputBox({
         title: "paste curl here",
         ignoreFocusOut: true,
         placeHolder: "curl -X <link>",
     });
-    const harType = curlToHar(curlStatement);
+
+    // problem with multiline curl
+    // inputopions is removing all new line chars
+    // which is causing this mitigation
+    // this is not perfect fix, but solves most use cases
+    curlStatement = curlStatement?.replace(/ \\ -/g, ' -');
+
+    const harType = version === importoptions.curlv2 ? curltoHarUsingpostmanconverter(curlStatement!) : curlToHar(curlStatement)
     const directory = await pickDirectoryToImport();
     if (directory) {
-        const result = await ApplicationServices.get().getClientHandler().importHarToFromHar([harType], directory)
+        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory)
         if (result.error) {
             vscode.window.showErrorMessage(`import curl failed with error, ${result}`)
             return;
@@ -83,12 +155,12 @@ export async function exportToPostman() {
 
 
 export async function importRequests() {
-    const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger, importoptions.curl]) as importoptions;
+    const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger, importoptions.curl, importoptions.curlv2]) as importoptions;
     try {
         // const pickType = importoptions.postman;
         if (!pickType) { return }
-        if (pickType === importoptions.curl) {
-            importCurl();
+        if (pickType === importoptions.curl || pickType === importoptions.curlv2) {
+            importCurl(pickType);
             return
         }
         const linkOrFile = await vscode.window.showQuickPick([{
@@ -212,7 +284,7 @@ async function importSwagger(data: any, filename: string, directory: string): Pr
     for (var har of libFormat) {
         harFormat.push(har.har);
     }
-    return await ApplicationServices.get().clientHanler.importHarToFromHar(harFormat, directory, saveFilename);
+    return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename);
 }
 
 

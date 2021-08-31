@@ -274,7 +274,7 @@ export class ClientHandler {
         })
     }
 
-    async importHarToFromHar(har: {}, save_directory: string, save_filename?: string): Promise<ImportHarResult> {
+    async importHttpFromHar(har: {}, save_directory: string, save_filename?: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
             har, save_directory, save_filename
         })
