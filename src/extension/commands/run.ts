@@ -26,7 +26,8 @@ enum importoptions {
     // swagger3 = 'swagger3.0',
     swagger = "swagger",
     curl = 'curl',
-    curlv2 = "curlv2"
+    curlv2 = "curlv2",
+    har = "har"
 }
 
 const readFile = promisify(fsreadFile);
@@ -155,7 +156,14 @@ export async function exportToPostman() {
 
 
 export async function importRequests() {
-    const pickType = await vscode.window.showQuickPick([importoptions.postman, importoptions.swagger, importoptions.curl, importoptions.curlv2]) as importoptions;
+    const pickType = await vscode.window.showQuickPick([
+        importoptions.postman,
+        importoptions.swagger,
+        importoptions.har,
+        importoptions.curlv2,
+        importoptions.curl,
+
+    ]) as importoptions;
     try {
         // const pickType = importoptions.postman;
         if (!pickType) { return }
@@ -190,8 +198,10 @@ export async function importRequests() {
                 });
             } else if (linkOrFile['label'] === 'file') {
                 const filters: { [ram: string]: any } = {}
-                if (pickType !== importoptions.postman) {
+                if (pickType === importoptions.swagger) {
                     filters.Swagger = ["json", "yaml"]
+                } else if (pickType === importoptions.har) {
+                    filters.har = ["har", "har.json", "json"]
                 } else {
                     filters["Postman Collection"] = ["json", "postman_collection.json"];
                 }
@@ -221,21 +231,24 @@ follow https://learning.postman.com/docs/getting-started/importing-and-exporting
 or raise bug`);
                 }
                 await vscode.window.showInformationMessage(`checkout ${directory} !! import from postman completed successfully`);
-            } else if (pickType === importoptions.swagger) {
+            } else if (pickType === importoptions.swagger || pickType === importoptions.har) {
                 try {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
-                    const result = await importSwagger(swaggerInStr, filenameToimport, directory);
+                    const result = await importSwagger(swaggerInStr, filenameToimport, directory
+                        , pickType);
                     if (result.error === true) {
                         throw new Error(result.error_message)
                     }
                     // show after import 
-                    vscode.window.showInformationMessage("import swagger successfull");
+                    vscode.window.showInformationMessage(`import ${pickType} successfull`);
                     const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(result.filename));
                     vscode.window.showTextDocument(doc);
                 } catch (error) {
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${error}. create bug`);
                     return;
                 }
+            } else if (pickType === importoptions.har) {
+                const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
             }
         }
 
@@ -254,7 +267,7 @@ async function getFileOrLink(linkOrFile: { label: string; description: string; p
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: string): Promise<ImportHarResult> {
+async function importSwagger(data: any, filename: string, directory: string, picktype: importoptions): Promise<ImportHarResult> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -269,7 +282,7 @@ async function importSwagger(data: any, filename: string, directory: string): Pr
             hardata = loadYaml(data);
         }
     }
-    const libFormat: Array<{ har: any; }> = swagger2har(hardata);
+    // figure file name from swagger info
     var saveFilename;
     if (hardata && hardata.info && hardata.info.title) {
         saveFilename = hardata.info.title;
@@ -277,12 +290,22 @@ async function importSwagger(data: any, filename: string, directory: string): Pr
         saveFilename = path.basename(filename);
     }
     saveFilename = saveFilename + ".http";
-    if (!(libFormat && libFormat.length > 0)) {
-        throw new Error("swagger file had problem or not able to import");
-    }
-    const harFormat = [];
-    for (var har of libFormat) {
-        harFormat.push(har.har);
+
+    // check if swagger, load har
+    // if har, just use it
+
+    let harFormat = [];
+    if (picktype === importoptions.swagger) {
+        let _libFormat = swagger2har(hardata)
+        const libFormat: Array<{ har: any; }> = _libFormat;
+        if (!(libFormat && libFormat.length > 0)) {
+            throw new Error("swagger file had problem or not able to import");
+        }
+        for (var har of libFormat) {
+            harFormat.push(har.har);
+        }
+    } else {
+        harFormat = hardata.log.entries.map((entry: { request: any; }) => entry.request);
     }
     return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename);
 }
