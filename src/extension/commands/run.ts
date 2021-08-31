@@ -146,7 +146,7 @@ export async function exportToPostman() {
             return;
         }
         const collection = result.collection;
-        const uri = vscode.Uri.parse("untitled:" + doc.fileName + ".json");
+        const uri = vscode.Uri.parse("untitled:" + doc.fileName + ".postman_collection.json");
         const collectionDoc = await vscode.workspace.openTextDocument(uri);
         showEditor(collectionDoc, JSON.stringify(collection));
     }
