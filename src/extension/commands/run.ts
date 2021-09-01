@@ -56,7 +56,7 @@ function curltoHarUsingpostmanconverter(statmenet: string) {
                 obj.header.forEach((element: { key: string; value: string; }) => {
                     headers[element.key.toLowerCase()] = element.value.toLowerCase();
                 });
-                if (headers['content-type'].indexOf("application/json"))
+                if (headers['content-type'].indexOf("application/json") > -1)
                     postData!.mimeType = "application/json"
                 else
                     postData!.mimeType = "text/plain"
