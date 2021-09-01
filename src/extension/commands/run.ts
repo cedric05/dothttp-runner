@@ -96,12 +96,35 @@ function curltoHarUsingpostmanconverter(statmenet: string) {
 
 
 async function importCurl(version: string) {
-    let curlStatement = await vscode.window.showInputBox({
-        title: "paste curl here",
-        ignoreFocusOut: true,
-        placeHolder: "curl -X <link>",
-    });
-
+    const category = await vscode.window.showQuickPick([
+        { label: "file", description: "Reads curl statement from file (preferred)", },
+        { label: "paste", description: "Paste curl statement in input box" },
+    ]);
+    let curlStatement: string | undefined = "";
+    if (!category) {
+        return;
+    }
+    if (category.label === "file") {
+        let filenameToimport;
+        const importUri = await vscode.window.showOpenDialog({
+            canSelectFolders: false,
+            canSelectFiles: true,
+            title: "select curl to import resource",
+            canSelectMany: false,
+        });
+        if (importUri && importUri.length > 0) {
+            filenameToimport = importUri[0].fsPath;
+        } else {
+            return;
+        }
+        curlStatement = await getFileOrLink({ label: 'file' }, filenameToimport);
+    } else {
+        curlStatement = await vscode.window.showInputBox({
+            title: "paste curl here",
+            ignoreFocusOut: true,
+            placeHolder: "curl -X <link>",
+        });
+    }
     // problem with multiline curl
     // inputopions is removing all new line chars
     // which is causing this mitigation
@@ -258,7 +281,7 @@ or raise bug`);
 }
 
 
-async function getFileOrLink(linkOrFile: { label: string; description: string; picked: true; alwaysShow: true; } | { label: string; description: string; picked: false; alwaysShow: true; }, filenameToimport: string) {
+async function getFileOrLink(linkOrFile: { label: string | undefined }, filenameToimport: string): Promise<string> {
     if (linkOrFile['label'] === 'link') {
         const out = await axios.get(filenameToimport);
         return out.data;
