@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.0.27]
+
+- [**Improvement**] Editor commands now more approachable (now available in editor context)
+- [**Fix**] `Generate request programming language` is generating file name with extension (two dots) "gen..py"
+- [**Improvement**] export postman now generates filename with suffix ".postmancollection.json" 
+- [**New Feature**] supports importing har file
+- [**Improvement**] curl with new library and import by file, should fix most curl import issues
+  - Use other formats as curl import os not standardised
+- [**Improvement**] Now `dothttp history`, `dothttp environment` and `dothttp propertiles` will be shown in seperate view container for easy access
+
+
+
 ## [0.0.26]
 
 - [**Improvement**] dothttp completions

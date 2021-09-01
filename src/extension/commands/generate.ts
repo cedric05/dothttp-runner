@@ -66,7 +66,7 @@ export async function generateLang(...arr: any[]) {
             indent: '\t'
         });
         // TODO only gives out python file name now.
-        const outputBodyURI = vscode.Uri.parse("untitled:" + filename + ".gen." + pickLanguage.filext);
+        const outputBodyURI = vscode.Uri.parse("untitled:" + filename + ".gen" + pickLanguage.filext);
         vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
             showEditor(textDoc, langSpec as string);
         });
