@@ -125,6 +125,10 @@ async function importCurl(version: string) {
             placeHolder: "curl -X <link>",
         });
     }
+    if (!curlStatement) {
+        // don't process if user hasn't pasted any thing
+        return
+    }
     // problem with multiline curl
     // inputopions is removing all new line chars
     // which is causing this mitigation

@@ -466,7 +466,7 @@
 			"activitybar": [
 				{
 					"id": "dothttp-view-container",
-					"title": "Package Explorer",
+					"title": "Dothttp",
 					"icon": "$(rocket)"
 				}
 			]
