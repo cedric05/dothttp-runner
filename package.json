@@ -445,7 +445,7 @@
 			}
 		],
 		"views": {
-			"explorer": [
+			"dothttp-view-container": [
 				{
 					"id": "dothttpEnvView",
 					"name": "Dothttp Environment",
@@ -459,6 +459,15 @@
 				{
 					"id": "dothttpHistory",
 					"name": "Dothttp history"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "dothttp-view-container",
+					"title": "Package Explorer",
+					"icon": "$(rocket)"
 				}
 			]
 		},
