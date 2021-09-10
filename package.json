@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.28",
+	"version": "0.0.29",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -520,7 +520,8 @@
 		"vscode-codicons": "0.0.14",
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.26.3",
-		"webpack-cli": "^4.5.0"
+		"webpack-cli": "^4.5.0",
+		"@stoplight/json-schema-sampler": "0.2.0"
 	},
 	"dependencies": {
 		"@types/vscode": "^1.59.0",
@@ -534,7 +535,7 @@
 		"mime-types": "^2.1.30",
 		"preact": "^10.5.13",
 		"semver": "^7.3.4",
-		"swagger2har": "^1.0.1",
+		"dothttp-swagger2har": "^1.0.3",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",
 		"uuid": "^8.3.2",

@@ -4,7 +4,7 @@ import { load as loadYaml } from "js-yaml";
 import { zip } from 'lodash';
 import { platform } from 'os';
 // @ts-expect-error
-import { swagger2har } from 'swagger2har';
+import { swagger2har } from 'dothttp-swagger2har';
 import { promisify } from 'util';
 import * as vscode from 'vscode';
 import { ImportHarResult, TargetSymbolInfo } from '../lib/client';
@@ -200,12 +200,12 @@ export async function importRequests() {
         }
         const linkOrFile = await vscode.window.showQuickPick([{
             label: "link",
-            description: "postman collection link",
+            description: pickType === importoptions.postman ? "postman collection link" : "swagger schema (json/yaml) link",
             picked: true,
             alwaysShow: true,
         }, {
             label: "file",
-            description: "file exists in local system",
+            description: pickType === importoptions.postman ? "postman collection (have <filename>.postman_collection.json file?)" : "swagger schema (have <swagger schema 2/3>.<yaml/json> file?)",
             picked: false,
             alwaysShow: true,
         }]);
@@ -213,7 +213,7 @@ export async function importRequests() {
         if (linkOrFile) {
             if (linkOrFile['label'] === 'link') {
                 filenameToimport = await vscode.window.showInputBox({
-                    prompt: "postman link",
+                    prompt: `${pickType === importoptions.postman ? "postman collection" : "swagger schema (json/yaml)"} link`,
                     ignoreFocusOut: true,
                     // validateInput: (value) => {
                     // if (value.startsWith("https://www.getpostman.com/collections") ||
@@ -274,8 +274,6 @@ or raise bug`);
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${error}. create bug`);
                     return;
                 }
-            } else if (pickType === importoptions.har) {
-                const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
             }
         }
 
@@ -308,6 +306,8 @@ async function importSwagger(data: any, filename: string, directory: string, pic
         } else {
             hardata = loadYaml(data);
         }
+    } else {
+        hardata = data;
     }
     // figure file name from swagger info
     var saveFilename;

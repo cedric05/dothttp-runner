@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.29]
+
+- [**Improvement**] Better support for swagger import 
+
 ## [0.0.28]
 
 - [**Improvement**] export postman now generates filename with suffix ".postmancollection.json" 
