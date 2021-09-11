@@ -4,7 +4,7 @@ import { load as loadYaml } from "js-yaml";
 import { zip } from 'lodash';
 import { platform } from 'os';
 // @ts-expect-error
-import { swagger2har } from 'dothttp-swagger2har';
+import { swagger2har } from 'swagger-to-har2';
 import { promisify } from 'util';
 import * as vscode from 'vscode';
 import { ImportHarResult, TargetSymbolInfo } from '../lib/client';

@@ -535,7 +535,7 @@
 		"mime-types": "^2.1.30",
 		"preact": "^10.5.13",
 		"semver": "^7.3.4",
-		"dothttp-swagger2har": "^1.0.3",
+		"swagger-to-har2": "^1.0.3",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",
 		"uuid": "^8.3.2",
