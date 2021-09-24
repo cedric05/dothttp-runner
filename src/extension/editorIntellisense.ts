@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { EndOfLine, Range, SymbolInformation } from 'vscode';
-import { ClientHandler } from './lib/client';
+import { EndOfLine, Range, SymbolInformation, Command } from 'vscode';
+import { ClientHandler, DotTttpSymbol } from './lib/client';
 import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';
 import { parseURL } from 'whatwg-url';
@@ -8,13 +8,64 @@ import { parse as parseQueryString } from 'querystring';
 import { ApplicationServices } from './services/global';
 import { DotHovers, DothttpTypes } from './models/misc';
 
+
+class RunHttpCommand implements Command {
+    title: string = "Run http";
+    tooltip: string = "Run http targets this definition";
+    command = Constants.RUN_TARGET_CODE_LENS;
+    arguments: any[];
+    curl: boolean = false;
+    constructor(target: string, uri: string, cellNo?: number) {
+        this.arguments = [{ target: target, "curl": this.curl, uri: uri, cellNo }];
+    }
+}
+
+class GenerateCurlCommand implements Command {
+    title: string = "Generate Curl";
+    tooltip: string = "Generate curl targeting this definition";
+    command = Constants.RUN_TARGET_CODE_LENS;
+    curl = true;
+    arguments: { target: string; curl: boolean; uri: string; cellNo: number | undefined; }[];
+    constructor(target: string, uri: string, cellNo?: number) {
+        this.arguments = [{ target: target, "curl": this.curl, uri: uri, cellNo }];
+    }
+}
+
+class RunHttpInNotebook extends RunHttpCommand {
+    title = "Run Http";
+    tooltip = "Select target in cell";
+    command = Constants.RUN_NOTEBOOK_TARGET_IN_CELL;
+}
+
 class DothttpPositions extends vscode.CodeLens {
     target!: string;
-    curl!: boolean;
-    constructor(range: Range, target: string, curl: boolean) {
-        super(range);
-        this.target = target;
-        this.curl = curl;
+    isCurl!: boolean;
+    isNotebook: boolean;
+    uri: string;
+    cellNo?: number;
+    // need to include filename
+    // for better handling of execution
+    constructor(obj: { range: Range, target: string, isCurl: boolean, isNotebook: boolean, uri: string, cellNo?: number }) {
+        super(obj.range);
+        this.target = obj.target;
+        this.isCurl = obj.isCurl;
+        this.isNotebook = obj.isNotebook;
+        this.uri = obj.uri;
+        this.cellNo = obj.cellNo;
+    }
+    resolveCommand() {
+        const target = this.target;
+        const uri = this.uri;
+        const cellNo = this.cellNo;
+        this.command =
+            this.isNotebook ?
+                new RunHttpInNotebook(target, uri, cellNo) :
+                (this.isCurl ?
+                    new GenerateCurlCommand(target, uri, cellNo)
+                    :
+                    new RunHttpCommand(target, uri, cellNo)
+                );
+        return this;
     }
 }
 
@@ -77,9 +128,14 @@ export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider
 
 
     private async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
         const offset = document.offsetAt(position);
-        const result = await this.clientHandler.getTypeFromFilePosition(offset, document.fileName);
-        return result;
+        if (isNotebook) {
+            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
+        } else {
+            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
+        }
+
     }
 }
 
@@ -132,46 +188,40 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         var names = null;
         if (isNotebook) {
             names = await this.clientHandler.getVirtualDocumentSymbols(document.getText());
-            if (names.error) {
-                this.updateDiagnostics(names, document);
-            } else {
-                this.diagnostics.clear();
-            }
-            return [];
         } else {
             names = await this.clientHandler.getDocumentSymbols(document.fileName);
-
         }
-        const codeLenses: DothttpPositions[] = [];
         if (names.names) {
             this.diagnostics.clear();
-            names.names.forEach(name => {
-                const runCommand = new DothttpPositions(new Range(
-                    document.positionAt(name.start),
-                    document.positionAt(name.end)),
-                    name.name,
-                    false
-                );
-                const curlCommand = new DothttpPositions(runCommand.range,
-                    name.name,
-                    true);
-                codeLenses.push(runCommand);
-                codeLenses.push(curlCommand);
-            })
+            return this.getCodeLens(names, document, isNotebook);
         } else {
             this.updateDiagnostics(names, document);
         }
+        return [];
+    }
+
+    private getCodeLens(symbolList: DotTttpSymbol, document: vscode.TextDocument, isNotebook: boolean) {
+        const codeLenses: DothttpPositions[] = [];
+        symbolList.names?.map(async symbol => {
+            const obj = {
+                range: new Range(document.positionAt(symbol.start), document.positionAt(symbol.end)),
+                target: symbol.name,
+                isNotebook: isNotebook,
+                uri: document.uri.fsPath,
+            }
+            if (isNotebook) {
+                const cellNo = parseInt(document.uri.fragment.substring(2));
+                codeLenses.push(new DothttpPositions({ ...obj, isCurl: false, cellNo: cellNo }));
+            } else {
+                codeLenses.push(new DothttpPositions({ ...obj, isCurl: false }));
+                codeLenses.push(new DothttpPositions({ ...obj, isCurl: true }));
+            }
+        });
         return codeLenses;
     }
 
     public resolveCodeLens(codeLens: DothttpPositions, _token: vscode.CancellationToken) {
-        codeLens.command = {
-            title: !codeLens.curl ? "Run http" : "Generate Curl",
-            tooltip: !codeLens.curl ? "Run http targets this definition" : "Generate curl targeting this definition",
-            command: !codeLens.curl ? "dothttp.command.run" : "dothttp.command.gencurl",
-            arguments: [{ "target": codeLens.target, "curl": codeLens.curl }]
-        };
-        return codeLens;
+        return codeLens.resolveCommand();
     }
 
 

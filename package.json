@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.30",
+	"version": "0.0.31",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -122,6 +122,18 @@
 			{
 				"command": "dothttp.command.run",
 				"title": "Dothttp Run Target",
+				"icon": "$(rocket)",
+				"category": "Dothttp"
+			},
+			{
+				"command": "dothttp.command.notebook.run",
+				"title": "Dothttp Run Target in Notebook",
+				"icon": "$(rocket)",
+				"category": "Dothttp"
+			},
+			{
+				"command": "dothttp.command.text.run",
+				"title": "Dothttp Run Target CodeLens",
 				"icon": "$(rocket)",
 				"category": "Dothttp"
 			},

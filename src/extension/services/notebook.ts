@@ -29,7 +29,7 @@ export class NotebookKernel {
     readonly label = 'Dot Book Kernel';
     readonly supportedLanguages = [Constants.dothttpNotebook];
 
-    private readonly _controller: vscode.NotebookController;
+    readonly _controller: vscode.NotebookController;
     private _executionOrder = 0;
     client: ClientHandler;
     fileStateService: IFileState;
@@ -58,15 +58,16 @@ export class NotebookKernel {
         }
     }
 
-    private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
+    public executeCell(cell: vscode.NotebookCell, target?: string) {
+        this._doExecution(cell, target);
+    }
+
+    private async _doExecution(cell: vscode.NotebookCell, target: string = '1'): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
         execution.start(Date.now());
         const httpDef = cell.document.getText();
         const filename = cell.document.fileName;
-        // TODO
-        // do we want to only execute first one?????
-        const target = '1';
         execution.token.onCancellationRequested(() => {
             // incase of cancellation, there is no need to replace out.
             // may appending could help

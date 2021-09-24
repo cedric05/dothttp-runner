@@ -28,9 +28,12 @@ const LANG_GEN_TARGETS = [
 ];
 
 
-export async function generateLang(...arr: any[]) {
-    const target = await cacheAndGetTarget(arr);
-    const filename = vscode.window.activeTextEditor?.document.fileName!;
+export async function generateLang(uri: vscode.Uri) {
+    const document = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(document);
+
+    const target = await cacheAndGetTarget(editor, document);
+    const filename = document.fileName!;
     if (!fs.existsSync(filename)) {
         return;
     }
@@ -45,7 +48,7 @@ export async function generateLang(...arr: any[]) {
         env: app.getFileStateService().getEnv(filename)! ?? [],
     });
     try {
-        const targetHttpDef = out.target[target]! as HttpTargetDef;
+        const targetHttpDef = out.target[target ?? '1']! as HttpTargetDef;
         const snippet = new HTTPSnippet({
             method: targetHttpDef.method, url: targetHttpDef.url,
             queryString: targetHttpDef.query, headers: targetHttpDef.headers,

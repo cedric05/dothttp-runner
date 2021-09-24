@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.0.31]
+
+- [**Improvement**] now, extension uses diposes, which helps vscode editor refresh or discard extension when not in use
+- [**Improvement**] Run Targets (allows non first target to be executed) in httpbook (save responses)
+- [**Improvement**] Show suggestions in httpbook
+- [**Bug**] Targets Execution will be taken from code lens or editor panel (earlier, it is taken from activetexteditor, which is running into errors incase its not real editor, such as output window)
+- 
+
+
 
 ## [0.0.30]
 

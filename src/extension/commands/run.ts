@@ -16,6 +16,7 @@ import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 import path = require('path');
 import * as querystring from 'querystring';
+import { TextEditorEdit, TextEditor } from 'vscode';
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib')
 
@@ -188,8 +189,8 @@ async function pickDirectoryToImport() {
     return directory;
 }
 
-export async function exportToPostman() {
-    const doc = vscode.window.activeTextEditor?.document!;
+export async function exportToPostman(uri: vscode.Uri) {
+    const doc = await vscode.workspace.openTextDocument(uri);
     const directory = await pickDirectoryToImport();
     if (directory) {
         const result = await ApplicationServices.get().getClientHandler().exportToPostman(doc.fileName);
@@ -362,46 +363,55 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename);
 }
 
+export async function runTargetInCell(arr: { uri: string, cellNo: number, target: string }) {
+    const uri = vscode.Uri.file(arr.uri);
+    const cellNo = arr.cellNo;
+    const notebook = await vscode.workspace.openNotebookDocument(uri);
+    const cell = notebook.cellAt(cellNo);
+    const kernel = ApplicationServices.get().getNotebookkernel();
+    kernel.executeCell(cell, arr.target);
+}
 
-export async function runFileCommand(...arr: any[]) {
-    const target = await cacheAndGetTarget(arr);
+
+export async function runHttpCodeLensCommand(...arr: any[]) {
+    const { uri, target, curl } = arr[2];
+    return runHttpFileWithOptions({ curl: curl, target: target, fileName: uri });
+}
+
+
+
+export async function runFileCommand(editor: TextEditor, _edit: TextEditorEdit, _uri: vscode.Uri) {
+    const target = await cacheAndGetTarget(editor, editor.document);
     if (target) {
-        return runHttpFileWithOptions({ curl: false, target: target });
+        return runHttpFileWithOptions({ curl: false, target: target, fileName: _uri.fsPath });
     }
 }
 
-export async function genCurlCommand(...arr: any[]) {
-    const target = await cacheAndGetTarget(arr);
+export async function genCurlCommand(editor: TextEditor, _edit: TextEditorEdit, _uri: vscode.Uri) {
+    const target = await cacheAndGetTarget(editor, editor.document);
     if (target) {
-        return runHttpFileWithOptions({ curl: true, target: target });
+        return runHttpFileWithOptions({ curl: true, target: target, fileName: _uri.fsPath });
     }
 }
 
-export async function cacheAndGetTarget(arr: any[]) {
-    const target = await getTargetFromQuickPick(arr);
+export async function cacheAndGetTarget(editor: TextEditor, document: vscode.TextDocument) {
+    const target = await getTargetFromQuickPick(editor, document);
     if (target) {
         const storage = ApplicationServices.get().getStorageService();
-        const filename = vscode.window.activeTextEditor?.document.fileName ?? '';
+        const filename = editor.document.fileName ?? '';
         storage.setValue(`httpruntarget://${filename}`, target);
         return target;
     }
 }
 
 
-async function getTargetFromQuickPick(arr: any[]) {
+async function getTargetFromQuickPick(editor: TextEditor, document: vscode.TextDocument) {
     // decide target from arguments,
     // this request is from code-lens
-    if (arr && arr.length >= 3) {
-        var target = arr[2].target;
-        if (target) {
-            return target;
-        }
-    }
+
     // otherwise ask for user input
-    const editor = vscode.window.activeTextEditor!;
-    const document = editor.document!;
-    const filename = document.fileName!;
-    if (ApplicationServices.get().getCconfig().runRecent) {
+    const filename = document.fileName;
+    if (ApplicationServices.get().getConfig().runRecent) {
         const storage = ApplicationServices.get().getStorageService();
         return storage.getValue(`httpruntarget://${filename}`, '1');
     }
@@ -436,7 +446,7 @@ async function getTargetFromQuickPick(arr: any[]) {
                 const range = new vscode.Range(
                     document.positionAt(quickPickItem.target.start),
                     document.positionAt(quickPickItem.target.end));
-                vscode.window.activeTextEditor?.revealRange(range, vscode.TextEditorRevealType.InCenter);
+                editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
             }
         });
     if (option?.label) {
@@ -444,11 +454,10 @@ async function getTargetFromQuickPick(arr: any[]) {
     }
 }
 
-export async function runHttpFileWithOptions(options: { curl: boolean, target: string }) {
-    const config = ApplicationServices.get().getCconfig();
-
-    const document = vscode.window.activeTextEditor?.document!;
-    const filename = document.fileName!;
+export async function runHttpFileWithOptions(options: { curl: boolean, target: string, fileName: string }) {
+    const filename = options.fileName;
+    const config = ApplicationServices.get().getConfig();
+    const document = (await vscode.workspace.openTextDocument(vscode.Uri.file(filename)));
     if (document.isDirty) {
         // as file is not saved,
         // execute http def on last saved file, which gives us 
@@ -538,7 +547,7 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
     if (existsSync(ifsavedFileName.fsPath)) {
         outputBodyURI = vscode.Uri.parse("untitled:" + getUnSaved(scriptFileName));
     }
-    if (ApplicationServices.get().getCconfig().reUseOld) {
+    if (ApplicationServices.get().getConfig().reUseOld) {
         const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
         if (editors.length !== 0) {
             const editor = editors[0];
@@ -548,7 +557,7 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
     }
     vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
         showEditor(textDoc, out.error ? out.error_message! : out.body!);
-        if (ApplicationServices.get().getCconfig().showHeaders && !out.error) {
+        if (ApplicationServices.get().getConfig().showHeaders && !out.error) {
             const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
             vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
                 showEditor(textDoc, JSON.stringify(out.headers), -2);
@@ -560,7 +569,7 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
 export function showEditor(textDoc: vscode.TextDocument, scriptContent: string, column = 2) {
     vscode.window.showTextDocument(textDoc, column /** new group */, false /**preserveFocus */).then(e => {
         e.edit(edit => {
-            if (ApplicationServices.get().getCconfig().reUseOld) {
+            if (ApplicationServices.get().getConfig().reUseOld) {
                 edit.delete(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(textDoc.lineCount + 1, 0)))
             }
             edit.insert(new vscode.Position(0, 0), scriptContent);

@@ -55,14 +55,15 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     onActiveEditorChanged(): any {
-        if (vscode.window.activeTextEditor) {
-            const scheme = vscode.window.activeTextEditor.document.uri.scheme;
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const fileName = vscode.window.activeTextEditor.document.fileName;
+                const fileName = editor.document.fileName;
                 const enabled = DotHttpEditorView.isHttpFile(fileName) || DotHttpEditorView.isHttpBook(fileName);
                 vscode.commands.executeCommand('setContext', Constants.propViewEnabled, enabled);
                 if (enabled) {
-                    this.filename = vscode.window.activeTextEditor.document.fileName;
+                    this.filename = editor.document.fileName;
                     this.refresh();
                 }
             }
@@ -320,10 +321,11 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     onActiveEditorChanged(): void {
-        if (vscode.window.activeTextEditor) {
-            const scheme = vscode.window.activeTextEditor.document.uri.scheme;
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const fileName = vscode.window.activeTextEditor.document.fileName;
+                const fileName = editor.document.fileName;
                 const enabled = DotHttpEditorView.isHttpFile(fileName)
                     || DotHttpEditorView.isHttpBook(fileName)
                     || basename(fileName) === ".dothttp.json";

@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import { extname } from 'path';
 import * as vscode from 'vscode';
-import { Configuration, isDotHttpCorrect, isPythonConfigured } from '../models/config';
+import { isDotHttpCorrect, isPythonConfigured } from '../models/config';
 import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
 import { IHistoryService } from '../tingohelpers';
@@ -61,7 +61,8 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             const app = ApplicationServices.get();
             const clientHandler = app.getClientHandler();
             const filestateService = app.getFileStateService();
-            const config = app.getCconfig();
+            const config = app.getConfig();
+            const env = filestateService.getEnv(kwargs.filename) ?? [];
             const options: DothttpRunOptions = {
                 noCookie: config.noCookies,
                 experimental: config.isExperimental,
@@ -69,7 +70,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 curl: kwargs.curl,
                 target: kwargs.target ?? '1',
                 properties: DotHttpEditorView.getEnabledProperties(kwargs.filename),
-                env: filestateService.getEnv(vscode.window.activeTextEditor?.document.fileName!)! ?? [],
+                env: env,
             }
             const out = await clientHandler.executeFile(options);
             if (out.script_result && out.script_result.properties)
