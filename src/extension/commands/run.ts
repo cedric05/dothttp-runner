@@ -15,12 +15,11 @@ import { getUnSaved } from '../utils/fileUtils';
 import DotHttpEditorView from '../views/editor';
 import dateFormat = require('dateformat');
 import path = require('path');
-import stringify = require('json-stringify-safe');
 import * as querystring from 'querystring';
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib')
 
-enum importoptions {
+enum ImportOptions {
     postman = 'postman',
     // swagger2 = 'swagger2.0',
     // swagger3 = 'swagger3.0',
@@ -28,6 +27,31 @@ enum importoptions {
     curl = 'curl',
     curlv2 = "curlv2",
     har = "har"
+}
+
+enum ImportType {
+    file = 'file',
+    link = 'link'
+}
+
+const IMPORTOPTION_MESSAGES: {
+    [imptype in ImportType]: { [option in ImportOptions]: string }
+} = {
+    "file": {
+        'postman': "Postman Collection (Have <Filename>.Postman_collection.Json File?)",
+        "swagger": "Swagger Schema (Have <Swagger Schema 2/3>.<Yaml/Json> File?)",
+        'curl': "Reads Curl Statement From File (Preferred)",
+        "curlv2": "Reads Curl Statement From File (Preferred)",
+        "har": "Har requests in a file"
+    },
+    "link": {
+        'postman': "Postman Collection Link",
+        "swagger": "Swagger Schema (Json/Yaml) Link",
+        'curl': "Paste Curl Statement In Input Box",
+        "curlv2": "Paste Curl Statement In Input Box",
+        "har": "Http Link To Har Collection",
+    }
+
 }
 
 const readFile = promisify(fsreadFile);
@@ -97,8 +121,8 @@ function curltoHarUsingpostmanconverter(statmenet: string) {
 
 async function importCurl(version: string) {
     const category = await vscode.window.showQuickPick([
-        { label: "file", description: "Reads curl statement from file (preferred)", },
-        { label: "paste", description: "Paste curl statement in input box" },
+        { label: "file", description: IMPORTOPTION_MESSAGES.file.curl, },
+        { label: "paste", description: IMPORTOPTION_MESSAGES.link.curl },
     ]);
     let curlStatement: string | undefined = "";
     if (!category) {
@@ -109,7 +133,7 @@ async function importCurl(version: string) {
         const importUri = await vscode.window.showOpenDialog({
             canSelectFolders: false,
             canSelectFiles: true,
-            title: "select curl to import resource",
+            title: IMPORTOPTION_MESSAGES.file.curl,
             canSelectMany: false,
         });
         if (importUri && importUri.length > 0) {
@@ -120,9 +144,9 @@ async function importCurl(version: string) {
         curlStatement = await getFileOrLink({ label: 'file' }, filenameToimport);
     } else {
         curlStatement = await vscode.window.showInputBox({
-            title: "paste curl here",
+            title: IMPORTOPTION_MESSAGES.link.curl,
             ignoreFocusOut: true,
-            placeHolder: "curl -X <link>",
+            placeHolder: "curl -X GET https://httpbin.org/get",
         });
     }
     if (!curlStatement) {
@@ -135,7 +159,7 @@ async function importCurl(version: string) {
     // this is not perfect fix, but solves most use cases
     curlStatement = curlStatement?.replace(/ \\ -/g, ' -');
 
-    const harType = version === importoptions.curlv2 ? curltoHarUsingpostmanconverter(curlStatement!) : curlToHar(curlStatement)
+    const harType = version === ImportOptions.curlv2 ? curltoHarUsingpostmanconverter(curlStatement!) : curlToHar(curlStatement)
     const directory = await pickDirectoryToImport();
     if (directory) {
         const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory)
@@ -151,9 +175,9 @@ async function pickDirectoryToImport() {
     const importUri = await vscode.window.showOpenDialog({
         canSelectFolders: true,
         canSelectFiles: false,
-        title: "select folder to import resource",
+        title: "Select Folder To Import Resource",
         canSelectMany: false,
-        openLabel: "select folder to import"
+        openLabel: "Select Folder To Import"
 
     });
     if (importUri?.length === 0) { return; }
@@ -184,36 +208,37 @@ export async function exportToPostman() {
 
 export async function importRequests() {
     const pickType = await vscode.window.showQuickPick([
-        importoptions.postman,
-        importoptions.swagger,
-        importoptions.har,
-        importoptions.curlv2,
-        importoptions.curl,
+        ImportOptions.postman,
+        ImportOptions.swagger,
+        ImportOptions.har,
+        ImportOptions.curlv2,
+        ImportOptions.curl,
 
-    ]) as importoptions;
+    ]) as ImportOptions;
     try {
         // const pickType = importoptions.postman;
         if (!pickType) { return }
-        if (pickType === importoptions.curl || pickType === importoptions.curlv2) {
+        if (pickType === ImportOptions.curl || pickType === ImportOptions.curlv2) {
             importCurl(pickType);
             return
         }
         const linkOrFile = await vscode.window.showQuickPick([{
-            label: "link",
-            description: pickType === importoptions.postman ? "postman collection link" : "swagger schema (json/yaml) link",
+            label: ImportType.link,
+            description: IMPORTOPTION_MESSAGES[ImportType.link][pickType],
             picked: true,
             alwaysShow: true,
         }, {
-            label: "file",
-            description: pickType === importoptions.postman ? "postman collection (have <filename>.postman_collection.json file?)" : "swagger schema (have <swagger schema 2/3>.<yaml/json> file?)",
+            label: ImportType.file,
+            description: IMPORTOPTION_MESSAGES[ImportType.file][pickType],
             picked: false,
             alwaysShow: true,
         }]);
         var filenameToimport: string | undefined;
         if (linkOrFile) {
-            if (linkOrFile['label'] === 'link') {
+            const linkOrFileType = linkOrFile['label'];
+            if (linkOrFileType === 'link') {
                 filenameToimport = await vscode.window.showInputBox({
-                    prompt: `${pickType === importoptions.postman ? "postman collection" : "swagger schema (json/yaml)"} link`,
+                    prompt: IMPORTOPTION_MESSAGES[linkOrFileType][pickType],
                     ignoreFocusOut: true,
                     // validateInput: (value) => {
                     // if (value.startsWith("https://www.getpostman.com/collections") ||
@@ -223,11 +248,11 @@ export async function importRequests() {
                     // },
                     placeHolder: "https://getpostman.com/collections"
                 });
-            } else if (linkOrFile['label'] === 'file') {
+            } else if (linkOrFileType === 'file') {
                 const filters: { [ram: string]: any } = {}
-                if (pickType === importoptions.swagger) {
+                if (pickType === ImportOptions.swagger) {
                     filters.Swagger = ["json", "yaml"]
-                } else if (pickType === importoptions.har) {
+                } else if (pickType === ImportOptions.har) {
                     filters.har = ["har", "har.json", "json"]
                 } else {
                     filters["Postman Collection"] = ["json", "postman_collection.json"];
@@ -235,7 +260,7 @@ export async function importRequests() {
                 const importUri = await vscode.window.showOpenDialog({
                     canSelectFolders: false,
                     canSelectFiles: true,
-                    title: "select file to import resource",
+                    title: IMPORTOPTION_MESSAGES[linkOrFileType][pickType],
                     filters: filters,
                     canSelectMany: false,
                 });
@@ -249,7 +274,7 @@ export async function importRequests() {
         }
         const directory = await pickDirectoryToImport();
         if (directory) {
-            if (pickType === importoptions.postman) {
+            if (pickType === ImportOptions.postman) {
                 const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true });
                 if (result.error == true) {
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${result.error_message}. 
@@ -258,7 +283,7 @@ follow https://learning.postman.com/docs/getting-started/importing-and-exporting
 or raise bug`);
                 }
                 await vscode.window.showInformationMessage(`checkout ${directory} !! import from postman completed successfully`);
-            } else if (pickType === importoptions.swagger || pickType === importoptions.har) {
+            } else if (pickType === ImportOptions.swagger || pickType === ImportOptions.har) {
                 try {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
                     const result = await importSwagger(swaggerInStr, filenameToimport, directory
@@ -292,7 +317,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined }, filename
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: string, picktype: importoptions): Promise<ImportHarResult> {
+async function importSwagger(data: any, filename: string, directory: string, picktype: ImportOptions): Promise<ImportHarResult> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -322,7 +347,7 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     // if har, just use it
 
     let harFormat = [];
-    if (picktype === importoptions.swagger) {
+    if (picktype === ImportOptions.swagger) {
         let _libFormat = swagger2har(hardata)
         const libFormat: Array<{ har: any; }> = _libFormat;
         if (!(libFormat && libFormat.length > 0)) {

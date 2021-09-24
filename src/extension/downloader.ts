@@ -79,6 +79,7 @@ export async function getVersion(): Promise<version> {
     const compatibleMat = resp.matrix[Constants.EXTENSION_VERSION];
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
+            .filter(mat => mat.stable)
             .filter(mat => semver.lte(compatibleMat.minVersion, mat.version)
                 && semver.lte(mat.version, compatibleMat.maxVersion))
             .sort((a, b) => {

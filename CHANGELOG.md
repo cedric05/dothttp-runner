@@ -1,5 +1,11 @@
 # Change Log
 
+
+## [0.0.30]
+
+- [**Improvement**] Import Resource Message Fix for all import types
+- [**Improvement**] dothttp-cli Install only stable versions
+
 ## [0.0.29]
 
 - [**Improvement**] Better support for swagger import 
