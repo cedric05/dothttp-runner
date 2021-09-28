@@ -2,7 +2,7 @@
 export enum Constants {
     // to notify, these all should be in caps
 
-    langCode = 'dothttp-vscode',
+    LANG_CODE = 'dothttp-vscode',
 
     // configs
     pythonPath = "dothttp.conf.pythonpath",
@@ -34,6 +34,7 @@ export enum Constants {
     RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
 
     HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
+	HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
 
     //    env tree
     envTreeView = 'dothttpEnvView',

@@ -41,7 +41,7 @@ export class NotebookKernel {
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = [Constants.langCode];
+        this._controller.supportedLanguages = [Constants.LANG_CODE];
         this._controller.supportsExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);

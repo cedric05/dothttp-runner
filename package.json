@@ -121,25 +121,25 @@
 		"commands": [
 			{
 				"command": "dothttp.command.run",
-				"title": "Dothttp Run Target",
+				"title": "Dothttp: Run Target",
 				"icon": "$(rocket)",
 				"category": "Dothttp"
 			},
 			{
 				"command": "dothttp.command.notebook.run",
-				"title": "Dothttp Run Target in Notebook",
+				"title": "Dothttp: Run Target in Notebook",
 				"icon": "$(rocket)",
 				"category": "Dothttp"
 			},
 			{
 				"command": "dothttp.command.text.run",
-				"title": "Dothttp Run Target CodeLens",
+				"title": "Dothttp: Run Target CodeLens",
 				"icon": "$(rocket)",
 				"category": "Dothttp"
 			},
 			{
 				"command": "dothttp.command.gencurl",
-				"title": "Dothttp Generate Curl",
+				"title": "Dothttp: Generate Curl",
 				"icon": "$(mirror)",
 				"category": "Dothttp"
 			},
@@ -181,7 +181,7 @@
 			},
 			{
 				"command": "dothttp.command.import.external",
-				"title": "Dothttp Import Resource To Http",
+				"title": "Dothttp: Import Resource To Http",
 				"category": "Dothttp",
 				"icon": "$(cloud-download)"
 			},
@@ -252,23 +252,28 @@
 			},
 			{
 				"command": "dothttp.command.generatelang",
-				"title": "Dothttp Generate General Programming Languages For Request",
+				"title": "Dothttp: Generate General Programming Languages For Request",
 				"icon": "$(extensions)"
 			},
 			{
 				"command": "dothttp.command.restartcli",
-				"title": "Dothttp Restart Cli Server",
+				"title": "Dothttp: Restart Cli Server",
 				"icon": "$(debug-restart)"
 			},
 			{
 				"command": "dothttp.command.export.postman",
-				"title": "Dothttp Export Http To Postman",
+				"title": "Dothttp: Export Http To Postman",
 				"icon": "$(extensions)"
 			},
 			{
 				"command": "dothttp.command.notebook.tohttpfile",
-				"title": "dothttp notebook to httpfile",
+				"title": "Dothttp: Notebook To Httpfile",
 				"icon": "$(archive)"
+			},
+			{
+				"command": "dothttp.command.openAsHttpBook",
+				"title": "Dothttp: Open as a Httpbook",
+				"icon": "$(book)"
 			}
 		],
 		"menus": {
@@ -292,27 +297,33 @@
 			"editor/context": [
 				{
 					"command": "dothttp.command.export.postman",
-					"title": "Dothttp export http to postman",
+					"title": "Dothttp: export http to postman",
 					"group": "Dothttp",
 					"icon": "$(extensions)"
 				},
 				{
 					"command": "dothttp.command.import.external",
-					"title": "Dothttp Import Resource To Http",
+					"title": "Dothttp: Import Resource To Http",
 					"group": "Dothttp",
 					"icon": "$(cloud-download)"
 				},
 				{
 					"command": "dothttp.command.generatelang",
-					"title": "Dothttp Generate General Programming Languages For Request",
+					"title": "Dothttp: Generate General Programming Languages For Request",
 					"group": "Dothttp",
 					"icon": "$(extensions)"
 				},
 				{
 					"command": "dothttp.command.run",
-					"title": "Dothttp Run Target",
+					"title": "Dothttp: Run Target",
 					"icon": "$(rocket)",
 					"category": "Dothttp"
+				},
+				{
+					"command": "dothttp.command.openAsHttpBook",
+					"title": "Dothttp: Open as a Httpbook",
+					"icon": "$(book)",
+					"when": "resourceLangId == 'dothttp-vscode'"
 				}
 			],
 			"commandPalette": [
@@ -337,6 +348,90 @@
 				},
 				{
 					"command": "dothttp.command.toggle.showheaders"
+				},
+				{
+					"command": "dothttp.command.export.postman",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.openAsHttpBook",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.enableenv",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.disableenv",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.copyPropertyValue",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.enableproperty",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.disableproperty",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.copyPropertyValue",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.updateproperty",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.removeproperty",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.refresh",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.opendothttpjson",
+					"when": "never"
+				},
+				{
+					"command": "dothttpEnvView.disableAllEnv",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.add",
+					"when": "never"
+				},
+				{
+					"command": "dothttpPropView.disableAllProperties",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.import.external",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.generatelang",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.notebook.tohttpfile",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.notebook.run",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.notebook.run",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.text.run",
+					"when": "never"
 				}
 			],
 			"view/title": [
@@ -364,6 +459,19 @@
 					"command": "dothttpPropView.disableAllProperties",
 					"when": "view == dothttpPropView",
 					"group": "navigation"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "dothttp.command.export.postman",
+					"title": "Dothttp: Export Http To Postman",
+					"icon": "$(extensions)"
+				},
+				{
+					"command": "dothttp.command.openAsHttpBook",
+					"title": "Dothttp: Open as a Httpbook",
+					"icon": "$(book)",
+					"when": "resourceLangId == 'dothttp-vscode'"
 				}
 			],
 			"view/item/context": [
@@ -411,7 +519,7 @@
 		},
 		"configuration": [
 			{
-				"title": "Dothttp Configuration",
+				"title": "Dothttp: Configuration",
 				"properties": {
 					"dothttp.conf.run.reuseold": {
 						"type": "boolean",

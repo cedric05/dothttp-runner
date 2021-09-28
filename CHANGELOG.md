@@ -9,6 +9,7 @@
   - Show Hover suggesstions in **HttpBook** cell
   - Run Individual target when multiple targets are defined in single cell of **HttpBook** notebook
   - Http Targets can be extended from http target defined in Other cell of **HttpBook** notebook
+  - Import http file as **Httpbook** (notebook)
 - [**Improvement**] now, extension uses disposes all commands, which helps vscode editor refresh or discard extension when not in use faster
 - [**Bug**] Targets Execution will be taken from code lens or editor panel (earlier, it is taken from activetexteditor, which is running into errors incase its not real editor, such as output window)
 - [**Bug**] export to postman runs into error in case of file already exported.

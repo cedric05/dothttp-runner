@@ -1,15 +1,15 @@
 import * as vscode from 'vscode';
+import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
+import { generateLangForHttpFile } from "./commands/export/generate";
+import { exportToPostman } from "./commands/export/postman";
+import { saveHttpFileasNotebook, saveNotebookAsHttpFile } from "./commands/http_httpbookConvertions";
+import { importRequests } from "./commands/import";
+import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
+import { setUp, updateDothttpIfAvailable } from './downloader';
 import {
 	DothttpClickDefinitionProvider,
 	UrlExpander
 } from './editorIntellisense';
-import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { generateLangForHttpFile } from "./commands/export/generate";
-import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
-import { importRequests } from "./commands/import";
-import { exportToPostman } from "./commands/export/postman";
-import { saveNotebookAsHttpFile } from "./commands/saveNotebookAsHttpFile";
-import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
 import { ApplicationServices } from './services/global';
@@ -44,6 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.RUN_NOTEBOOK_TARGET_IN_CELL, runTargetInCell),
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFile),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
+		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook)
 	])
 
 
@@ -77,21 +78,21 @@ export async function activate(context: vscode.ExtensionContext) {
 	const clickProvider = new DothttpClickDefinitionProvider();
 	context.subscriptions.push(...[
 
-		vscode.languages.registerCodeLensProvider(Constants.langCode, appServices.getDothttpSymbolProvier()),
-		vscode.languages.registerDefinitionProvider(Constants.langCode, clickProvider),
-		vscode.languages.registerHoverProvider(Constants.langCode, clickProvider),
+		vscode.languages.registerCodeLensProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerDefinitionProvider(Constants.LANG_CODE, clickProvider),
+		vscode.languages.registerHoverProvider(Constants.LANG_CODE, clickProvider),
 
-		vscode.languages.registerCodeActionsProvider(Constants.langCode, appServices.getDothttpSymbolProvier()),
-		vscode.languages.registerCodeActionsProvider(Constants.langCode, new UrlExpander()),
-		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.langCode }, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new UrlExpander()),
+		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE }, appServices.getDothttpSymbolProvier()),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider()),
 
 
-		vscode.languages.registerCompletionItemProvider(Constants.langCode, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.langCode, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.langCode, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
 
-		vscode.languages.registerCompletionItemProvider(Constants.langCode, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
 	]);
 
 
