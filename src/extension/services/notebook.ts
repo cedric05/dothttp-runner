@@ -1,13 +1,14 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { Response } from '../../common/response';
-import { addHistory } from '../commands/run';
+import { DothttpExecuteResponse, Response } from '../../common/response';
+import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
 import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
+import dateFormat = require("dateformat");
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -46,6 +47,24 @@ export class NotebookKernel {
 
         this.client = ApplicationServices.get().getClientHandler();
         this.fileStateService = ApplicationServices.get().getFileStateService();
+        const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
+        _renderer.onDidReceiveMessage(this.onMessage.bind(this))
+    }
+    onMessage(e: any) {
+        if (e.message.request === 'save') {
+            const response = e.message.response as DothttpExecuteResponse;
+            const {
+                target,
+                date,
+                fileName,
+                // cellNo
+            } = response.metadata!;
+
+            const fileNameWithInfo = contructFileName(fileName, { curl: false, target: target }, response, date);
+            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
+            // Launch the editor for the output identified by `e.message.data`
+        }
+
     }
 
     dispose(): void {
@@ -80,6 +99,8 @@ export class NotebookKernel {
             execution.end(false, Date.now())
 
         });
+        const date = new Date();
+        var now = dateFormat(date, 'hh:MM:ss');
         const out = await this.client.executeContent({
             content: httpDef,
             file: cell.document.fileName,
@@ -87,7 +108,14 @@ export class NotebookKernel {
             properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
             target,
             curl: false,
-        });
+        }) as DothttpExecuteResponse;
+        DotHttpEditorView.attachFileExtension(out);
+        out.metadata = {
+            fileName: cell.document.fileName,
+            cellNo: cell.index,
+            date: now,
+            target: target
+        }
         if (out.script_result && out.script_result.properties)
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
@@ -208,4 +236,3 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         return new TextEncoder().encode(stringify(contents, null, 1));
     }
 }
-

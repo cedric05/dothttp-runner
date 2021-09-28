@@ -13,6 +13,12 @@ export interface Response {
 
 
 export interface DothttpExecuteResponse {
+    metadata?: {
+        target: string;
+        date: string;
+        fileName: string;
+        cellNo: number;
+    }
     headers: Headers;
     body: string;
     status: number;

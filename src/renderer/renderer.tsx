@@ -2,16 +2,18 @@
 import { FunctionComponent, h } from 'preact';
 import { StateUpdater, useEffect, useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse } from '../common/response';
 var stringify = require('json-stringify-safe');
 // import * as Search from 'vscode-codicons/src/icons/search.svg';
 
-export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResponse> }> = ({ response }) => {
+export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResponse>, context: RendererContext<any> }> = ({ response, context }) => {
     const [activeIndex, setActive] = useState(0);
     const [searchKeyword, setSearchKeyword] = useState('');
     const uuid = uuidv4();
     const searchBarId = `search-bar-${uuid}`;
     const searchButtonId = `search-button-${uuid}`;
+    const saveButtonId = `save-button-${uuid}`;
 
     let darkMode = document.body.getAttribute('data-vscode-theme-kind')?.includes('dark') ?? false;
 
@@ -58,6 +60,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
                 scriptResultExists={scriptResultExists}
                 generatedProperties={propertiesGenerated} />
             <span class='tab-bar-tools'>
+                <button id={saveButtonId} class='search-button' title='Save response' onClick={() => postMessageToExtensionhost(context, response)}>Save Response</button>
                 <input id={searchBarId} placeholder='Search for keyword'></input>
                 <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
                     {/* <Icon name={Search} /> */}
@@ -222,3 +225,8 @@ const searchForTermInText = (text: string, searchKeyword: string) => {
         })}
     </span>;
 };
+
+function postMessageToExtensionhost(context: RendererContext<any>, response: any): void {
+    // console.log(response);
+    context.postMessage!({ "response": response, "request": "save", })
+}

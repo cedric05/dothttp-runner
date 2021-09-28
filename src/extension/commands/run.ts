@@ -17,6 +17,7 @@ import dateFormat = require('dateformat');
 import path = require('path');
 import * as querystring from 'querystring';
 import { TextEditorEdit, TextEditor } from 'vscode';
+import { DothttpExecuteResponse } from '../../common/response';
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib')
 
@@ -535,7 +536,7 @@ export function addHistory(out: any, filename: string, options: { target: string
     ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
 }
 
-function showInUntitledView(scriptFileName: string, headerURI: string, out: { error?: boolean, error_message?: string, body?: string, headers: {} }) {
+export function showInUntitledView(scriptFileName: string, headerURI: string, out: DothttpExecuteResponse) {
     /**
      * with textdocumentcontentprovider, content is not editable and formattable.
      * currently i'm skepticall among both options, 
@@ -551,16 +552,16 @@ function showInUntitledView(scriptFileName: string, headerURI: string, out: { er
         const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
         if (editors.length !== 0) {
             const editor = editors[0];
-            showEditor(editor.document, out.error ? out.error_message! : out.body!);
+            showEditor(editor.document, out.error ? out.error_message! : out.response.body!);
             return
         }
     }
     vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
-        showEditor(textDoc, out.error ? out.error_message! : out.body!);
+        showEditor(textDoc, out.error ? out.error_message! : out.response.body!);
         if (ApplicationServices.get().getConfig().showHeaders && !out.error) {
             const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
             vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
-                showEditor(textDoc, JSON.stringify(out.headers), -2);
+                showEditor(textDoc, JSON.stringify(out.response.headers), -2);
             });
         }
     });
@@ -577,7 +578,7 @@ export function showEditor(textDoc: vscode.TextDocument, scriptContent: string, 
     });
 }
 
-function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, now: string) {
+export function contructFileName(filename: string, options: { curl: boolean; target: string; }, out: any, now: string) {
     var middlepart = 'error';
     options.target = (options.target ?? '').replace(/[^\w\s]/gi, '')
     if (!out.error_message) {

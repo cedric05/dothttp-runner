@@ -83,7 +83,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         }
     }
 
-    private static attachFileExtension(out: any) {
+    static attachFileExtension(out: any) {
         out['filenameExtension'] = 'txt';
         const headers = out['headers'] ?? {};
         Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
