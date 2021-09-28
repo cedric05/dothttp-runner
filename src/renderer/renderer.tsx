@@ -3,7 +3,7 @@ import { FunctionComponent, h } from 'preact';
 import { StateUpdater, useEffect, useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { RendererContext } from 'vscode-notebook-renderer';
-import { DothttpExecuteResponse } from '../common/response';
+import { DothttpExecuteResponse, MessageType } from '../common/response';
 var stringify = require('json-stringify-safe');
 // import * as Search from 'vscode-codicons/src/icons/search.svg';
 
@@ -60,7 +60,8 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
                 scriptResultExists={scriptResultExists}
                 generatedProperties={propertiesGenerated} />
             <span class='tab-bar-tools'>
-                <button id={saveButtonId} class='search-button' title='Save response' onClick={() => postMessageToExtensionhost(context, response)}>Save Response</button>
+                <button id={saveButtonId} class='search-button' title='Save response' onClick={() => saveResponse(context, response)}>Save Response</button>
+                <button id={'generate-lang-${uuid}'} class='search-button' title='Generate Language' onClick={() => generateLanguage(context, response)}>Generate Language</button>
                 <input id={searchBarId} placeholder='Search for keyword'></input>
                 <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
                     {/* <Icon name={Search} /> */}
@@ -226,7 +227,11 @@ const searchForTermInText = (text: string, searchKeyword: string) => {
     </span>;
 };
 
-function postMessageToExtensionhost(context: RendererContext<any>, response: any): void {
+function saveResponse(context: RendererContext<any>, response: any): void {
     // console.log(response);
-    context.postMessage!({ "response": response, "request": "save", })
+    context.postMessage!({ "response": response, "request": MessageType.save, })
 }
+function generateLanguage(context: RendererContext<any>, response: Readonly<DothttpExecuteResponse>): void {
+    context.postMessage!({ "response": response, "request": MessageType.generate, })
+}
+

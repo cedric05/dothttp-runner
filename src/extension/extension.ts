@@ -4,8 +4,11 @@ import {
 	UrlExpander
 } from './editorIntellisense';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { generateLang } from "./commands/generate";
-import { exportToPostman, genCurlCommand, importRequests, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
+import { generateLangForHttpFile } from "./commands/export/generate";
+import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
+import { importRequests } from "./commands/import";
+import { exportToPostman } from "./commands/export/postman";
+import { saveNotebookAsHttpFile } from "./commands/saveNotebookAsHttpFile";
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import { Constants } from './models/constants';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
@@ -34,11 +37,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand)),
 		vscode.commands.registerCommand(Constants.IMPORT_RESOURCE_COMMAND, importRequests),
 		vscode.commands.registerCommand(Constants.EXPORT_RESOURCE_COMMAND, exportToPostman),
-		vscode.commands.registerCommand(Constants.generateLangCommand, generateLang),
+		vscode.commands.registerCommand(Constants.GENERATE_PROG_LANG_COMMAND, generateLangForHttpFile),
 		vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
 			appServices.getClientHandler().restart();
 		}),
 		vscode.commands.registerCommand(Constants.RUN_NOTEBOOK_TARGET_IN_CELL, runTargetInCell),
+		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFile),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
 	])
 

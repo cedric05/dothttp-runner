@@ -264,6 +264,11 @@
 				"command": "dothttp.command.export.postman",
 				"title": "Dothttp Export Http To Postman",
 				"icon": "$(extensions)"
+			},
+			{
+				"command": "dothttp.command.notebook.tohttpfile",
+				"title": "dothttp notebook to httpfile",
+				"icon": "$(archive)"
 			}
 		],
 		"menus": {
@@ -277,6 +282,11 @@
 					"command": "dothttp.command.gencurl",
 					"when": "resourceExtname == .http || resourceExtname == .dhttp",
 					"group": "navigation@2"
+				},
+				{
+					"command": "dothttp.command.notebook.tohttpfile",
+					"when": "resourceExtname == .httpbook || resourceExtname == .hnbk",
+					"group": "navigation@1"
 				}
 			],
 			"editor/context": [

@@ -28,10 +28,12 @@ export enum Constants {
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
     EXPORT_RESOURCE_COMMAND = "dothttp.command.export.postman",
-    generateLangCommand = "dothttp.command.generatelang",
+    GENERATE_PROG_LANG_COMMAND = "dothttp.command.generatelang",
     RESTART_CLI_COMMAND = "dothttp.command.restartcli",
     RUN_NOTEBOOK_TARGET_IN_CELL = "dothttp.command.codelens.notebook.run",
     RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
+
+    HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
 
     //    env tree
     envTreeView = 'dothttpEnvView',

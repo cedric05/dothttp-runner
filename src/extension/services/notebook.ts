@@ -1,6 +1,7 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { DothttpExecuteResponse, Response } from '../../common/response';
+import { DothttpExecuteResponse, MessageType, Response } from '../../common/response';
+import { generateLang } from "../commands/export/generate";
 import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
@@ -50,19 +51,33 @@ export class NotebookKernel {
         const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
-    onMessage(e: any) {
-        if (e.message.request === 'save') {
-            const response = e.message.response as DothttpExecuteResponse;
-            const {
-                target,
-                date,
-                fileName,
-                // cellNo
-            } = response.metadata!;
+    async onMessage(e: any) {
+        switch (e.message.request) {
+            case MessageType.generate: {
+                const response = e.message.response as DothttpExecuteResponse;
+                const {
+                    target,
+                    fileName,
+                    cellNo
+                } = response.metadata!;
+                const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(fileName));
+                const cell = notebook.cellAt(cellNo);
+                return generateLang({ filename: fileName, target: target, content: cell.document.getText() })
+            }
+            case MessageType.save: {
+                const response = e.message.response as DothttpExecuteResponse;
+                const {
+                    target,
+                    date,
+                    fileName,
+                    // cellNo
+                } = response.metadata!;
 
-            const fileNameWithInfo = contructFileName(fileName, { curl: false, target: target }, response, date);
-            showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
-            // Launch the editor for the output identified by `e.message.data`
+                const fileNameWithInfo = contructFileName(fileName, { curl: false, target: target }, response, date);
+                return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
+            }
+            default:
+                break;
         }
 
     }
@@ -105,22 +120,22 @@ export class NotebookKernel {
         });
         const date = new Date();
         var now = dateFormat(date, 'hh:MM:ss');
-        const out = await this.client.executeContent({
+        const out = await this.client.executeContentWithExtension({
             content: httpDef,
             file: cell.document.fileName,
             env: this.fileStateService.getEnv(filename),
             properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
             target,
             curl: false,
-            contexts:contexts
+            contexts: contexts
         }) as DothttpExecuteResponse;
-        DotHttpEditorView.attachFileExtension(out);
-        out.metadata = {
+        const metadata = {
             fileName: cell.document.fileName,
             cellNo: cell.index,
             date: now,
             target: target
         }
+        out.metadata = metadata;
         if (out.script_result && out.script_result.properties)
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
