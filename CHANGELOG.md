@@ -2,11 +2,12 @@
 
 ## [0.0.31]
 
-- [**Improvement**] now, extension uses diposes, which helps vscode editor refresh or discard extension when not in use
-- [**Improvement**] Run Targets (allows non first target to be executed) in httpbook (save responses)
+- [**Improvement**] now, extension uses disposes all commands, which helps vscode editor refresh or discard extension when not in use faster
+- [**Improvement**] [httpbook] Run Targets (allows non first target to be executed) in httpbook (save responses)
+  - multiple targets can be defined in single cell and can be run individually
+  - can extend from different cell's target.
 - [**Improvement**] Show suggestions in httpbook
 - [**Bug**] Targets Execution will be taken from code lens or editor panel (earlier, it is taken from activetexteditor, which is running into errors incase its not real editor, such as output window)
-- 
 
 
 

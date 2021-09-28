@@ -239,6 +239,7 @@ export class ClientHandler {
             nocookie: options.noCookie,
             target: options.target,
             curl: options.curl,
+            contexts: options.contexts
         })
     }
 

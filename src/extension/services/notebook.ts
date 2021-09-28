@@ -87,6 +87,10 @@ export class NotebookKernel {
         execution.start(Date.now());
         const httpDef = cell.document.getText();
         const filename = cell.document.fileName;
+        const contexts = cell.notebook
+            .getCells()
+            .filter(cell => cell.kind == vscode.NotebookCellKind.Code)
+            .map(cell => cell.document.getText());
         execution.token.onCancellationRequested(() => {
             // incase of cancellation, there is no need to replace out.
             // may appending could help
@@ -108,6 +112,7 @@ export class NotebookKernel {
             properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
             target,
             curl: false,
+            contexts:contexts
         }) as DothttpExecuteResponse;
         DotHttpEditorView.attachFileExtension(out);
         out.metadata = {
