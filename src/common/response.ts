@@ -13,6 +13,13 @@ export interface Response {
 
 
 export interface DothttpExecuteResponse {
+    metadata?: {
+        target: string;
+        date: string;
+        fileName: string;
+        cellNo: number;
+    }
+    filenameExtension?: string,
     headers: Headers;
     body: string;
     status: number;
@@ -39,4 +46,10 @@ export interface Test {
     success: boolean;
     result: string;
     error: string,
+}
+
+
+export enum MessageType {
+    save,
+    generate
 }

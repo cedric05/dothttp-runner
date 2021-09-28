@@ -2,7 +2,7 @@
 export enum Constants {
     // to notify, these all should be in caps
 
-    langCode = 'dothttp-vscode',
+    LANG_CODE = 'dothttp-vscode',
 
     // configs
     pythonPath = "dothttp.conf.pythonpath",
@@ -18,8 +18,8 @@ export enum Constants {
     // view props
 
     // commands
-    runFileCommand = 'dothttp.command.run',
-    genCurlForFileCommand = 'dothttp.command.gencurl',
+    RUN_FILE_COMMAND = 'dothttp.command.run',
+    GEN_CURL_FILE_COMMAND = 'dothttp.command.gencurl',
     toggleExperimentalCommand = "dothttp.command.toggle.experimental",
     toggleHistoryCommand = "dothttp.command.toggle.history",
     toggleNocookieCommand = "dothttp.command.toggle.nocookie",
@@ -28,8 +28,13 @@ export enum Constants {
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
     IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
     EXPORT_RESOURCE_COMMAND = "dothttp.command.export.postman",
-    generateLangCommand = "dothttp.command.generatelang",
+    GENERATE_PROG_LANG_COMMAND = "dothttp.command.generatelang",
     RESTART_CLI_COMMAND = "dothttp.command.restartcli",
+    RUN_NOTEBOOK_TARGET_IN_CELL = "dothttp.command.codelens.notebook.run",
+    RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
+
+    HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
+	HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
 
     //    env tree
     envTreeView = 'dothttpEnvView',

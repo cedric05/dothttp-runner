@@ -1,13 +1,15 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { Response } from '../../common/response';
-import { addHistory } from '../commands/run';
+import { DothttpExecuteResponse, MessageType, Response } from '../../common/response';
+import { generateLang } from "../commands/export/generate";
+import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
 import DotHttpEditorView from "../views/editor";
 import { ApplicationServices } from "./global";
 import { IFileState } from "./state";
 import stringify = require('json-stringify-safe');
+import dateFormat = require("dateformat");
 var mime = require('mime-types');
 
 interface RawNotebookCell {
@@ -29,7 +31,7 @@ export class NotebookKernel {
     readonly label = 'Dot Book Kernel';
     readonly supportedLanguages = [Constants.dothttpNotebook];
 
-    private readonly _controller: vscode.NotebookController;
+    readonly _controller: vscode.NotebookController;
     private _executionOrder = 0;
     client: ClientHandler;
     fileStateService: IFileState;
@@ -39,13 +41,45 @@ export class NotebookKernel {
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = [Constants.langCode];
+        this._controller.supportedLanguages = [Constants.LANG_CODE];
         this._controller.supportsExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
 
         this.client = ApplicationServices.get().getClientHandler();
         this.fileStateService = ApplicationServices.get().getFileStateService();
+        const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
+        _renderer.onDidReceiveMessage(this.onMessage.bind(this))
+    }
+    async onMessage(e: any) {
+        switch (e.message.request) {
+            case MessageType.generate: {
+                const response = e.message.response as DothttpExecuteResponse;
+                const {
+                    target,
+                    fileName,
+                    cellNo
+                } = response.metadata!;
+                const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(fileName));
+                const cell = notebook.cellAt(cellNo);
+                return generateLang({ filename: fileName, target: target, content: cell.document.getText() })
+            }
+            case MessageType.save: {
+                const response = e.message.response as DothttpExecuteResponse;
+                const {
+                    target,
+                    date,
+                    fileName,
+                    // cellNo
+                } = response.metadata!;
+
+                const fileNameWithInfo = contructFileName(fileName, { curl: false, target: target }, response, date);
+                return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
+            }
+            default:
+                break;
+        }
+
     }
 
     dispose(): void {
@@ -58,15 +92,20 @@ export class NotebookKernel {
         }
     }
 
-    private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
+    public executeCell(cell: vscode.NotebookCell, target?: string) {
+        this._doExecution(cell, target);
+    }
+
+    private async _doExecution(cell: vscode.NotebookCell, target: string = '1'): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
         execution.start(Date.now());
         const httpDef = cell.document.getText();
         const filename = cell.document.fileName;
-        // TODO
-        // do we want to only execute first one?????
-        const target = '1';
+        const contexts = cell.notebook
+            .getCells()
+            .filter(cell => cell.kind == vscode.NotebookCellKind.Code)
+            .map(cell => cell.document.getText());
         execution.token.onCancellationRequested(() => {
             // incase of cancellation, there is no need to replace out.
             // may appending could help
@@ -79,14 +118,24 @@ export class NotebookKernel {
             execution.end(false, Date.now())
 
         });
-        const out = await this.client.executeContent({
+        const date = new Date();
+        var now = dateFormat(date, 'hh:MM:ss');
+        const out = await this.client.executeContentWithExtension({
             content: httpDef,
             file: cell.document.fileName,
             env: this.fileStateService.getEnv(filename),
             properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
             target,
             curl: false,
-        });
+            contexts: contexts
+        }) as DothttpExecuteResponse;
+        const metadata = {
+            fileName: cell.document.fileName,
+            cellNo: cell.index,
+            date: now,
+            target: target
+        }
+        out.metadata = metadata;
         if (out.script_result && out.script_result.properties)
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
@@ -207,4 +256,3 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         return new TextEncoder().encode(stringify(contents, null, 1));
     }
 }
-

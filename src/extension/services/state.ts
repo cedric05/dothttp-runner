@@ -93,6 +93,9 @@ export class FileState implements IFileState {
         return null;
     }
     addEnv(filename: string, env: string): void {
+        if (env === "*"){
+            return;
+        }
         const fileinfo = this.getFileInfo(filename);
         const index = fileinfo.envs.indexOf(env);
         if (index > -1) {

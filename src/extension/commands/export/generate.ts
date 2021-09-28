@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import { HttpTargetDef } from '../lib/lang-parse';
-import { ApplicationServices } from '../services/global';
-import DotHttpEditorView from '../views/editor';
-import { cacheAndGetTarget, showEditor } from './run';
+import { HttpTargetDef } from '../../lib/lang-parse';
+import { ApplicationServices } from '../../services/global';
+import DotHttpEditorView from '../../views/editor';
+import { cacheAndGetTarget, showEditor } from '../run';
 import HTTPSnippet = require("httpsnippet");
 
 const LANG_GEN_TARGETS = [
@@ -28,24 +28,34 @@ const LANG_GEN_TARGETS = [
 ];
 
 
-export async function generateLang(...arr: any[]) {
-    const target = await cacheAndGetTarget(arr);
-    const filename = vscode.window.activeTextEditor?.document.fileName!;
+export async function generateLangForHttpFile(uri: vscode.Uri) {
+    const document = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(document);
+
+    const target = await cacheAndGetTarget(editor, document);
+    const filename = document.fileName!;
     if (!fs.existsSync(filename)) {
         return;
     }
+    return generateLang({ filename, target: target! })
 
-    const app = ApplicationServices.get();
-    const out = await app.clientHanler.generateLangHttp({
+}
+
+export async function generateLang(options: { filename: string, target: string, content?: string }): Promise<void> {
+    const { filename, target, content } = options;
+    const clientHanler = ApplicationServices.get().getClientHandler();
+    const fileStateService = ApplicationServices.get().getFileStateService();
+    const func = ((content) ? clientHanler.generateLangFromVirtualDocHttp : clientHanler.generateLangHttp).bind(clientHanler);
+    const out = await func({
         file: filename,
+        content: content,
         curl: false,
-        content: "",
         target: target,
         properties: DotHttpEditorView.getEnabledProperties(filename),
-        env: app.getFileStateService().getEnv(filename)! ?? [],
+        env: fileStateService.getEnv(filename)! ?? [],
     });
     try {
-        const targetHttpDef = out.target[target]! as HttpTargetDef;
+        const targetHttpDef = out.target[target ?? '1']! as HttpTargetDef;
         const snippet = new HTTPSnippet({
             method: targetHttpDef.method, url: targetHttpDef.url,
             queryString: targetHttpDef.query, headers: targetHttpDef.headers,

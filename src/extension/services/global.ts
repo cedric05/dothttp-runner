@@ -11,6 +11,7 @@ import path = require('path');
 import { Configuration } from "../models/config";
 import * as fs from 'fs';
 import { UrlStorageService, UrlStore } from "./UrlStorage";
+import { NotebookKernel } from "./notebook";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -29,6 +30,7 @@ export class ApplicationServices {
     private versionInfo: VersionInfo;
     private config: Configuration;
     private urlStore: UrlStore;
+    private notebookkernel!: NotebookKernel;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -147,10 +149,10 @@ export class ApplicationServices {
         this.versionInfo = value;
     }
 
-    public getCconfig(): Configuration {
+    public getConfig(): Configuration {
         return this.config;
     }
-    public setCconfig(value: Configuration) {
+    public setConfig(value: Configuration) {
         this.config = value;
     }
 
@@ -160,6 +162,13 @@ export class ApplicationServices {
     }
     public setUrlStore(value: UrlStore) {
         this.urlStore = value;
+    }
+
+    public getNotebookkernel(): NotebookKernel {
+        return this.notebookkernel;
+    }
+    public setNotebookkernel(value: NotebookKernel) {
+        this.notebookkernel = value;
     }
 
 }

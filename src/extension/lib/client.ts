@@ -9,6 +9,8 @@ import { Configuration, isDotHttpCorrect } from '../models/config';
 import { DothttpRunOptions, DothttpTypes } from '../models/misc';
 import { HttpFileTargetsDef } from './lang-parse';
 import EventEmitter = require('events');
+var mime = require('mime-types');
+
 
 interface ICommandClient {
     request(method: string, params: {}): Promise<{}>;
@@ -230,6 +232,16 @@ export class ClientHandler {
         })
     }
 
+    async executeFileWithExtension(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {
+        const out = await this.executeFile(options);
+        out['filenameExtension'] = 'txt';
+        const headers = out['headers'] ?? {};
+        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+            out['filenameExtension'] = mime.extension(headers[key]);
+        });
+        return out;
+    }
+
     async executeContent(options: DothttpRunOptions & { content: string }): Promise<DothttpExecuteResponse> {
         return await this.cli.request(ClientHandler.CONTENT_EXECUTE_COMMAND, {
             content: options.content,
@@ -239,7 +251,18 @@ export class ClientHandler {
             nocookie: options.noCookie,
             target: options.target,
             curl: options.curl,
+            contexts: options.contexts
         })
+    }
+
+    async executeContentWithExtension(options: DothttpRunOptions & { content: string }): Promise<DothttpExecuteResponse> {
+        const out = await this.executeContent(options);
+        out['filenameExtension'] = 'txt';
+        const headers = out['headers'] ?? {};
+        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+            out['filenameExtension'] = mime.extension(headers[key]);
+        });
+        return out;
     }
 
     async importPostman(options: { link: string, directory: string, save: boolean }) {
@@ -286,11 +309,20 @@ export class ClientHandler {
         })
     }
 
-    async generateLangHttp(options: DothttpRunOptions & { content: string }): Promise<HttpFileTargetsDef> {
+    async generateLangHttp(options: DothttpRunOptions & { content?: string }): Promise<HttpFileTargetsDef> {
+        return await this.cli.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+            env: options.env,
+            file: options.file,
+            properties: options.properties,
+            nocookie: options.noCookie,
+            target: options.target,
+        })
+    }
+
+    async generateLangFromVirtualDocHttp(options: DothttpRunOptions & { content?: string }): Promise<HttpFileTargetsDef> {
         return await this.cli.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
             content: options.content,
             env: options.env,
-            file: options.file,
             properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,

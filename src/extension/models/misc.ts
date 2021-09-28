@@ -8,6 +8,7 @@ export interface DothttpRunOptions {
     curl: boolean
     file: string,
     target?: string,
+    contexts?: Array<string>,
     properties?: { [prop: string]: string },
 }
 
