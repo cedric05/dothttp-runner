@@ -33,6 +33,7 @@
 		"onCommand:dothttp.command.toggle.showheaders",
 		"onCommand:dothttp.command.toggle.history",
 		"onCommand:dothttp.command.toggle.nocookie",
+		"onCommand:dothttp.command.toggle.unstable",
 		"onCommand:dothttp.command.import.external",
 		"onCommand:dothttpEnvView.refresh",
 		"onCommand:dothttpEnvView.enableenv",
@@ -176,6 +177,12 @@
 			{
 				"command": "dothttp.command.toggle.nocookie",
 				"title": "Toggles Cookie Setting",
+				"category": "Dothttp",
+				"icon": "$(gear)"
+			},
+			{
+				"command": "dothttp.command.toggle.unstable",
+				"title": "Toggles Unstable dothttp build",
 				"category": "Dothttp",
 				"icon": "$(gear)"
 			},
@@ -521,6 +528,11 @@
 			{
 				"title": "Dothttp: Configuration",
 				"properties": {
+					"dothttp.conf.useunstable": {
+						"type": "boolean",
+						"default": false,
+						"description": "Use dothttp build type: Stable(:false) or Unstable(:true)"
+					},
 					"dothttp.conf.run.reuseold": {
 						"type": "boolean",
 						"default": false,

@@ -51,6 +51,8 @@ export function toggleExperimentalFlag(confKey: string) {
             case "dothttp.command.toggle.reuse":
                 key = "dothttp.conf.run.reuseold"
                 break;
+            case Constants.COMMAND_TOGGLE_UNSTABLE:
+                key = Constants.CONFIG_DOTHTTP_USE_STABLE;
         }
         vscode.workspace.getConfiguration().update(key!, !vscode.workspace.getConfiguration().get(key!), vscode.ConfigurationTarget.Workspace);
     };

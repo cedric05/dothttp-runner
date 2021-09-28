@@ -1,7 +1,7 @@
 
 export enum Constants {
     // to notify, these all should be in caps
-
+    
     LANG_CODE = 'dothttp-vscode',
 
     // configs
@@ -15,6 +15,7 @@ export enum Constants {
     runConf = "dothttp.conf.runrecent",
     reUseOldTab = "dothttp.conf.run.reuseold",
     responseDirectory = "dothttp.conf.response.savedirectory",
+    CONFIG_DOTHTTP_USE_STABLE = "dothttp.conf.useunstable",
     // view props
 
     // commands
@@ -26,6 +27,7 @@ export enum Constants {
     toggleHeadersCommand = "dothttp.command.toggle.showheaders",
     toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
     toggleRunRecentCommand = "dothttp.command.toggle.reuse",
+    COMMAND_TOGGLE_UNSTABLE = "dothttp.command.toggle.unstable",
     IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
     EXPORT_RESOURCE_COMMAND = "dothttp.command.export.postman",
     GENERATE_PROG_LANG_COMMAND = "dothttp.command.generatelang",
@@ -34,7 +36,7 @@ export enum Constants {
     RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
 
     HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
-	HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
+    HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
 
     //    env tree
     envTreeView = 'dothttpEnvView',

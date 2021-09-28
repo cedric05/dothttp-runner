@@ -78,6 +78,10 @@ export class Configuration {
         return Configuration.setGlobalValue(Constants.dothttpPath, value);
     }
 
+    static get isToUseUnStable() {
+        return vscode.workspace.getConfiguration().get(Constants.CONFIG_DOTHTTP_USE_STABLE) as boolean;
+    }
+
 
     reUseOld = false;
     runRecent = false;
