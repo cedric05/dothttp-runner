@@ -1,5 +1,16 @@
 # Change Log
 
+
+## [0.0.32]
+
+- [**Feature**] Postman Personal Account Integration
+  - [**Feature**] Import Postman Collections / workspaces
+  - [**Feature**] Export to Postman Collection
+- [**Feature**] Better suggessions for generate programming language
+- [**Bug**] **HttpBook** Generate request programming language is not working few times fixed
+- [**Bug**] Request error is not shown in case of property is not found
+
+
 ## [0.0.31]
 
 - [**Improvement**] **HttpBook**

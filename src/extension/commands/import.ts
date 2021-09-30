@@ -1,19 +1,24 @@
 import axios from 'axios';
-import { readFile as fsreadFile } from 'fs';
+import { promises as fs } from 'fs';
 import { load as loadYaml } from "js-yaml";
+import * as querystring from 'querystring';
 // @ts-expect-error
 import { swagger2har } from 'swagger-to-har2';
-import { promisify } from 'util';
+import * as temp from 'temp';
 import * as vscode from 'vscode';
 import { ImportHarResult } from '../lib/client';
 import { ApplicationServices } from '../services/global';
+import { Collection, PostmanClient, getPostmanClient } from './export/postmanUtils';
+
 import path = require('path');
-import * as querystring from 'querystring';
+import { Constants } from '../models/constants';
+
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib');
 
 enum ImportOptions {
     postman = 'postman',
+    postman_workspace = "postman_workspace",
     // swagger2 = 'swagger2.0',
     // swagger3 = 'swagger3.0',
     swagger = "swagger",
@@ -27,7 +32,7 @@ enum ImportType {
 }
 const IMPORTOPTION_MESSAGES: {
     [imptype in ImportType]: {
-        [option in ImportOptions]: string;
+        [option in ImportOptions]?: string;
     };
 } = {
     "file": {
@@ -45,7 +50,6 @@ const IMPORTOPTION_MESSAGES: {
         "har": "Http Link To Har Collection",
     }
 };
-const readFile = promisify(fsreadFile);
 function curltoHarUsingpostmanconverter(statmenet: string) {
     const obj = curl2Postman.convertCurlToRequest(statmenet);
     let postData: {
@@ -178,16 +182,31 @@ export async function pickDirectoryToImport() {
 }
 
 export async function importRequests() {
-    const pickType = await vscode.window.showQuickPick([
-        ImportOptions.postman,
-        ImportOptions.swagger,
-        ImportOptions.har,
-        ImportOptions.curlv2,
-        ImportOptions.curl,
-    ]) as ImportOptions;
+    const pickType = (await vscode.window.showQuickPick([
+        { "picktype": ImportOptions.postman, description: "Import using Public collection url/file shared by some one else", "label": "Postman Individual Collection" },
+        { "picktype": ImportOptions.postman_workspace, description: "Import by connecting to postman account via postman apis", label: "Postman Self Account" },
+        { "picktype": ImportOptions.swagger, label: "Swagger(v2 or v3)", description: "is a specification and framework for describing REST APIs" },
+        { "picktype": ImportOptions.har, label: "Har", description: "Har is http archive, easy way to Capture Web session traffic info: https://support.google.com/admanager/answer/10358597?hl=en" },
+        { "picktype": ImportOptions.curlv2, label: "CurlV2" },
+        { "picktype": ImportOptions.curl, label: "Curl" },
+    ] as Array<{ picktype: ImportOptions } & vscode.QuickPickItem>, { ignoreFocusOut: true }))?.picktype;
     try {
         // const pickType = importoptions.postman;
         if (!pickType) { return; }
+        if (pickType === ImportOptions.postman_workspace) {
+            try {
+                return await importPostmanInternal();
+            } catch (error) {
+                if ((error as Error & { isAxiosError: boolean }).isAxiosError) {
+                    error = await vscode.window.showWarningMessage("Postman API Key is revoked and is removed, please try again now", "Enter Postman key again?");
+                    if (error == "Enter Postman key again?") {
+                        return await vscode.commands.executeCommand(Constants.IMPORT_RESOURCE_COMMAND);
+                    }
+                } else {
+                    return await vscode.window.showErrorMessage(`Unknown Error ${error} happened!, Please create Bug`)
+                }
+            }
+        }
         if (pickType === ImportOptions.curl || pickType === ImportOptions.curlv2) {
             importCurl(pickType);
             return;
@@ -288,7 +307,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenam
         const out = await axios.get(filenameToimport);
         return out.data;
     } else {
-        return (await readFile(filenameToimport)).toString('utf-8');
+        return (await fs.readFile(filenameToimport)).toString('utf-8');
     }
 }
 
@@ -335,3 +354,85 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     }
     return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename);
 }
+
+
+async function importPostmanInternal() {
+    const postmanClient = await getPostmanClient();
+    const directory = await pickDirectoryToImport();
+    if (!directory) {
+        return;
+    }
+    const category = await vscode.window.showQuickPick(
+        [
+            { "label": "All Collectoins", "type": "Collections", description: "Collections from all Workspaces" },
+            { "label": "Pick from workspace", "type": "workspace", description: "Pick collection from specific Workspaces" }
+        ], { ignoreFocusOut: true });
+    if (!category) {
+        return;
+    }
+    // temp will track each file
+    temp.track();
+    let results: Array<CollectionImportErrorInfo | undefined>;
+    if (category.type === "Collections") {
+        // error can happen at this point
+        // but it is irrecoverable
+        const collectionsListResponse = await postmanClient.listCollections();
+        results = await Promise.all(collectionsListResponse.data.collections.map(
+            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory)
+        ));
+    } else {
+        // error can happen at this point
+        // but it is irrecoverable
+        const workspaceResponse = await postmanClient.listWorkSpaces();
+        const workspacePicks = workspaceResponse.data.workspaces.map(workspace => {
+            return {
+                "label": `workspace: ${workspace.name}, id: ${workspace.id}`,
+                "workspaceType": "existing",
+                "description": "use existing workspace",
+                ...workspace
+            }
+        })
+        const picked = await vscode.window.showQuickPick(workspacePicks);
+        if (!picked) {
+            return;
+        }
+        // error can happen at this point
+        // but it is irrecoverable
+        const worksapce = await postmanClient.getWorkspace(picked.id);
+        const { collections } = worksapce.data.workspace;
+        if (!collections || collections.length == 0) {
+            await vscode.window.showInformationMessage(`No Collections availaible in workspace : '${worksapce.data.workspace.name}' ${directory}`);
+            return;
+        }
+        results = await Promise.all(collections.map(
+            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory)
+        ))
+    }
+    const failures = results.filter(error => error).map(er => `${er!.id} msg: ${er!.message}`).join(", ");
+    // delete all collections
+    await temp.cleanup();
+    if (failures) {
+        await vscode.window.showWarningMessage(`Only Few Collections have been imported in ${directory}, other ran into error info: ${results}`);
+    } else {
+        await vscode.window.showInformationMessage(`All Collections have been imported in ${directory}`);
+    }
+}
+
+
+type CollectionImportErrorInfo = Error & { id: string }
+
+
+async function importPostmanCollectionHandler(aCollectionInfo: Collection, client: PostmanClient, directory: string): Promise<CollectionImportErrorInfo | undefined> {
+    try {
+        const collectionResponse = await client.getCollection(aCollectionInfo.uid);
+        const { collection } = collectionResponse.data;
+        const tempFileInfo = await temp.open("dothttp_collection");
+        await fs.writeFile(tempFileInfo.path, JSON.stringify(collection));
+        await ApplicationServices.get().getClientHandler().importPostman({ link: tempFileInfo.path, directory: directory, save: true });
+    } catch (err) {
+        const error = new Error(err as unknown as string) as CollectionImportErrorInfo;
+        error.id = aCollectionInfo.name;
+        return error;
+    }
+};
+

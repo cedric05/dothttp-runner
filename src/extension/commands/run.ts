@@ -199,7 +199,7 @@ export function showInUntitledView(scriptFileName: string, headerURI: string, ou
     }
     // for http response, body will be in out.response.body
     // for curl response, body will be in out.body
-    const body = out.body || out.response.body!;
+    const body = out.error ? "Unknown Error happened" : out.body || out.response.body;
     if (ApplicationServices.get().getConfig().reUseOld) {
         const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
         if (editors.length !== 0) {

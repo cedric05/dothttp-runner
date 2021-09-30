@@ -31,6 +31,7 @@ export class ApplicationServices {
     private config: Configuration;
     private urlStore: UrlStore;
     private notebookkernel!: NotebookKernel;
+    private context: vscode.ExtensionContext;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -52,6 +53,7 @@ export class ApplicationServices {
         this.dothttpSymbolProvier = new DothttpNameSymbolProvider();
         this.versionInfo = new VersionInfo(this.globalstorageService);
         this.config = Configuration.instance();
+        this.context = context;
         context.subscriptions.push(this.diagnostics);
     }
 
@@ -82,6 +84,14 @@ export class ApplicationServices {
 
     getClientHandler(): ClientHandler {
         return this.clientHanler;
+    }
+
+    getContext() {
+        return this.context;
+    }
+
+    setContext(context: vscode.ExtensionContext) {
+        this.context = context;
     }
 
     getStorageService(): LocalStorageService {
