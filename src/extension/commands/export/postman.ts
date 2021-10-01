@@ -15,8 +15,7 @@ enum PostmanUploadType {
 }
 
 export async function exportToPostman(uri: vscode.Uri) {
-    const doc = await vscode.workspace.openTextDocument(uri);
-    const result = await ApplicationServices.get().getClientHandler().exportToPostman(doc.fileName);
+    const result = await ApplicationServices.get().getClientHandler().exportToPostman(uri.fsPath);
     if (result.error) {
         return vscode.window.showErrorMessage(`export postman failed with error, ${result}`);
     }
@@ -32,11 +31,11 @@ export async function exportToPostman(uri: vscode.Uri) {
         } catch (error) {
             await vscode.window.showWarningMessage("Publish To Postman Ran Into Error, Will Export To A File. Which Can Be Imported By Postman");
             // in case of error resort to local collection
-            await showInLocalFolder(doc, collection);
+            await showInLocalFolder(uri, collection);
         }
     } else {
         // if user don't want to upload to postman
-        await showInLocalFolder(doc, collection);
+        await showInLocalFolder(uri, collection);
     }
     return;
 }
@@ -44,12 +43,12 @@ export async function exportToPostman(uri: vscode.Uri) {
 
 
 
-async function showInLocalFolder(doc: vscode.TextDocument, collection: any) {
+async function showInLocalFolder(parent: vscode.Uri, collection: any) {
     const directory = await pickDirectoryToImport();
     if (!directory) {
         return;
     }
-    const uri = vscode.Uri.parse("untitled:" + getUnSaved(path.join(directory, path.parse(doc.fileName).base) + ".postman_collection.json"));
+    const uri = vscode.Uri.parse("untitled:" + getUnSaved(path.join(directory, path.parse(parent.fsPath).base) + ".postman_collection.json"));
     const collectionDoc = await vscode.workspace.openTextDocument(uri);
     showEditor(collectionDoc, JSON.stringify(collection));
 }

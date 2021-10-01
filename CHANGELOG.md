@@ -5,10 +5,11 @@
 
 - [**Feature**] Postman Personal Account Integration
   - [**Feature**] Import Postman Collections / workspaces
-  - [**Feature**] Export to Postman Collection
+  - [**Feature**] Export to Postman Collection (single file and folder)
 - [**Feature**] Better suggessions for generate programming language
 - [**Bug**] **HttpBook** Generate request programming language is not working few times fixed
 - [**Bug**] Request error is not shown in case of property is not found
+- [**BUMP**] dothttp build to 0.0.40
 
 
 ## [0.0.31]

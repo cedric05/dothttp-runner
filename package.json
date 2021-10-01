@@ -311,8 +311,7 @@
 					"command": "dothttp.command.export.postman",
 					"title": "Export http to postman",
 					"group": "Export",
-					"icon": "$(extensions)",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"icon": "$(extensions)"
 				},
 				{
 					"command": "dothttp.command.import.external",
@@ -487,8 +486,7 @@
 				{
 					"command": "dothttp.command.export.postman",
 					"title": "Export Http To Postman",
-					"icon": "$(extensions)",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"icon": "$(extensions)"
 				},
 				{
 					"command": "dothttp.command.generatelang",
