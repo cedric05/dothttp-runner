@@ -7,8 +7,9 @@
   - [**Feature**] Import Postman Collections / workspaces
   - [**Feature**] Export to Postman Collection (single file and folder)
 - [**Feature**] Better suggessions for generate programming language
-- [**Bug**] **HttpBook** Generate request programming language is not working few times fixed
+- [**Bug**] **HttpBook** Generate request programming language is not working in case of target not defined in same cell
 - [**Bug**] Request error is not shown in case of property is not found
+- [**Bug**] history item not executing fixed
 - [**BUMP**] dothttp build to 0.0.40
 
 

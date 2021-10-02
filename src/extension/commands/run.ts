@@ -13,10 +13,9 @@ import path = require('path');
 import { TextEditorEdit, TextEditor } from 'vscode';
 import { DothttpExecuteResponse } from '../../common/response';
 
-export async function runTargetInCell(arr: { uri: string, cellNo: number, target: string }) {
-    const uri = vscode.Uri.file(arr.uri);
+export async function runTargetInCell(arr: { uri: vscode.Uri, cellNo: number, target: string }) {
     const cellNo = arr.cellNo;
-    const notebook = await vscode.workspace.openNotebookDocument(uri);
+    const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(arr.uri.fsPath));
     const cell = notebook.cellAt(cellNo);
     const kernel = ApplicationServices.get().getNotebookkernel();
     kernel.executeCell(cell, arr.target);
@@ -25,7 +24,7 @@ export async function runTargetInCell(arr: { uri: string, cellNo: number, target
 
 export async function runHttpCodeLensCommand(...arr: any[]) {
     const { uri, target, curl } = arr[2];
-    return runHttpFileWithOptions({ curl: curl, target: target, fileName: uri });
+    return runHttpFileWithOptions({ curl: curl, target: target, uri: uri });
 }
 
 
@@ -33,19 +32,19 @@ export async function runHttpCodeLensCommand(...arr: any[]) {
 export async function runFileCommand(editor: TextEditor, _edit: TextEditorEdit, _uri: vscode.Uri) {
     const target = await cacheAndGetTarget(editor, editor.document);
     if (target) {
-        return runHttpFileWithOptions({ curl: false, target: target, fileName: _uri.fsPath });
+        return runHttpFileWithOptions({ curl: false, target: target, uri: _uri });
     }
 }
 
 export async function genCurlCommand(editor: TextEditor, _edit: TextEditorEdit, _uri: vscode.Uri) {
     const target = await cacheAndGetTarget(editor, editor.document);
     if (target) {
-        return runHttpFileWithOptions({ curl: true, target: target, fileName: _uri.fsPath });
+        return runHttpFileWithOptions({ curl: true, target: target, uri: _uri });
     }
 }
 
 export async function cacheAndGetTarget(editor: TextEditor, document: vscode.TextDocument) {
-    const target = await getTargetFromQuickPick(editor, document);
+    const target = document.uri.scheme != 'file' ? '1' : await getTargetFromQuickPick(editor, document);
     if (target) {
         const storage = ApplicationServices.get().getStorageService();
         const filename = editor.document.fileName ?? '';
@@ -104,10 +103,10 @@ async function getTargetFromQuickPick(editor: TextEditor, document: vscode.TextD
     }
 }
 
-export async function runHttpFileWithOptions(options: { curl: boolean, target: string, fileName: string }) {
-    const filename = options.fileName;
+export async function runHttpFileWithOptions(options: { curl: boolean, target: string, uri: vscode.Uri }) {
+    const filename = options.uri.fsPath;
     const config = ApplicationServices.get().getConfig();
-    const document = (await vscode.workspace.openTextDocument(vscode.Uri.file(filename)));
+    const document = await vscode.workspace.openTextDocument(options.uri);
     if (document.isDirty) {
         // as file is not saved,
         // execute http def on last saved file, which gives us 
