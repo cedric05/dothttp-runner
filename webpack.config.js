@@ -55,7 +55,7 @@ const rendererConfig = {
 		libraryTarget: 'module',
 	},
 	resolve: {
-		extensions: ['.ts', '.tsx', '.css']
+		extensions: ['.ts', '.tsx', '.css', '.js', '.jsx']
 	},
 	experiments: {
 		outputModule: true,
@@ -63,7 +63,7 @@ const rendererConfig = {
 	module: {
 		rules: [
 			{
-				test: /\.tsx?$/,
+				test: /\.ts(x?)$/,
 				exclude: /node_modules/,
 				use: [
 					{

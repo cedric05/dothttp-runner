@@ -663,6 +663,7 @@
 		"@types/mime-types": "^2.1.0",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^12.20.12",
+		"@types/prop-types": "^15.7.4",
 		"@types/semver": "^7.3.4",
 		"@types/temp": "^0.9.1",
 		"@types/unzipper": "^0.10.3",
@@ -684,7 +685,9 @@
 		"vscode-codicons": "0.0.14",
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.26.3",
-		"webpack-cli": "^4.5.0"
+		"webpack-cli": "^4.5.0",
+		"@cedric05/preact-ace": "^10.0.0",
+		"preact": "^10.5.13"
 	},
 	"dependencies": {
 		"@types/vscode": "^1.59.0",
@@ -696,7 +699,6 @@
 		"json-stringify-safe": "^5.0.1",
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.30",
-		"preact": "^10.5.13",
 		"semver": "^7.3.4",
 		"swagger-to-har2": "^1.0.3",
 		"temp": "^0.9.4",

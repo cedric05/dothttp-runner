@@ -7,7 +7,6 @@
 		"lib": [
 			"es6"
 		],
-		"sourceMap": true,
 		// "strict": true
 	},
 	"references": [

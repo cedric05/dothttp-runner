@@ -1,12 +1,16 @@
 # Change Log
 
 
+## Known issues
+- notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
+
 ## [0.0.32]
 
 - [**Feature**] Postman Personal Account Integration
   - [**Feature**] Import Postman Collections / workspaces
   - [**Feature**] Export to Postman Collection (single file and folder)
 - [**Feature**] Better suggessions for generate programming language
+- [**Feature**] Httpbook response coloring using ace editor and search from output
 - [**Bug**] **HttpBook** Generate request programming language is not working in case of target not defined in same cell
 - [**Bug**] Request error is not shown in case of property is not found
 - [**Bug**] history item not executing fixed

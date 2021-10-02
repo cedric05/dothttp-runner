@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"composite": true,
 		"rootDir": ".",
+		"sourceMap": true,
 		"outDir": "../../out/common"
 	}
 }
