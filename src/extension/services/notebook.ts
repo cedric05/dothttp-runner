@@ -58,11 +58,9 @@ export class NotebookKernel {
                 const {
                     target,
                     fileName,
-                    cellNo
+                    // cellNo
                 } = response.metadata!;
-                const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(fileName));
-                const cell = notebook.cellAt(cellNo);
-                return generateLang({ filename: fileName, target: target, content: cell.document.getText() })
+                return generateLang({ filename: fileName, target, content: response.http })
             }
             case MessageType.save: {
                 const response = e.message.response as DothttpExecuteResponse;

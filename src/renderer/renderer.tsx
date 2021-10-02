@@ -1,11 +1,36 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import AceEditor from '@cedric05/preact-ace';
+import 'ace-builds/src-min-noconflict/ext-searchbox';
+import "ace-builds/src-noconflict/ext-language_tools";
+import modelList from 'ace-builds/src-noconflict/ext-modelist';
+import 'ace-builds/src-noconflict/ext-searchbox';
+import 'ace-builds/src-noconflict/mode-asciidoc';
+import 'ace-builds/src-noconflict/mode-css';
+import 'ace-builds/src-noconflict/mode-graphqlschema';
+import 'ace-builds/src-noconflict/mode-haml';
+import 'ace-builds/src-noconflict/mode-html';
+import "ace-builds/src-noconflict/mode-java";
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/mode-json5';
+import 'ace-builds/src-noconflict/mode-jsoniq';
+import 'ace-builds/src-noconflict/mode-jsx';
+import 'ace-builds/src-noconflict/mode-markdown';
+import 'ace-builds/src-noconflict/mode-plain_text';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/mode-xml';
+import 'ace-builds/src-noconflict/mode-yaml';
+import "ace-builds/src-noconflict/theme-chrome";
+import "ace-builds/src-noconflict/theme-monokai";
+// import 'ace-builds/src-noconflict/theme-pastel_on_dark';
 import { FunctionComponent, h } from 'preact';
 import { StateUpdater, useEffect, useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse, MessageType } from '../common/response';
+
 var stringify = require('json-stringify-safe');
 // import * as Search from 'vscode-codicons/src/icons/search.svg';
+
 
 export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResponse>, context: RendererContext<any> }> = ({ response, context }) => {
     const [activeIndex, setActive] = useState(0);
@@ -16,6 +41,8 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
     const saveButtonId = `save-button-${uuid}`;
 
     let darkMode = document.body.getAttribute('data-vscode-theme-kind')?.includes('dark') ?? false;
+    let theme = darkMode ? "monokai" : "chrome"
+    let mode = modelList.getModeForPath(`response.${response.filenameExtension}`).name;
 
     useEffect(() => {
         document.getElementById(searchBarId)?.addEventListener('keypress', event => {
@@ -49,6 +76,7 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
             response.script_result.stdout = "no log";
         }
     }
+
     return <div>
         <Status code={response.status} url={response.url} />
         <br />
@@ -69,7 +97,8 @@ export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResp
             </span>
         </div>
         <br />
-        <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} />
+        <AceWrap data={response.response.body} mode={mode} active={activeIndex === 0} theme={theme}></AceWrap>
+        {/* <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} /> */}
         <TableTab dict={response.response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
         <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
         <div>
@@ -146,6 +175,34 @@ const Status: FunctionComponent<{ code: number, url: string }> = ({ code, url })
 
     return <div>
         {generateCodeLabel()}   <span class='request-url'>   {url}</span>
+    </div>;
+};
+
+
+const AceWrap: FunctionComponent<{ data: any, active: boolean, theme: string, mode: string }> = ({ data, active, theme, mode }) => {
+
+    return <div class='tab-content' id='data-container' hidden={!active}>
+        <AceEditor
+            placeholder="Placeholder Text"
+            mode={mode}
+            readOnly={true}
+            theme={theme}
+            name="blah2"
+            width="100%"
+            value={data}
+            fontSize={14}
+            showPrintMargin={true}
+            showGutter={true}
+            highlightActiveLine={true}
+            setOptions={{
+                useWorker: false,
+                enableBasicAutocompletion: false,
+                enableLiveAutocompletion: false,
+                enableSnippets: false,
+                showLineNumbers: true,
+                tabSize: 2
+            }}
+        />
     </div>;
 };
 

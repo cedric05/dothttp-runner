@@ -5,14 +5,15 @@ import { ApplicationServices } from '../../services/global';
 import DotHttpEditorView from '../../views/editor';
 import { cacheAndGetTarget, showEditor } from '../run';
 import HTTPSnippet = require("httpsnippet");
+import { QuickPickItem } from 'vscode';
 
-const LANG_GEN_TARGETS = [
-    { label: "python", options: ["requests", "python3",], filext: ".py" },
-    { label: "node", options: ["fetch", "axios", "native", "request", "unirest"], filext: ".js" },
-    { label: "javascript", options: ["fetch", "axios", "jquery", "xhr"], filext: ".js" },
-    { label: "java", options: ["asynchttp", "nethttp", "okhttp", "unirest"], filext: ".java" },
-    { label: "csharp", options: ["httpclient", "restsharp"], filext: ".cs" },
-    { label: "shell", options: ["curl", "wget", "httpie"], filext: ".sh" },
+const LANG_GEN_TARGETS: Array<QuickPickItem & { options?: Array<string>, filext?: string, description?: string }> = [
+    { label: "python", options: ["requests", "python3",], filext: ".py", description: "python :(requests, python3)", },
+    { label: "node", options: ["fetch", "axios", "native", "request", "unirest"], filext: ".js", description: "node: (fetch, axios, native, request, unirest)" },
+    { label: "javascript", options: ["fetch", "axios", "jquery", "xhr"], filext: ".js", description: "javascript: (fetch, axios, jquery, xhr)" },
+    { label: "java", options: ["asynchttp", "nethttp", "okhttp", "unirest"], filext: ".java", description: `java: (asynchttp, nethttp, okhttp, unirest)` },
+    { label: "csharp", options: ["httpclient", "restsharp"], filext: ".cs", description: `csharp: (httpclient, restsharp)` },
+    { label: "shell", options: ["curl", "wget", "httpie"], filext: ".sh", description: `shell: (curl, wget, httpie)` },
     { label: "ruby", filext: ".rb" },
     { label: "kotlin", filext: ".kt" },
     { label: "go", filext: ".go" },

@@ -15,3 +15,20 @@ export function getUnSaved(scriptFileName: string) {
     }
     return path.join(dir, `${fileNameWithOutExt} [${i}]${ext}`);
 }
+
+
+
+// copied from 
+// https://stackoverflow.com/a/57625661
+export const cleanEmpty: any = (obj: any) => {
+    if (Array.isArray(obj)) {
+        return obj
+            .map(v => (v && typeof v === 'object') ? cleanEmpty(v) : v)
+            .filter(v => !(v == null));
+    } else {
+        return Object.entries(obj)
+            .map(([k, v]) => [k, v && typeof v === 'object' ? cleanEmpty(v) : v])
+            // @ts-ignore
+            .reduce((a, [k, v]) => (v == null ? a : (a[k] = v, a)), {});
+    }
+}

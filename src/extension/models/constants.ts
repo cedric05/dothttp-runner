@@ -1,7 +1,6 @@
 
 export enum Constants {
     // to notify, these all should be in caps
-    
     LANG_CODE = 'dothttp-vscode',
 
     // configs
@@ -17,7 +16,6 @@ export enum Constants {
     responseDirectory = "dothttp.conf.response.savedirectory",
     CONFIG_DOTHTTP_USE_STABLE = "dothttp.conf.useunstable",
     // view props
-
     // commands
     RUN_FILE_COMMAND = 'dothttp.command.run',
     GEN_CURL_FILE_COMMAND = 'dothttp.command.gencurl',
@@ -77,11 +75,12 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.29",
+    EXTENSION_VERSION = "0.0.32",
 
     dothttpNotebook = "dothttp-book",
 
     dothttpVersion = "dothttp.version",
 
-    versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json"
+    versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json",
+    SECRET_POSTMAN_API_KEY = "POSTMAN_API_KEY"
 }

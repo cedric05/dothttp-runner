@@ -6,7 +6,6 @@ import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
 import { IHistoryService } from '../tingohelpers';
 import querystring = require('querystring');
-import { DothttpExecuteResponse } from '../../common/response';
 var mime = require('mime-types');
 
 

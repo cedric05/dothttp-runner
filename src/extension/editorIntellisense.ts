@@ -15,7 +15,7 @@ class RunHttpCommand implements Command {
     command = Constants.RUN_TARGET_CODE_LENS;
     arguments: any[];
     curl: boolean = false;
-    constructor(target: string, uri: string, cellNo?: number) {
+    constructor(target: string, uri: vscode.Uri, cellNo?: number) {
         this.arguments = [{ target: target, "curl": this.curl, uri: uri, cellNo }];
     }
 }
@@ -25,8 +25,8 @@ class GenerateCurlCommand implements Command {
     tooltip: string = "Generate curl targeting this definition";
     command = Constants.RUN_TARGET_CODE_LENS;
     curl = true;
-    arguments: { target: string; curl: boolean; uri: string; cellNo: number | undefined; }[];
-    constructor(target: string, uri: string, cellNo?: number) {
+    arguments: { target: string; curl: boolean; uri: vscode.Uri; cellNo: number | undefined; }[];
+    constructor(target: string, uri: vscode.Uri, cellNo?: number) {
         this.arguments = [{ target: target, "curl": this.curl, uri: uri, cellNo }];
     }
 }
@@ -41,11 +41,11 @@ class DothttpPositions extends vscode.CodeLens {
     target!: string;
     isCurl!: boolean;
     isNotebook: boolean;
-    uri: string;
+    uri: vscode.Uri;
     cellNo?: number;
     // need to include filename
     // for better handling of execution
-    constructor(obj: { range: Range, target: string, isCurl: boolean, isNotebook: boolean, uri: string, cellNo?: number }) {
+    constructor(obj: { range: Range, target: string, isCurl: boolean, isNotebook: boolean, uri: vscode.Uri, cellNo?: number }) {
         super(obj.range);
         this.target = obj.target;
         this.isCurl = obj.isCurl;
@@ -207,7 +207,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
                 range: new Range(document.positionAt(symbol.start), document.positionAt(symbol.end)),
                 target: symbol.name,
                 isNotebook: isNotebook,
-                uri: document.uri.fsPath,
+                uri: document.uri,
             }
             if (isNotebook) {
                 const cellNo = parseInt(document.uri.fragment.substring(2));
