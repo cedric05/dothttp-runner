@@ -3,6 +3,12 @@
     justify-content: space-between;
 }
 
+.status-and-url{
+    /* color: var(--theme-foreground);
+    background-color: var(--theme-background); */
+    width: fit-content;
+}
+
 .tab-content[hidden] {
     display: none;
 }
@@ -18,9 +24,8 @@ tr {
     text-align: left;
 }
 
-table .sub-list {
-    list-style: none;
-    padding-left: 0;
+th {
+    text-align: center;
 }
 
 table .key {
@@ -28,7 +33,7 @@ table .key {
 }
 
 table .column {
-    width: 150px;
+    width: fit-content;
 }
 
 input {
@@ -75,23 +80,30 @@ svg {
     opacity: 1.0;
 }
 
+/*
+ when ever themes not working
+ checkout this page, and update colors accordingly, this information is not shown vscode docs
+ so, don't delete this
+ https://github.com/microsoft/vscode/blob/920ad7ca6e11485710d34c87bae49b2ce1a97509/src/vs/workbench/contrib/notebook/browser/view/renderers/webviewThemeMapping.ts
+*/
 button.tab {
     border: none;
-    color: var(--theme-editor-foreground);
-    background-color: var(--theme-input-background);
+    color: var(--theme-button-foreground);
+    background-color: var(--theme-button-background);
     padding: 10px 30px 10px 30px;
-    border: 0.2px solid var(--theme-input-border);
+    border: 0.2px solid var(--theme-input-border-color);
 }
 
-button:hover { 
-    color: var(--theme-editor-foreground);
+button:hover {
+    color: var(--theme-button-hover-foreground);
+    background-color: var(--theme-button-hover-background);
     cursor: pointer;
 }
 
 button.tab[active] {
-    color: var(--theme-editor-foreground);
-    background-color: var(--theme-input-border);
-    border-bottom: 2px solid var(--theme-editor-foreground);
+    color: var(--theme-button-focus-foreground);
+    /* background-color: var(--vscode-editor-background); */
+    border-bottom: 2px solid var(--vscode-editor-foreground);
 }
 
 #data-container {
@@ -101,35 +113,52 @@ button.tab[active] {
     font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
-.request-url {
+.execution-summary {
     opacity: 0.6;
+    padding-left: 5px;
+    border-width: 1px;
+    border-style: solid;
+    /* padding: 2px 2px 2px 2px; */
+    /* margin: 0 1px; */
+    font-size: 1.15em;
+    margin-right: 1px;
+    padding-left: 1px;
+    background-color: lightgrey;
+}
+
+
+.request-url {
+    opacity: 0.8;
     padding-left: 5px;
 }
 
 .status-label {
-    padding: 2px 10px 2px 10px;
-    margin: 0 2px;
+    /* padding: 2px 10px 2px 10px; */
+    /* margin: 0 1px; */
+    margin-right: 4px;
     font-size: 1.15em;
+    border-style: solid;
+    border-width: 1px;
     font-weight: 500;
 }
 
-.status-label[statusType="info"] {
+.status-label-info {
     background-color: #CCCCCC;
     color: #333333;
 }
-.status-label[statusType="success"] {
+.status-label-success {
     background-color: #CCFF99;
     color: #006600;
 }
-.status-label[statusType="redirect"] {
+.status-label-redirect {
     background-color: #99CCCC;
     color: #003366;
 }
-.status-label[statusType="client-err"] {
+.status-label-client-err {
     background-color: #FFCC66;
     color: #663300;
 }
-.status-label[statusType="server-err"] {
+.status-label-server-err{
     background-color: #FF9999;
     color:#990000;
 }

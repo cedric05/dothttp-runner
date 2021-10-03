@@ -10,10 +10,10 @@ export function getUnSaved(scriptFileName: string) {
     const fileNameWithOutExt = baseName.substr(0, indexStart);
     const ext = baseName.substr(indexStart);
     var i = 0;
-    while (existsSync(path.join(dir, `${fileNameWithOutExt} [${i}]${ext}`))) {
+    while (existsSync(path.join(dir, `${fileNameWithOutExt} (${i})${ext}`))) {
         i++;
     }
-    return path.join(dir, `${fileNameWithOutExt} [${i}]${ext}`);
+    return path.join(dir, `${fileNameWithOutExt} (${i})${ext}`);
 }
 
 

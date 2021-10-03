@@ -1,12 +1,14 @@
+import { promises as fs } from 'fs';
 import * as vscode from 'vscode';
+import { Constants } from '../../models/constants';
 import { ApplicationServices } from '../../services/global';
 import { getUnSaved } from '../../utils/fileUtils';
+import { getNotebookUriToHttpContent } from '../http_httpbookConvertions';
 import { pickDirectoryToImport } from "../import";
 import { showEditor } from '../run';
+import { getPostmanClient, Workspace } from './postmanUtils';
 import path = require('path');
-import { getPostmanClient } from './postmanUtils';
-import { Workspace } from './postmanUtils';
-import { Constants } from '../../models/constants';
+import glob = require('glob');
 
 
 enum PostmanUploadType {
@@ -15,7 +17,25 @@ enum PostmanUploadType {
 }
 
 export async function exportToPostman(uri: vscode.Uri) {
-    const result = await ApplicationServices.get().getClientHandler().exportToPostman(uri.fsPath);
+    const fileName = uri.fsPath
+    if ((await fs.lstat(fileName)).isDirectory()) {
+        // await // don't wait for swarning to be discarded, it just a warning message
+        vscode.window.showWarningMessage("httpbooks will be converted to http files, before generating postman collection");
+        // dothttp core 
+        // will not consider while generating postman collection
+        try {
+            const notebookFiles = glob.sync(`${fileName}${path.sep}**${path.sep}*.{hnbk,httpbook}`);
+            await Promise.all(notebookFiles.map(async aNotebook => {
+                const content = await getNotebookUriToHttpContent(vscode.Uri.file(aNotebook))
+                const noteBookPathObj = path.parse(aNotebook);
+                await fs.writeFile(getUnSaved(path.join(noteBookPathObj.dir, `${noteBookPathObj.name}.http`)), content);
+                console.log("done wrting");
+            }));
+        } catch {
+            //ignoring for now
+        }
+    }
+    const result = await ApplicationServices.get().getClientHandler().exportToPostman(fileName);
     if (result.error) {
         return vscode.window.showErrorMessage(`export postman failed with error, ${result}`);
     }

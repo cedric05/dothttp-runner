@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import AceEditor from '@cedric05/preact-ace';
-import 'ace-builds/src-min-noconflict/ext-searchbox';
 import "ace-builds/src-noconflict/ext-language_tools";
 import modelList from 'ace-builds/src-noconflict/ext-modelist';
 import 'ace-builds/src-noconflict/ext-searchbox';
@@ -23,127 +22,151 @@ import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/theme-monokai";
 // import 'ace-builds/src-noconflict/theme-pastel_on_dark';
 import { FunctionComponent, h } from 'preact';
-import { StateUpdater, useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import {
+    getReasonPhrase
+} from 'http-status-codes';
+import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
-import { DothttpExecuteResponse, MessageType } from '../common/response';
+import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from '../common/response';
 
-var stringify = require('json-stringify-safe');
-// import * as Search from 'vscode-codicons/src/icons/search.svg';
+type CountAndExistence = {
+    exists: boolean,
+    count: number | string
+}
 
+function arrayAndCount(arr: Array<any> | undefined): CountAndExistence {
+    const tempArr = (arr ?? [])
+    return {
+        exists: tempArr.length > 0 ? true : false,
+        count: tempArr.length
+    } as CountAndExistence;
+}
 
-export const Response: FunctionComponent<{ response: Readonly<DothttpExecuteResponse>, context: RendererContext<any> }> = ({ response, context }) => {
+enum TabType {
+    Response,
+    Headers,
+    RequestSent,
+    TestResult,
+    GeneratedProperties
+}
+
+export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExecuteResponse, metadata: NotebookExecutionMetadata }>, context: RendererContext<any> }> = ({ out, context }) => {
+    const { response: props } = out
+    // createStates
     const [activeIndex, setActive] = useState(0);
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const uuid = uuidv4();
-    const searchBarId = `search-bar-${uuid}`;
-    const searchButtonId = `search-button-${uuid}`;
+
+    // create keys
+    const uuid = uuidv4()
     const saveButtonId = `save-button-${uuid}`;
 
+
+    // retriveResponse
+    const { headers } = props.response
+    const { executionTime } = out.metadata
+    let { body, url, status } = props.response
+    const { filenameExtension, http: dothttpCode, script_result } = props
+    let scriptLog = script_result?.stdout;
+    if (!scriptLog) {
+        scriptLog = "no log";
+    }
+
+
+
+    // format
+    // contentUpdate
+    // this is hack, sender should set it.
+    if (filenameExtension === "json") {
+        body = jsonPretty(body, '\t')
+    } else if (filenameExtension == 'xml') {
+        body = xmlPretty(body, '\t')
+    }
+
+    // response tab ace editor properties
     let darkMode = document.body.getAttribute('data-vscode-theme-kind')?.includes('dark') ?? false;
     let theme = darkMode ? "monokai" : "chrome"
-    let mode = modelList.getModeForPath(`response.${response.filenameExtension}`).name;
+    let mode = modelList.getModeForPath(`response.${filenameExtension}`).name;
 
-    useEffect(() => {
-        document.getElementById(searchBarId)?.addEventListener('keypress', event => {
-            if (event.key === 'Enter') {
-                document.getElementById(searchButtonId)?.click();
-            }
+    let testPass = 0;
+    let testFail = 0;
+    const testResult = script_result?.tests?.
+        map(key => {
+            if (key.success) testPass++; else testFail++;
+            return ([key.name, key.success ? "✅" : "❌", key.result || key.error]);
         });
-    });
 
-    var headersExists = false;
-    if (response.response.headers && Object.keys(response.response.headers).length != 0) {
-        headersExists = true;
-    }
+    const headerTab = arrayAndCount(Object.keys(headers ?? {}));
+    const testResultTab = arrayAndCount(script_result?.tests);
 
-    // this is hack.
-    // sender should set it.
-    if (response.response.contentType === "application/json") {
-        response.response.body = JSON.stringify(JSON.parse(response.response.body), null, 1)
-    }
-
-    const testResult: { [key: string]: any } = {}
-    response.script_result?.tests?.forEach(key => {
-        testResult[key.name] = { success: key.success ? "true" : "false", result: key.result || key.error }
-    });
-
-
-    const scriptResultExists = (response.script_result && response.script_result.tests.length > 0) ? true : false;
-    const propertiesGenerated = response.script_result && response.script_result.properties && Object.keys(response.script_result.properties).length > 0 ? true : false;
-    if (response.script_result) {
-        if (response.script_result.stdout === "") {
-            response.script_result.stdout = "no log";
+    /*
+    // show success and failure accordingly
+    // commented out, as it is not looking good. upon more user exp, it may change
+    if (testResultTab.exists) {
+        if (testPass == 0) {
+            testResultTab.count = `-${testFail}`
+        }
+        else if (testFail == 0) {
+            testResultTab.count = `+${testPass}`
+        } else {
+            testResultTab.count = `+${testPass},-${testFail}`
         }
     }
+    */
+
+    const outputPropTab = arrayAndCount(Object.keys(script_result?.properties ?? {}));
 
     return <div>
-        <Status code={response.status} url={response.url} />
+        <br />
+        <Status code={status} url={url} executionTime={executionTime} />
         <br />
         <div class='tab-bar'>
             <TabHeader activeTab={activeIndex} setActive={setActive}
-                headersExist={headersExists}
-                requestExists={response.http ? true : false}
                 darkMode={darkMode}
-                scriptResultExists={scriptResultExists}
-                generatedProperties={propertiesGenerated} />
+                requestSentExists={dothttpCode ? true : false}
+                headerTab={headerTab}
+                testResultTab={testResultTab}
+                outputPropTab={outputPropTab} />
             <span class='tab-bar-tools'>
-                <button id={saveButtonId} class='search-button' title='Save response' onClick={() => saveResponse(context, response)}>Save Response</button>
-                <button id={'generate-lang-${uuid}'} class='search-button' title='Generate Language' onClick={() => generateLanguage(context, response)}>Generate Language</button>
-                <input id={searchBarId} placeholder='Search for keyword'></input>
-                <button id={searchButtonId} class='search-button' title='Search for keyword' onClick={() => handleSearchForKeywordClick(setSearchKeyword, searchBarId)}>
-                    {/* <Icon name={Search} /> */}
-                </button>
+                <button id={saveButtonId} class='search-button' title='Open In Editor' onClick={() => saveResponse(context, props, out.metadata)}>Open In Editor</button>
+                <button id={`generate-lang-${uuid}`} class='search-button' title='Generate Language' onClick={() => generateLanguage(context, props, out.metadata)}>Generate Language</button>
             </span>
         </div>
         <br />
-        <AceWrap data={response.response.body} mode={mode} active={activeIndex === 0} theme={theme}></AceWrap>
-        {/* <DataTab data={response.response.body} active={activeIndex === 0} searchKeyword={searchKeyword} /> */}
-        <TableTab dict={response.response.headers} active={activeIndex === 1} searchKeyword={searchKeyword} />
-        <DataTab data={response.http} active={activeIndex === 3} searchKeyword={searchKeyword} />
-        <div>
-            <TableTab dict={testResult} active={activeIndex === 4} searchKeyword={searchKeyword} />
-            <div class='tab-content' hidden={!(activeIndex === 4)}>
-                <strong><span class='key'>Script Log</span></strong>
-                <DataTab data={response.script_result.stdout ?? "no log"} active={activeIndex === 4} searchKeyword={searchKeyword} />
-            </div>
+        <AceWrap data={body} mode={mode} active={activeIndex === TabType.Response} theme={theme}></AceWrap>
+        <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
+        <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} />
+        <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
+            <strong><span class='key'>Script Log</span></strong>
+            <pre>
+                {scriptLog}
+            </pre>
         </div>
-        <TableTab dict={response.script_result.properties} active={activeIndex === 5} searchKeyword={searchKeyword} />
+        <TableTab data={objectToDataGridRows(script_result?.properties)} columns={["Property", "Value"]} active={outputPropTab.exists && activeIndex === TabType.GeneratedProperties} />
+        <AceWrap data={dothttpCode} mode={'text'} active={(dothttpCode ? true : false) && activeIndex === TabType.RequestSent} theme={theme}></AceWrap>
     </div>;
 };
-
 const TabHeader: FunctionComponent<{
     activeTab: number, setActive: (i: number) => void,
-    headersExist: boolean, requestExists: boolean,
-    darkMode: boolean,
-    scriptResultExists: boolean,
-    generatedProperties: boolean
-}> = ({ activeTab, setActive, headersExist, requestExists, darkMode, scriptResultExists, generatedProperties }) => {
+    darkMode: boolean, requestSentExists: boolean,
+    headerTab: CountAndExistence,
+    testResultTab: CountAndExistence,
+    outputPropTab: CountAndExistence
+}> = ({ activeTab, setActive, headerTab: headers, requestSentExists, darkMode, testResultTab: testResult, outputPropTab: outputProps }) => {
+
+    function pushIfExists(results: h.JSX.Element[], countAndExistence: CountAndExistence, tabHeading: string, activeTabNumber: TabType) {
+        if (countAndExistence.exists) {
+            // @ts-ignore
+            results.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(activeTabNumber)} active={activeTab === activeTabNumber}>{tabHeading} <sup>{countAndExistence.count == 0 ? "" : `(${countAndExistence.count})`}</sup></button>);
+        }
+    };
     const renderTabHeaders = () => {
         let result: h.JSX.Element[] = [];
-
-        //@ts-ignore
-        result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(0)} active={activeTab === 0}>Data</button>);
-
-        if (headersExist) {
-            //@ts-ignore
-            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(1)} active={activeTab === 1}>Headers</button>);
-        }
-
-        if (requestExists) {
-            //@ts-ignore
-            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(3)} active={activeTab === 3}>Request Sent</button>);
-        }
-
-        if (scriptResultExists) {
-            //@ts-ignore
-            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(4)} active={activeTab === 4}>Test Result</button>);
-        }
-
-        if (generatedProperties) {
-            //@ts-ignore
-            result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(5)} active={activeTab === 5}>Generated Properties</button>);
-        }
+        pushIfExists(result, { exists: true, count: 0 }, "Data", TabType.Response);
+        pushIfExists(result, headers, "Headers", TabType.Headers);
+        pushIfExists(result, testResult, "Test Result", TabType.TestResult);
+        pushIfExists(result, outputProps, "Generated Properties", TabType.GeneratedProperties);
+        pushIfExists(result, { exists: requestSentExists, count: 0 }, "Request Sent", TabType.RequestSent);
 
         return result;
     };
@@ -154,7 +177,7 @@ const TabHeader: FunctionComponent<{
 };
 
 // reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-const Status: FunctionComponent<{ code: number, url: string }> = ({ code, url }) => {
+const Status: FunctionComponent<{ code: number, url: string, executionTime: string }> = ({ code, url, executionTime }) => {
     let statusType: string;
     if (code < 200) {
         statusType = 'info';
@@ -168,22 +191,21 @@ const Status: FunctionComponent<{ code: number, url: string }> = ({ code, url })
         statusType = 'server-err';
     }
 
-    const generateCodeLabel = () => {
-        //@ts-ignore
-        return <span class='status-label' statusType={statusType}>{code}</span>;
-    };
 
-    return <div>
-        {generateCodeLabel()}   <span class='request-url'>   {url}</span>
+    return <div class="status-and-url">
+        <span className={`status-label status-label-${statusType!}`} >{code} {getReasonPhrase(code).toLowerCase()}</span>
+        <span class='execution-summary' >{executionTime}s</span>
+        <span class='request-url'>   {url}</span>
     </div>;
 };
 
 
-const AceWrap: FunctionComponent<{ data: any, active: boolean, theme: string, mode: string }> = ({ data, active, theme, mode }) => {
+const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string }> = ({ data, active, theme, mode }) => {
 
+    let maxLines = data.split(/\r\n|\r|\n/).length + 2;
     return <div class='tab-content' id='data-container' hidden={!active}>
         <AceEditor
-            placeholder="Placeholder Text"
+            placeholder="Empty Response from server"
             mode={mode}
             readOnly={true}
             theme={theme}
@@ -196,6 +218,7 @@ const AceWrap: FunctionComponent<{ data: any, active: boolean, theme: string, mo
             highlightActiveLine={true}
             setOptions={{
                 useWorker: false,
+                maxLines: maxLines,
                 enableBasicAutocompletion: false,
                 enableLiveAutocompletion: false,
                 enableSnippets: false,
@@ -206,89 +229,36 @@ const AceWrap: FunctionComponent<{ data: any, active: boolean, theme: string, mo
     </div>;
 };
 
-const TableTab: FunctionComponent<{ dict?: any, active: boolean, searchKeyword: string }> = ({ dict, active, searchKeyword }) => {
-    const renderFields = () => {
-        return Object.keys(dict).map((key) => {
-            if (dict[key] === null) {
-                return <tr>
-                    <td class='key column'>{key}</td>
-                    <td>null</td>
+const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> | undefined, columns: Array<string> }> = ({ active, data, columns }) => {
+    if (data)
+        return <div class='tab-content' hidden={!active}>
+            <table>
+                <tr>
+                    {columns.map(key => <th class="key column"><b>{key}</b></th>)}
                 </tr>
-            }
-            if (typeof dict[key] === 'object') {
-                return <tr>
-                    <td class='key column'>{key}</td>
-                    <td>
-                        <ul class='sub-list'>
-                            {Object.keys(dict[key]).map((subKey) => {
-                                let value;
-                                if (typeof dict[key][subKey] === 'object') {
-                                    value = stringify(dict[key][subKey]);
-                                } else {
-                                    value = dict[key][subKey];
-                                }
-                                return <li><span class='key'>{subKey}:</span>  {searchForTermInText((value as string), searchKeyword)}</li>;
-                            })}
-                        </ul>
-                    </td>
-                </tr>;
-            }
-            return <tr><td class='key column'>{key}</td> <td>{searchForTermInText((dict[key] as string), searchKeyword)}</td></tr>;
-        });
-    };
-
-    //@ts-ignore
-    return <div class='tab-content' hidden={!active}>
-        <table>
-            {renderFields()}
-        </table>
-    </div>;
-};
-
-const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: string }> = ({ data, active, searchKeyword }) => {
-    const dataStr = typeof data === 'string' ? data : stringify(data);
-
-    return <div class='tab-content' id='data-container' hidden={!active}>
-        <pre>
-            {searchForTermInText(dataStr, searchKeyword)}
-        </pre>
-    </div>;
-};
-
-const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {
-    return <span class='icon'
-        dangerouslySetInnerHTML={{ __html: i }}
-    />;
-};
-
-
-const handleSearchForKeywordClick = (setter: StateUpdater<string>, searchBarId: string) => {
-    const keyword = (document.getElementById(searchBarId) as HTMLInputElement)?.value ?? '';
-    setter(keyword);
-};
-
-const searchForTermInText = (text: string, searchKeyword: string) => {
-    let splitOnSearch = [text];
-    if (searchKeyword !== '' && typeof text === 'string' && text) {
-        splitOnSearch = text.split(searchKeyword);
+                {data.map(row => <tr>
+                    {row.map(d => <td class="key column">
+                        {d}
+                    </td>)}
+                </tr>)}
+            </table>
+        </div>;
+    else {
+        return <div></div>
     }
-
-    return <span>
-        {splitOnSearch.map((token, i) => {
-            if (i === splitOnSearch.length - 1) {
-                return <span>{token}</span>;
-            } else {
-                return <span>{token}<span dangerouslySetInnerHTML={{ __html: `<span class='search-term'>${searchKeyword}</span>` }} /></span>;
-            }
-        })}
-    </span>;
 };
 
-function saveResponse(context: RendererContext<any>, response: any): void {
-    // console.log(response);
-    context.postMessage!({ "response": response, "request": MessageType.save, })
+
+function objectToDataGridRows(obj: Object | undefined): any {
+    if (!obj) { return [] }
+    return Object.entries(obj);
 }
-function generateLanguage(context: RendererContext<any>, response: Readonly<DothttpExecuteResponse>): void {
-    context.postMessage!({ "response": response, "request": MessageType.generate, })
+
+function saveResponse(context: RendererContext<any>, response: any, metadata: NotebookExecutionMetadata): void {
+    // console.log(response);
+    context.postMessage!({ "response": response, "metadata": metadata, "request": MessageType.save, })
+}
+function generateLanguage(context: RendererContext<any>, response: Readonly<DothttpExecuteResponse>, metadata: NotebookExecutionMetadata): void {
+    context.postMessage!({ "response": response, "metadata": metadata, "request": MessageType.generate, })
 }
 

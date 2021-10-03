@@ -12,13 +12,16 @@ export interface Response {
 }
 
 
+export interface NotebookExecutionMetadata {
+    target: string;
+    date: string;
+    fileName: string;
+    cellNo: number;
+    executionTime: string;
+}
+
 export interface DothttpExecuteResponse {
-    metadata?: {
-        target: string;
-        date: string;
-        fileName: string;
-        cellNo: number;
-    }
+
     filenameExtension?: string,
     headers: Headers;
     body: string;
@@ -28,7 +31,7 @@ export interface DothttpExecuteResponse {
     http: string;
     error?: boolean;
     error_message?: string;
-    script_result: ScriptResult
+    script_result?: ScriptResult
 }
 
 export interface ScriptResult {

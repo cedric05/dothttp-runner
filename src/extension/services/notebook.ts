@@ -1,6 +1,6 @@
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from 'vscode';
-import { DothttpExecuteResponse, MessageType, Response } from '../../common/response';
+import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata, Response } from '../../common/response';
 import { generateLang } from "../commands/export/generate";
 import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
 import { ClientHandler } from "../lib/client";
@@ -52,25 +52,18 @@ export class NotebookKernel {
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
     async onMessage(e: any) {
+        const { metadata, response } = e.message;
+        const {
+            target,
+            date,
+            fileName,
+            // cellNo
+        } = metadata as NotebookExecutionMetadata;
         switch (e.message.request) {
             case MessageType.generate: {
-                const response = e.message.response as DothttpExecuteResponse;
-                const {
-                    target,
-                    fileName,
-                    // cellNo
-                } = response.metadata!;
                 return generateLang({ filename: fileName, target, content: response.http })
             }
             case MessageType.save: {
-                const response = e.message.response as DothttpExecuteResponse;
-                const {
-                    target,
-                    date,
-                    fileName,
-                    // cellNo
-                } = response.metadata!;
-
                 const fileNameWithInfo = contructFileName(fileName, { curl: false, target: target }, response, date);
                 return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
             }
@@ -97,7 +90,8 @@ export class NotebookKernel {
     private async _doExecution(cell: vscode.NotebookCell, target: string = '1'): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
-        execution.start(Date.now());
+        const start = Date.now();
+        execution.start(start);
         const httpDef = cell.document.getText();
         const filename = cell.document.fileName;
         const contexts = cell.notebook
@@ -116,8 +110,6 @@ export class NotebookKernel {
             execution.end(false, Date.now())
 
         });
-        const date = new Date();
-        var now = dateFormat(date, 'hh:MM:ss');
         const out = await this.client.executeContentWithExtension({
             content: httpDef,
             file: cell.document.fileName,
@@ -127,13 +119,14 @@ export class NotebookKernel {
             curl: false,
             contexts: contexts
         }) as DothttpExecuteResponse;
-        const metadata = {
+        const end = Date.now();
+        const metadata: NotebookExecutionMetadata = {
             fileName: cell.document.fileName,
             cellNo: cell.index,
-            date: now,
-            target: target
+            date: dateFormat(start, 'hh:MM:ss'),
+            target: target,
+            executionTime: ((end - start) / 1000).toFixed(1),
         }
-        out.metadata = metadata;
         if (out.script_result && out.script_result.properties)
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
         addHistory(out, filename + "-notebook-cell.http", { target });
@@ -145,25 +138,24 @@ export class NotebookKernel {
                         vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
                     ])
                 ]);
-                execution.end(false, Date.now());
+                execution.end(false, end);
             } else {
                 out.body = "";
                 out.headers = {};
                 const outs: Array<vscode.NotebookCellOutputItem> = [];
                 const nativeContentTypes = this.parseAndAdd(out.response);
-                outs.push(vscode.NotebookCellOutputItem.json(out, Constants.NOTEBOOK_MIME_TYPE));
+                outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
                 outs.push(...nativeContentTypes);
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput(outs)
                 ]);
-                execution.end(true, Date.now())
+                execution.end(true, end)
             }
         } catch (error) {
             execution.replaceOutput([
                 new vscode.NotebookCellOutput([
-                    vscode.NotebookCellOutputItem.stderr(error),
-                    vscode.NotebookCellOutputItem.stdout(error),
-                    vscode.NotebookCellOutputItem.text(error)
+                    // @ts-ignore
+                    vscode.NotebookCellOutputItem.stderr(error), vscode.NotebookCellOutputItem.stdout(error), vscode.NotebookCellOutputItem.text(error)
                 ])
             ]);
             execution.end(false, Date.now())
