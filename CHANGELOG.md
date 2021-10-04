@@ -8,13 +8,11 @@
 ## [0.0.33]
 
 - [**Improvement**] **HttpBook**
-  -  formatting for json and xml
+  -  formatting for json and xml (on user input)
   -  Hover, active, inactive coloring fix
   -  Indicate number of headers, number tests, properties, show script output log if exists
 - [**Improvement**] upload httpbooks to postman collection/account
 - [**Bug**] Fix for Notebook target execution for first time is not working
-- [**TODO**] Icon of `Open in Editor` and `Generate Language` with hover
-- [**TODO**] Icon of `Format only when needed` and its Action
 
 ## [0.0.32]
 

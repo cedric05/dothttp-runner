@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import AceEditor from '@cedric05/preact-ace';
+import * as ClearAll from '@vscode/codicons/src/icons/clear-all.svg';
+import * as LinkExternal from '@vscode/codicons/src/icons/code.svg';
+import * as OpenInEditor from '@vscode/codicons/src/icons/open-preview.svg';
 import "ace-builds/src-noconflict/ext-language_tools";
 import modelList from 'ace-builds/src-noconflict/ext-modelist';
 import 'ace-builds/src-noconflict/ext-searchbox';
@@ -20,16 +23,17 @@ import 'ace-builds/src-noconflict/mode-xml';
 import 'ace-builds/src-noconflict/mode-yaml';
 import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/theme-monokai";
+import { getReasonPhrase } from 'http-status-codes';
 // import 'ace-builds/src-noconflict/theme-pastel_on_dark';
 import { FunctionComponent, h } from 'preact';
 import { useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
-import {
-    getReasonPhrase
-} from 'http-status-codes';
 import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from '../common/response';
+
+
+
 
 type CountAndExistence = {
     exists: boolean,
@@ -52,10 +56,12 @@ enum TabType {
     GeneratedProperties
 }
 
+const MAX_DEFAULT_FORMAT_LEN = 2 * 1024 * 1024;
+
 export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExecuteResponse, metadata: NotebookExecutionMetadata }>, context: RendererContext<any> }> = ({ out, context }) => {
     const { response: props } = out
     // createStates
-    const [activeIndex, setActive] = useState(0);
+    const [activeIndex, setActive] = useState(TabType.Response);
 
     // create keys
     const uuid = uuidv4()
@@ -63,10 +69,17 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
 
     // retriveResponse
-    const { headers } = props.response
+    const { headers, url, status } = props.response
     const { executionTime } = out.metadata
-    let { body, url, status } = props.response
+    let { body } = props.response
     const { filenameExtension, http: dothttpCode, script_result } = props
+
+
+    if (body.length < MAX_DEFAULT_FORMAT_LEN) {
+        body = formatBody(filenameExtension, body);
+    }
+    const [responseBody, setResponseBody] = useState(body);
+
     let scriptLog = script_result?.stdout;
     if (!scriptLog) {
         scriptLog = "no log";
@@ -77,22 +90,17 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     // format
     // contentUpdate
     // this is hack, sender should set it.
-    if (filenameExtension === "json") {
-        body = jsonPretty(body, '\t')
-    } else if (filenameExtension == 'xml') {
-        body = xmlPretty(body, '\t')
-    }
 
     // response tab ace editor properties
     let darkMode = document.body.getAttribute('data-vscode-theme-kind')?.includes('dark') ?? false;
     let theme = darkMode ? "monokai" : "chrome"
     let mode = modelList.getModeForPath(`response.${filenameExtension}`).name;
 
-    let testPass = 0;
-    let testFail = 0;
+    // let testPass = 0;
+    // let testFail = 0;
     const testResult = script_result?.tests?.
         map(key => {
-            if (key.success) testPass++; else testFail++;
+            // if (key.success) testPass++; else testFail++;
             return ([key.name, key.success ? "✅" : "❌", key.result || key.error]);
         });
 
@@ -129,12 +137,16 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
                 testResultTab={testResultTab}
                 outputPropTab={outputPropTab} />
             <span class='tab-bar-tools'>
-                <button id={saveButtonId} class='search-button' title='Open In Editor' onClick={() => saveResponse(context, props, out.metadata)}>Open In Editor</button>
-                <button id={`generate-lang-${uuid}`} class='search-button' title='Generate Language' onClick={() => generateLanguage(context, props, out.metadata)}>Generate Language</button>
+                <button id={`format-${uuid}`} class='search-button' title='Format'
+                    onClick={() => setResponseBody(formatBody(filenameExtension, responseBody))}>Beautify <Icon name={ClearAll} /></button>
+                <button id={saveButtonId} class='search-button' title='Open In Editor'
+                    onClick={() => saveResponse(context, props, out.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
+                <button id={`generate-lang-${uuid}`} class='search-button' title="Generate Language"
+                    onClick={() => generateLanguage(context, props, out.metadata)}>Generate<Icon name={LinkExternal} /></button>
             </span>
         </div>
         <br />
-        <AceWrap data={body} mode={mode} active={activeIndex === TabType.Response} theme={theme}></AceWrap>
+        <AceWrap data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme}></AceWrap>
         <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
         <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} />
         <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
@@ -149,6 +161,14 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
         <AceWrap data={dothttpCode} mode={'text'} active={(dothttpCode ? true : false) && activeIndex === TabType.RequestSent} theme={theme}></AceWrap>
     </div>;
 };
+
+const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {
+    return <span class='icon'
+        dangerouslySetInnerHTML={{ __html: i }}
+    />;
+};
+
+
 const TabHeader: FunctionComponent<{
     activeTab: number, setActive: (i: number) => void,
     darkMode: boolean, requestSentExists: boolean,
@@ -251,6 +271,15 @@ const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> 
     }
 };
 
+
+function formatBody(filenameExtension: string | undefined, body: string) {
+    if (filenameExtension === "json") {
+        body = jsonPretty(body, '\t');
+    } else if (filenameExtension == 'xml') {
+        body = xmlPretty(body, '\t');
+    }
+    return body;
+}
 
 function objectToDataGridRows(obj: Object | undefined): any {
     if (!obj) { return [] }
