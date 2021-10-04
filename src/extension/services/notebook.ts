@@ -83,13 +83,14 @@ export class NotebookKernel {
         }
     }
 
-    public executeCell(cell: vscode.NotebookCell, target?: string) {
-        this._doExecution(cell, target);
-    }
-
-    private async _doExecution(cell: vscode.NotebookCell, target: string = '1'): Promise<void> {
+    private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
+
+        const cellNo = parseInt(cell.document.uri.fragment.substring(2));
+        const { uri } = cell.document;
+        const target: string = ApplicationServices.get().getStorageService().getValue(`notebooktarget:${uri.fsPath}:${cellNo}`) ?? '1';
+
         const start = Date.now();
         execution.start(start);
         const httpDef = cell.document.getText();
@@ -127,8 +128,24 @@ export class NotebookKernel {
             target: target,
             executionTime: ((end - start) / 1000).toFixed(1),
         }
-        if (out.script_result && out.script_result.properties)
+        if (out.script_result && out.script_result.properties) {
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
+            // const totalProps = out.script_result!.properties;
+            // const app = ApplicationServices.get();
+            // const newprops: { [a: string]: string } = {};
+            // (app
+            //     .getFileStateService()
+            //     .getProperties(cell.document.fileName) ?? []
+            // )
+            //     .filter(property => property.enabled)
+            //     .filter(prop =>
+            //         (totalProps[prop.key] !== prop.value))
+            //     .forEach(prop => {
+            //         newprops[prop.key] = totalProps[prop.key]
+            //     });
+            // app.getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
+            // out.script_result.properties = newprops;
+        }
         addHistory(out, filename + "-notebook-cell.http", { target });
 
         try {
@@ -197,7 +214,9 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
         const cells = raw.map(item => {
             const cell = new vscode.NotebookCellData(
                 item.kind,
-                item.value,
+                // in case of value not there
+                // use empty
+                item.value ?? "",
                 item.language
             );
             cell.outputs = item.outputs ? [new vscode.NotebookCellOutput(

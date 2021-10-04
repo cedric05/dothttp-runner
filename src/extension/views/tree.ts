@@ -110,15 +110,22 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     public addProperties(filename: string, properties: { [prop: string]: string }) {
         const keys = Object.keys(properties);
         if (keys.length !== 0) {
+
+            // with dothttp core 0.0.39b3
+            // only generated properties will be sent
+            // so, no need remove and add
+            /*
             // TODO
             // as a workaround, going in crude way!!!
             const enabledProperties = this.fileStateService?.getProperties(filename);
             enabledProperties?.forEach(prop => {
-                this.fileStateService?.disableProperty(filename, prop.key, prop.value);
+                this.fileStateService?.removeProperty(filename, prop.key, prop.value);
             })
+            */
             keys.forEach(key => {
+                // in case property exists, we want to enable back property
                 this.fileStateService!.addProperty(filename, key, properties[key]);
-                this.fileStateService!.enableProperty(filename, key, properties[key]);
+                this.fileStateService!.enableProperty(filename, key, properties[key]); // enable property
             })
             this.refresh();
         }

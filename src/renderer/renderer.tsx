@@ -98,6 +98,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
     const headerTab = arrayAndCount(Object.keys(headers ?? {}));
     const testResultTab = arrayAndCount(script_result?.tests);
+    testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout);
 
     /*
     // show success and failure accordingly
@@ -137,10 +138,12 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
         <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
         <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} />
         <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
-            <strong><span class='key'>Script Log</span></strong>
+            <strong><span class='key'>Script Log:</span></strong>
+            <br />
             <pre>
                 {scriptLog}
             </pre>
+            <br />
         </div>
         <TableTab data={objectToDataGridRows(script_result?.properties)} columns={["Property", "Value"]} active={outputPropTab.exists && activeIndex === TabType.GeneratedProperties} />
         <AceWrap data={dothttpCode} mode={'text'} active={(dothttpCode ? true : false) && activeIndex === TabType.RequestSent} theme={theme}></AceWrap>
@@ -230,7 +233,7 @@ const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string,
 };
 
 const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> | undefined, columns: Array<string> }> = ({ active, data, columns }) => {
-    if (data)
+    if (data && data!.length > 0)
         return <div class='tab-content' hidden={!active}>
             <table>
                 <tr>

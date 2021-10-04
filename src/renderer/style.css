@@ -123,7 +123,9 @@ button.tab[active] {
     font-size: 1.15em;
     margin-right: 1px;
     padding-left: 1px;
-    background-color: lightgrey;
+    /* background-color: lightgrey; */
+    color: var(--theme-foreground);
+    background-color: var(--theme-background);
 }
 
 
