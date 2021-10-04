@@ -6,7 +6,7 @@ import './style.css';
 
 export const activate: ActivationFunction = (context: RendererContext<any>) => ({
 	renderOutputItem(outputItem, element) {
-		render(<Response response={outputItem.json() as any} context={context} />, element);
+		render(<Response out={outputItem.json() as any} context={context} />, element);
 	}
 
 });

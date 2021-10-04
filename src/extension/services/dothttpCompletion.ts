@@ -50,7 +50,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
             label: item.url,
             kind: CompletionItemKind.Unit,
             documentation: "recent request",
-            detail: `${item.url}`,
+            detail: item.url,
             keepWhitespace: true,
         }));
         const targets = await this.client.getDocumentSymbols(fileName);
@@ -67,7 +67,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
                 label: item.label,
                 kind: CompletionItemKind.Unit,
                 documentation: "url request",
-                detail: `${item.url}`,
+                detail: item.url,
                 keepWhitespace: true,
             })), historyUrls);
     }
@@ -90,7 +90,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
 
     static readonly randomSuggestions: ReadonlyArray<CompletionItem> = VariableCompletionProvider.randomSuggesstionsList.map(item => ({
-        label: `${item}`,
+        label: item,
         insertText: new SnippetString()
             .appendText(`${item}}}`)
         ,
@@ -157,7 +157,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     private variableCompletionItem(detail: string): (item: string) => CompletionItem {
         return (item: string) =>
         ({
-            label: `"${item}"`,
+            label: item,
             insertText: `{${item}}`,
             commitCharacters: ["{"],
             kind: CompletionItemKind.Variable,

@@ -14,11 +14,20 @@ import { TextEditorEdit, TextEditor } from 'vscode';
 import { DothttpExecuteResponse } from '../../common/response';
 
 export async function runTargetInCell(arr: { uri: vscode.Uri, cellNo: number, target: string }) {
-    const cellNo = arr.cellNo;
-    const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(arr.uri.fsPath));
-    const cell = notebook.cellAt(cellNo);
-    const kernel = ApplicationServices.get().getNotebookkernel();
-    kernel.executeCell(cell, arr.target);
+    const { cellNo, uri, target } = arr;
+    // earlier target is sent as argument
+    // but, if notebook is executing its first cell
+    // it will run into error
+    // to solve this, target is cached between runs
+    /*
+        const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(arr.uri.fsPath));
+        const cell = notebook.cellAt(cellNo);
+        await vscode.commands.executeCommand("notebook.execute", arr.uri);
+        const kernel = ApplicationServices.get().getNotebookkernel();
+        kernel.executeCell(cell, arr.target);
+    */
+    ApplicationServices.get().getStorageService().setValue(`notebooktarget:${uri.fsPath}:${cellNo}`, target)
+    await vscode.commands.executeCommand("notebook.cell.execute", [{ start: cellNo, end: cellNo }], uri, target)
 }
 
 

@@ -4,6 +4,16 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## [0.0.33]
+
+- [**Improvement**] **HttpBook**
+  -  formatting for json and xml (on user input)
+  -  Hover, active, inactive coloring fix
+  -  Indicate number of headers, number tests, properties, show script output log if exists
+- [**Improvement**] upload httpbooks to postman collection/account
+- [**Bug**] Fix for Notebook target execution for first time is not working
+
 ## [0.0.32]
 
 - [**Feature**] Postman Personal Account Integration
