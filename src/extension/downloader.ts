@@ -249,13 +249,8 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 getExePath(path.join(originalLocation, 'cli'));
             }
             ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(versionData.version);
-            const shouldReload = await vscode.window.showInformationMessage(
-                'dothttp upgrade completed, reload to view latest updates', 'reload', 'leave')
-            if (shouldReload === 'reload') {
-                vscode.commands.executeCommand(
-                    'workbench.action.reloadWindow',
-                );
-            }
+            vscode.window.showInformationMessage('dothttp upgrade completed')
+            vscode.commands.executeCommand(Constants.RESTART_CLI_COMMAND);
         }
     }
 }

@@ -4,6 +4,14 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.34]
+
+- [**New**] show information message when ever http file is opened. to switch to httpbook
+- [**Improvement**] ask for file type, (http or notebook) when importing resource (swagger, har, postman, curl, curlv2)
+- [**Bug**] Fix uploading httpbook `export as postman` for a file fix
+- [**Bug**] Fix for showing response if server says content-type to `json` and json content is not sent
+- [**Feature**] show output if output is mentioned in request. (used occationally when response is binary)
+
 
 ## [0.0.33]
 

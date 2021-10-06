@@ -24,6 +24,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	loadNoteBookControllerSafely(context);
 
 
+	context.subscriptions.push(
+		vscode.workspace.onDidOpenTextDocument(async doc => {
+			const { fsPath } = doc.uri;
+			if (fsPath.endsWith(".dhttp") || fsPath.endsWith(".http")) {
+				const out = await vscode.window.showInformationMessage("checkout httpbook, you can have all features of http file and more", "Open Http File as Notebook", 'ignore');
+				if (out && out != "ignore") {
+					vscode.commands.executeCommand(Constants.HTTP_AS_HTTPBOOK, doc.uri);
+				}
+			}
+		}));
 	context.subscriptions.push(...[
 		vscode.commands.registerTextEditorCommand(Constants.RUN_FILE_COMMAND, runFileCommand),
 		vscode.commands.registerTextEditorCommand(Constants.GEN_CURL_FILE_COMMAND, genCurlCommand),
