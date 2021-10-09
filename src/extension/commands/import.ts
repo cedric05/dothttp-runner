@@ -12,6 +12,7 @@ import { Collection, PostmanClient, getPostmanClient } from './export/postmanUti
 
 import path = require('path');
 import { Constants } from '../models/constants';
+import { getUnSaved } from '../utils/fileUtils';
 
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib');
@@ -156,13 +157,13 @@ async function importCurl(version: string, isNotebook: string) {
     const harType = version === ImportOptions.curlv2 ? curltoHarUsingpostmanconverter(curlStatement!) : curlToHar(curlStatement);
     const directory = await pickDirectoryToImport();
     if (directory) {
-        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory, isNotebook);
+        const save_filename = getUnSaved(path.join(directory, `from_curl.${isNotebook == 'notebook' ? 'httpbook' : 'http'}`));
+        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory, save_filename, isNotebook);
         if (result.error) {
             vscode.window.showErrorMessage(`import curl failed with error, ${result}`);
             return;
         }
-        const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(result.filename));
-        vscode.window.showTextDocument(doc);
+        await vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(result.filename));
     }
 }
 export async function pickDirectoryToImport() {
@@ -342,7 +343,7 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     } else {
         saveFilename = path.basename(filename);
     }
-    saveFilename = saveFilename + (isNotebooK ? ".hnbk" : ".http");
+    saveFilename = saveFilename + (isNotebooK == 'notebook' ? ".hnbk" : ".http");
 
     // check if swagger, load har
     // if har, just use it

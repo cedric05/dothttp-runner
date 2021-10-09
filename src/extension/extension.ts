@@ -27,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidOpenTextDocument(async doc => {
 			const { fsPath } = doc.uri;
-			if (fsPath.endsWith(".dhttp") || fsPath.endsWith(".http")) {
+			if (doc.uri.scheme === "file" && (fsPath.endsWith(".dhttp") || fsPath.endsWith(".http"))) {
 				const out = await vscode.window.showInformationMessage("checkout httpbook, you can have all features of http file and more", "Open Http File as Notebook", 'ignore');
 				if (out && out != "ignore") {
 					vscode.commands.executeCommand(Constants.HTTP_AS_HTTPBOOK, doc.uri);
