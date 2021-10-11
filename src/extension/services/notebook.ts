@@ -77,9 +77,13 @@ export class NotebookKernel {
         this._controller.dispose();
     }
 
-    private _executeAll(cells: vscode.NotebookCell[], _notebook: vscode.NotebookDocument, _controller: vscode.NotebookController): void {
+    private async _executeAll(cells: vscode.NotebookCell[], _notebook: vscode.NotebookDocument, _controller: vscode.NotebookController): Promise<void> {
         for (let cell of cells) {
-            this._doExecution(cell);
+            try {
+                await this._doExecution(cell);
+            } catch (error) {
+
+            }
         }
     }
 

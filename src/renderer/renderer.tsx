@@ -50,6 +50,7 @@ function arrayAndCount(arr: Array<any> | undefined): CountAndExistence {
 
 enum TabType {
     Response,
+    RawResponse,
     Headers,
     RequestSent,
     TestResult,
@@ -71,7 +72,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     // retriveResponse
     const { headers, url, status } = props.response
     const { executionTime } = out.metadata
-    let { body } = props.response
+    let { body, output_file } = props.response
     const { filenameExtension, http: dothttpCode, script_result } = props
 
 
@@ -107,6 +108,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     const headerTab = arrayAndCount(Object.keys(headers ?? {}));
     const testResultTab = arrayAndCount(script_result?.tests);
     testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout);
+    const responseTab: CountAndExistence = { exists: true, count: output_file ? 1 : 0 }
 
     /*
     // show success and failure accordingly
@@ -124,6 +126,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     */
 
     const outputPropTab = arrayAndCount(Object.keys(script_result?.properties ?? {}));
+    console.log(output_file);
 
     return <div>
         <br />
@@ -135,7 +138,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
                 requestSentExists={dothttpCode ? true : false}
                 headerTab={headerTab}
                 testResultTab={testResultTab}
-                outputPropTab={outputPropTab} />
+                outputPropTab={outputPropTab} responseTabMeta={responseTab} />
             <span class='tab-bar-tools'>
                 <button id={`format-${uuid}`} class='search-button' title='Format'
                     onClick={() => setResponseBody(formatBody(filenameExtension, responseBody))}>Beautify <Icon name={ClearAll} /></button>
@@ -146,7 +149,11 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
             </span>
         </div>
         <br />
-        <AceWrap data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme}></AceWrap>
+        <div hidden={!(responseTab.exists && activeIndex === TabType.Response)}>
+            <ShowOutputDiv output_file={output_file} />
+            <AceWrap data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme} placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}></AceWrap>
+        </div>
+        {/* <AceWrap data={responseBody} mode="text" active={activeIndex === TabType.RawResponse} theme={theme}></AceWrap> */}
         <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
         <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} />
         <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
@@ -169,23 +176,38 @@ const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {
 };
 
 
+const ShowOutputDiv: FunctionComponent<{ output_file?: string }> = ({ output_file }) => {
+    if (output_file)
+        return <div class='request-url'>
+            {output_file ? `Output stored in ` : ""} <strong>{output_file}</strong>
+            <br />
+            <br />
+        </div>
+    else {
+        return <div></div>
+    }
+
+}
+
 const TabHeader: FunctionComponent<{
     activeTab: number, setActive: (i: number) => void,
     darkMode: boolean, requestSentExists: boolean,
     headerTab: CountAndExistence,
     testResultTab: CountAndExistence,
-    outputPropTab: CountAndExistence
-}> = ({ activeTab, setActive, headerTab: headers, requestSentExists, darkMode, testResultTab: testResult, outputPropTab: outputProps }) => {
+    outputPropTab: CountAndExistence,
+    responseTabMeta: CountAndExistence
+}> = ({ activeTab, setActive, headerTab: headers, requestSentExists, darkMode, testResultTab: testResult, outputPropTab: outputProps, responseTabMeta }) => {
 
-    function pushIfExists(results: h.JSX.Element[], countAndExistence: CountAndExistence, tabHeading: string, activeTabNumber: TabType) {
+    function pushIfExists(results: h.JSX.Element[], countAndExistence: CountAndExistence, tabHeading: string, activeTabNumber: TabType, title = "") {
         if (countAndExistence.exists) {
             // @ts-ignore
-            results.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(activeTabNumber)} active={activeTab === activeTabNumber}>{tabHeading} <sup>{countAndExistence.count == 0 ? "" : `(${countAndExistence.count})`}</sup></button>);
+            results.push(<button class='tab' title={title} dark-mode={darkMode} onClick={() => setActive(activeTabNumber)} active={activeTab === activeTabNumber}>{tabHeading} <sup>{countAndExistence.count == 0 ? "" : `(${countAndExistence.count})`}</sup></button>);
         }
     };
     const renderTabHeaders = () => {
         let result: h.JSX.Element[] = [];
-        pushIfExists(result, { exists: true, count: 0 }, "Data", TabType.Response);
+        pushIfExists(result, responseTabMeta, "Response", TabType.Response, "If Output is binary consider using `output('<filename>')`");
+        // pushIfExists(result, { exists: true, count: 0 }, "Raw", TabType.RawResponse);
         pushIfExists(result, headers, "Headers", TabType.Headers);
         pushIfExists(result, testResult, "Test Result", TabType.TestResult);
         pushIfExists(result, outputProps, "Generated Properties", TabType.GeneratedProperties);
@@ -223,12 +245,12 @@ const Status: FunctionComponent<{ code: number, url: string, executionTime: stri
 };
 
 
-const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string }> = ({ data, active, theme, mode }) => {
+const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, theme, mode, placeholder }) => {
 
     let maxLines = data.split(/\r\n|\r|\n/).length + 2;
     return <div class='tab-content' id='data-container' hidden={!active}>
         <AceEditor
-            placeholder="Empty Response from server"
+            placeholder={placeholder}
             mode={mode}
             readOnly={true}
             theme={theme}
@@ -273,10 +295,14 @@ const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> 
 
 
 function formatBody(filenameExtension: string | undefined, body: string) {
-    if (filenameExtension === "json") {
-        body = jsonPretty(body, '\t');
-    } else if (filenameExtension == 'xml') {
-        body = xmlPretty(body, '\t');
+    try {
+        if (filenameExtension === "json") {
+            body = jsonPretty(body, '\t');
+        } else if (filenameExtension == 'xml') {
+            body = xmlPretty(body, '\t');
+        }
+    } catch {
+        console.log("content-type is not same as server response");
     }
     return body;
 }

@@ -9,6 +9,7 @@ export interface Response {
     body: string;
     status: number;
     url: string;
+    output_file?: string;
 }
 
 

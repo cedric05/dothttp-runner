@@ -11,3 +11,4 @@ yarn.lock
 .idea/vcs.xml
 .idea/inspectionProfiles/Project_Default.xml
 test-resources/.vscode/settings.json
+*.webm

@@ -12,6 +12,7 @@ import { Collection, PostmanClient, getPostmanClient } from './export/postmanUti
 
 import path = require('path');
 import { Constants } from '../models/constants';
+import { getUnSaved } from '../utils/fileUtils';
 
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib');
@@ -113,7 +114,7 @@ function curltoHarUsingpostmanconverter(statmenet: string) {
 
 
 
-async function importCurl(version: string) {
+async function importCurl(version: string, isNotebook: string) {
     const category = await vscode.window.showQuickPick([
         { label: "file", description: IMPORTOPTION_MESSAGES.file.curl, },
         { label: "paste", description: IMPORTOPTION_MESSAGES.link.curl },
@@ -156,13 +157,13 @@ async function importCurl(version: string) {
     const harType = version === ImportOptions.curlv2 ? curltoHarUsingpostmanconverter(curlStatement!) : curlToHar(curlStatement);
     const directory = await pickDirectoryToImport();
     if (directory) {
-        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory);
+        const save_filename = getUnSaved(path.join(directory, `from_curl.${isNotebook == 'notebook' ? 'httpbook' : 'http'}`));
+        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory, save_filename, isNotebook);
         if (result.error) {
             vscode.window.showErrorMessage(`import curl failed with error, ${result}`);
             return;
         }
-        const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(result.filename));
-        vscode.window.showTextDocument(doc);
+        await vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(result.filename));
     }
 }
 export async function pickDirectoryToImport() {
@@ -190,12 +191,19 @@ export async function importRequests() {
         { "picktype": ImportOptions.curlv2, label: "CurlV2" },
         { "picktype": ImportOptions.curl, label: "Curl" },
     ] as Array<{ picktype: ImportOptions } & vscode.QuickPickItem>, { ignoreFocusOut: true }))?.picktype;
+
+    if (!pickType) { return; }
+    const isNotebookImport = (await vscode.window.showQuickPick([
+        { label: "Import as http", filetype: "http" },
+        { label: "Import as httpnotebook", "filetype": 'notebook' }], {
+        ignoreFocusOut: true,
+        canPickMany: false,
+    }))?.filetype ?? 'http';
     try {
         // const pickType = importoptions.postman;
-        if (!pickType) { return; }
         if (pickType === ImportOptions.postman_workspace) {
             try {
-                return await importPostmanInternal();
+                return await importPostmanInternal(isNotebookImport);
             } catch (error) {
                 if ((error as Error & { isAxiosError: boolean }).isAxiosError) {
                     error = await vscode.window.showWarningMessage("Postman API Key is revoked and is removed, please try again now", "Enter Postman key again?");
@@ -208,7 +216,7 @@ export async function importRequests() {
             }
         }
         if (pickType === ImportOptions.curl || pickType === ImportOptions.curlv2) {
-            importCurl(pickType);
+            importCurl(pickType, isNotebookImport);
             return;
         }
         const linkOrFile = await vscode.window.showQuickPick([{
@@ -264,7 +272,7 @@ export async function importRequests() {
         const directory = await pickDirectoryToImport();
         if (directory) {
             if (pickType === ImportOptions.postman) {
-                const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true });
+                const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true, filetype: isNotebookImport });
                 if (result.error == true) {
                     if ((result.error_message as string).indexOf("File exists")) {
                         await vscode.window.showErrorMessage(`file already exists in \`${directory}\`!, pick different directory`);
@@ -281,14 +289,14 @@ export async function importRequests() {
                 try {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
                     const result = await importSwagger(swaggerInStr, filenameToimport, directory,
-                        pickType);
+                        pickType, isNotebookImport);
                     if (result.error === true) {
                         throw new Error(result.error_message);
                     }
                     // show after import 
                     vscode.window.showInformationMessage(`import ${pickType} successfull`);
-                    const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(result.filename));
-                    vscode.window.showTextDocument(doc);
+                    const newNotebookOrHttp = vscode.Uri.parse(result.filename);
+                    await vscode.commands.executeCommand("vscode.open", newNotebookOrHttp);
                 } catch (error) {
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${error}. create bug`);
                     return;
@@ -311,7 +319,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenam
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: string, picktype: ImportOptions): Promise<ImportHarResult> {
+async function importSwagger(data: any, filename: string, directory: string, picktype: ImportOptions, isNotebooK: string): Promise<ImportHarResult> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -335,7 +343,7 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     } else {
         saveFilename = path.basename(filename);
     }
-    saveFilename = saveFilename + ".http";
+    saveFilename = saveFilename + (isNotebooK == 'notebook' ? ".hnbk" : ".http");
 
     // check if swagger, load har
     // if har, just use it
@@ -352,11 +360,11 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     } else {
         harFormat = hardata.log.entries.map((entry: { request: any; }) => entry.request);
     }
-    return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename);
+    return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename, isNotebooK);
 }
 
 
-async function importPostmanInternal() {
+async function importPostmanInternal(isNotebook: string) {
     const postmanClient = await getPostmanClient();
     const directory = await pickDirectoryToImport();
     if (!directory) {
@@ -378,7 +386,7 @@ async function importPostmanInternal() {
         // but it is irrecoverable
         const collectionsListResponse = await postmanClient.listCollections();
         results = await Promise.all(collectionsListResponse.data.collections.map(
-            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory)
+            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory, isNotebook)
         ));
     } else {
         // error can happen at this point
@@ -386,7 +394,7 @@ async function importPostmanInternal() {
         const workspaceResponse = await postmanClient.listWorkSpaces();
         const workspacePicks = workspaceResponse.data.workspaces.map(workspace => {
             return {
-                "label": `workspace: ${workspace.name}, id: ${workspace.id}`,
+                "label": `${workspace.name}, id: ${workspace.id}`,
                 "workspaceType": "existing",
                 "description": "use existing workspace",
                 ...workspace
@@ -405,7 +413,7 @@ async function importPostmanInternal() {
             return;
         }
         results = await Promise.all(collections.map(
-            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory)
+            (collectionInfo) => importPostmanCollectionHandler(collectionInfo, postmanClient, directory, isNotebook)
         ))
     }
     const failures = results.filter(error => error).map(er => `${er!.id} msg: ${er!.message}`).join(", ");
@@ -422,13 +430,13 @@ async function importPostmanInternal() {
 type CollectionImportErrorInfo = Error & { id: string }
 
 
-async function importPostmanCollectionHandler(aCollectionInfo: Collection, client: PostmanClient, directory: string): Promise<CollectionImportErrorInfo | undefined> {
+async function importPostmanCollectionHandler(aCollectionInfo: Collection, client: PostmanClient, directory: string, isNotebookImport: string): Promise<CollectionImportErrorInfo | undefined> {
     try {
         const collectionResponse = await client.getCollection(aCollectionInfo.uid);
         const { collection } = collectionResponse.data;
         const tempFileInfo = await temp.open("dothttp_collection");
         await fs.writeFile(tempFileInfo.path, JSON.stringify(collection));
-        await ApplicationServices.get().getClientHandler().importPostman({ link: tempFileInfo.path, directory: directory, save: true });
+        await ApplicationServices.get().getClientHandler().importPostman({ link: tempFileInfo.path, directory: directory, save: true, filetype: isNotebookImport });
     } catch (err) {
         const error = new Error(err as unknown as string) as CollectionImportErrorInfo;
         error.id = aCollectionInfo.name;

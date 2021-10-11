@@ -16,24 +16,30 @@ enum PostmanUploadType {
     UPLOAD_TO_POSTMAN = "Upload to Postman Account"
 }
 
+
+async function notebookFromFile(aNotebook: string) {
+    const content = await getNotebookUriToHttpContent(vscode.Uri.file(aNotebook));
+    const noteBookPathObj = path.parse(aNotebook);
+    const fileName = getUnSaved(path.join(noteBookPathObj.dir, `${noteBookPathObj.name}.http`));
+    await fs.writeFile(fileName, content);
+    return fileName;
+}
+
 export async function exportToPostman(uri: vscode.Uri) {
-    const fileName = uri.fsPath
+    let fileName = uri.fsPath
     if ((await fs.lstat(fileName)).isDirectory()) {
         // await // don't wait for swarning to be discarded, it just a warning message
         vscode.window.showWarningMessage("httpbooks will be converted to http files, before generating postman collection");
         // dothttp core 
         // will not consider while generating postman collection
         try {
-            const notebookFiles = glob.sync(`${fileName}${path.sep}**${path.sep}*.{hnbk,httpbook}`);
-            await Promise.all(notebookFiles.map(async aNotebook => {
-                const content = await getNotebookUriToHttpContent(vscode.Uri.file(aNotebook))
-                const noteBookPathObj = path.parse(aNotebook);
-                await fs.writeFile(getUnSaved(path.join(noteBookPathObj.dir, `${noteBookPathObj.name}.http`)), content);
-                console.log("done wrting");
-            }));
+            const notebookFiles = ((await fs.lstat(fileName)).isDirectory()) ? glob.sync(`${fileName}${path.sep}**${path.sep}*.{hnbk,httpbook}`) : [fileName]
+            await Promise.all(notebookFiles.map(notebookFromFile));
         } catch {
             //ignoring for now
         }
+    } else if (uri.fsPath.endsWith('.httpbook') || uri.fsPath.endsWith('.hnbk')) {
+        fileName = await notebookFromFile(fileName);
     }
     const result = await ApplicationServices.get().getClientHandler().exportToPostman(fileName);
     if (result.error) {

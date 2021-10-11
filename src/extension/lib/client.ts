@@ -265,7 +265,7 @@ export class ClientHandler {
         return out;
     }
 
-    async importPostman(options: { link: string, directory: string, save: boolean }) {
+    async importPostman(options: { link: string, directory: string, save: boolean, filetype?: string }) {
         return await this.cli.request(ClientHandler.IMPORT_POSTMAN_COMMAND, options)
     }
 
@@ -291,15 +291,15 @@ export class ClientHandler {
     }
 
 
-    async importHarFromLink(filename: number, save_directory: string): Promise<ImportHarResult> {
+    async importHarFromLink(filename: number, save_directory: string, filetype?: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
-            filename, save_directory
+            filename, save_directory, filetype
         })
     }
 
-    async importHttpFromHar(har: {}, save_directory: string, save_filename?: string): Promise<ImportHarResult> {
+    async importHttpFromHar(har: {}, save_directory: string, save_filename?: string, filetype?: string): Promise<ImportHarResult> {
         return await this.cli.request(ClientHandler.HAR_IMPORT_COMMAND, {
-            har, save_directory, save_filename
+            har, save_directory, save_filename, filetype
         })
     }
 
