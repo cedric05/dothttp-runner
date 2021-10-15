@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.34",
+	"version": "0.0.35",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -17,6 +17,7 @@
 		"Notebooks"
 	],
 	"activationEvents": [
+		"onNotebook:dothttp-book",
 		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
 		"workspaceContains:**/*.httpbook",
