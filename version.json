@@ -446,6 +446,14 @@
         "0.0.34": {
             "maxVersion": "0.0.39",
             "minVersion": "0.0.8"
+        },
+        "0.0.35": {
+            "maxVersion": "0.0.39",
+            "minVersion": "0.0.8"
+        },
+        "0.0.36": {
+            "maxVersion": "0.0.39",
+            "minVersion": "0.0.8"
         }
     }
 }
