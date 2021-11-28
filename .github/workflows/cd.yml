@@ -21,12 +21,15 @@ jobs:
             - name: Verify versions
               run: node -e "if ('refs/tags/v' + '${{ env.PACKAGE_VERSION }}' !== '${{ github.ref }}') { console.log('::error' + 'Version Mismatch. refs/tags/v' + '${{ env.PACKAGE_VERSION }}', '${{ github.ref }}'); throw Error('Version Mismatch')} "
             - name: Install
-              run: npm install
+              run: |
+                npm install
+                npm install vsce --global
+                npm install ovsx --global
             - name: Package extension
               run: |
-                npx vsce package
-                npx vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
-                npx ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
+                npm run package
+                vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
+                ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
             - name: Create GitHub release
               id: create_release
               uses: actions/create-release@v1
