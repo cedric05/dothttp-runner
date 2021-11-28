@@ -26,8 +26,9 @@ jobs:
             - name: Install
               run: |
                 npm install
+                npm install vsce --global
             - name: Package
-              run: npx vsce package
+              run: npm run package
             - name: 'Upload Artifact'
               uses: actions/upload-artifact@v2
               with:
