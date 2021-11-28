@@ -185,15 +185,19 @@ export class NotebookKernel {
     }
     parseAndAdd(response: Response): Array<vscode.NotebookCellOutputItem> {
         if (response.headers) {
-            return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type').map(key => {
-                const mimeType = mime.lookup(mime.extension(response.headers![key]))
-                // this is a hack
-                // unless its called, it will not be available
-                // and its not customary to call this function
-                response.contentType = mimeType;
-                const ret = vscode.NotebookCellOutputItem.text(response.body, mimeType);
-                return ret;
-            })
+            return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type')
+                .map(key => mime.extension(response.headers![key]))
+                .filter(key => key)
+                .map(extension => {
+                    const mimeType = mime.lookup(extension)
+                    // this is a hack
+                    // unless its called, it will not be available
+                    // and its not customary to call this function
+                    response.contentType = mimeType;
+                    const ret = vscode.NotebookCellOutputItem.text(response.body, mimeType);
+                    return ret;
+
+                })
         }
         return [];
     }

@@ -140,9 +140,9 @@ async function downloadDothttp(downloadLocation: string, url: string) {
     }
     var contentDownloaded = 0;
     await vscode.window.withProgress({
-        title: `downloading binaries from ${url}`,
+        title: `Downloading Dothttp lannguage Server from ${url}`,
         cancellable: false,
-        location: vscode.ProgressLocation.Window
+        location: vscode.ProgressLocation.Notification
     }, async function (progress) {
         await new Promise((resolve, reject) => {
             res.on('data', function (data) {
