@@ -291,7 +291,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b0/dotextensions-0.0.39b0-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b0/dotextensions-0.0.39b0-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.39-b0"
         },
@@ -301,7 +301,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b2/dotextensions-0.0.39b2-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b2/dotextensions-0.0.39b2-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.39-b2"
         },
@@ -311,7 +311,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b3/dotextensions-0.0.39b3-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b3/dotextensions-0.0.39b3-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.39-b3"
         },
@@ -321,7 +321,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b4/dotextensions-0.0.39b4-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b4/dotextensions-0.0.39b4-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.39-b4"
         },
@@ -331,7 +331,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b5/dotextensions-0.0.39b5-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39b5/dotextensions-0.0.39b5-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": false,
             "version": "0.0.39-b5"
         },
@@ -342,8 +342,18 @@
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.39/dotextensions-0.0.39-darwin.zip"
             },
             "latest": true,
-            "stable": false,
+            "stable": true,
             "version": "0.0.39"
+        },
+        {
+            "downloadUrls": {
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a1/dotextensions-0.0.40a1-linux.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a1/dotextensions-0.0.40a1-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a1/dotextensions-0.0.40a1-darwin.zip"
+            },
+            "latest": true,
+            "stable": false,
+            "version": "0.0.40-alpha1"
         }
     ],
     "matrix": {
@@ -472,7 +482,7 @@
             "minVersion": "0.0.8"
         },
         "0.0.36": {
-            "maxVersion": "0.0.39",
+            "maxVersion": "0.0.40",
             "minVersion": "0.0.8"
         }
     }
