@@ -35,6 +35,7 @@ export enum Constants {
 
     HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
     HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
+    NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
 
     //    env tree
     envTreeView = 'dothttpEnvView',
@@ -49,6 +50,7 @@ export enum Constants {
     copyEnvValueCommand = 'dothttpEnvView.copyPropertyValue',
     openEnvFileCommmand = 'dothttpEnvView.opendothttpjson',
     disableAllEnvCommmand = "dothttpEnvView.disableAllEnv",
+    
 
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 
@@ -75,7 +77,7 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.36",
+    EXTENSION_VERSION = "0.0.37",
 
     dothttpNotebook = "dothttp-book",
 

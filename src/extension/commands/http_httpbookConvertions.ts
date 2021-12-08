@@ -75,6 +75,29 @@ ${text}
 }
 
 
+export async function createNewNotebook() {
+    const directory = await vscode.window.showOpenDialog({
+        canSelectFolders: true,
+        canSelectFiles: false,
+        title: "Select Folder To Create Notebook",
+        canSelectMany: false,
+        openLabel: "Select Folder To Create Notebook"
+    })
+    if (!directory) {
+        return;
+    }
+    const filename = await vscode.window.showInputBox({
+        title: "enter notebook file name",
+        prompt: "enter notebook file name",
+        ignoreFocusOut: true,
+        placeHolder: "api.hnbk",
+        validateInput: (filename) => filename.endsWith(".hnbk") || filename.endsWith(".httpbook") ? null : "extension has to be `httpbook` or `hnbk` like api.httpbook",
+        value: "api.hnbk"
+    })
+    if (!filename) return
+    await fs.writeFile(path.join(directory[0].fsPath, filename), "");
+}
+
 export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
     uri = uri || vscode.window.activeTextEditor?.document.uri;
     if (!uri) {

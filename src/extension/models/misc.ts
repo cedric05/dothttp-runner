@@ -116,6 +116,10 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#url-params)`),
 
 example:
 
+\`text("this is payload")\`
+
+or 
+
 \`data("this is payload")\`
 visit [docs](https://docs.dothttp.dev/docs/request-basics#text-payload)`),
     "payload_urlencoded": new MarkdownString(`UrlEncoded payload (sets content-type to urlformencoded)
@@ -130,7 +134,9 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#urlencode)
 
 example:
 
-\`fileinput("<path to upload>")\`
+\`< "<path to upload>"\`
+// or
+\`fileinput("<file path to upload>")\`
     
 visit [docs](https://docs.dothttp.dev/docs/request-basics#binary)
 `),
@@ -144,13 +150,21 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#json-payload)`),
 
 example:
 \`\`\`
-files(
-    ("<key>", "<path to file or data>"),
-    ("<key>", "<path to file or data>", "<optional content-type>")
+multipart(
+    "<key>" :  "<path to file or data>",
+    "<key>" : "<path to file or data>" ; "<optional content-type>")
 )
 \`\`\`
 visit [docs](https://docs.dothttp.dev/docs/request-basics#multipart)`),
-    "output": new MarkdownString("save Output in output filename"),
+    "output": new MarkdownString(`save Output in output filename
+
+\`>> "<output file name>"\`
+
+// or 
+
+\`output("<output file name>")\`
+
+`),
     "script": new MarkdownString(`Run Javascript script after execution of httpdef
 
 visit [docs](https://docs.dothttp.dev/docs/scripts)`),
