@@ -5,17 +5,8 @@
 const path = require('path');
 
 /**@type {import('webpack').Configuration}*/
-const config = {
-	target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+const baseConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-
-	entry: './src/extension/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
-	output: {
-		// the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-		path: path.resolve(__dirname, 'dist'),
-		filename: 'extension.js',
-		libraryTarget: 'commonjs2'
-	},
 	devtool: 'nosources-source-map',
 	externals: {
 		vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
@@ -43,6 +34,36 @@ const config = {
 	}
 };
 
+
+const webConfig = {
+	...baseConfig,
+	entry: './src/extension/webextension.ts',
+	target: 'webworker', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	output: {
+		// the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'extension-web.js',
+		libraryTarget: 'commonjs2'
+	},
+	resolve: {
+		fallback: {
+		},
+		extensions: ['.ts', '.js']
+	},
+};
+
+
+const nodeconfig = {
+	...baseConfig,
+	entry: './src/extension/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+	target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	output: {
+		// the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'extension-node.js',
+		libraryTarget: 'commonjs2'
+	},
+};
 
 
 const rendererConfig = {
@@ -92,4 +113,4 @@ const rendererConfig = {
 
 
 
-module.exports = [rendererConfig, config];
+module.exports = [rendererConfig, webConfig, nodeconfig];

@@ -52,7 +52,14 @@
 		"onCommand:dothttp.command.newHttpBook",
 		"onCommand:dothttp.command.generatelang"
 	],
-	"main": "./dist/extension.js",
+	"main": "./dist/extension-node.js",
+	"browser": "./dist/extension-web.js",
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "Only Partial Syntax highlight is supported. Cannot execute dothttp with untrusted files."
+		}
+	},
 	"contributes": {
 		"notebooks": [
 			{
@@ -615,7 +622,12 @@
 						"default": false,
 						"description": "Show headers in seperate view"
 					}
-				}
+				},
+				"label": "dothttp",
+				"languages": [
+					"dothttp-vscode"
+				],
+				"type": "dothttp"
 			}
 		],
 		"views": {
@@ -714,11 +726,13 @@
 		"json-stringify-safe": "^5.0.1",
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.30",
+		"path-browserify": "^1.0.1",
 		"semver": "^7.3.4",
 		"swagger-to-har2": "^1.0.3",
 		"temp": "^0.9.4",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",
+		"util": "^0.12.4",
 		"uuid": "^8.3.2",
 		"whatwg-url": "^8.5.0"
 	}
