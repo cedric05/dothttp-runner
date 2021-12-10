@@ -258,6 +258,14 @@
                     "name": "keyword.other"
                 },
                 {
+                    "match": "urlencoded",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "text",
+                    "name": "keyword.other"
+                },
+                {
                     "match": "fileinput",
                     "name": "keyword.other"
                 },
@@ -306,6 +314,14 @@
                 },
                 {
                     "match": "files",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "form",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "multipart",
                     "name": "keyword.other"
                 },
                 {

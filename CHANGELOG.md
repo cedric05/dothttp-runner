@@ -4,6 +4,21 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.37]
+
+- [**New**] added `create new notebook command`
+- [**New**] support web extensions (vscode.dev/github.dev)
+  - Only syntax highlighting and notebook viewing is supported for any other features.
+- [**Bug**] update settings gui section name (earlier it used to be `configuration` now it will be `new`)
+- [**Bump**] bump dothttp version to 0.0.40-alpha1
+  - changes w.r.t new improvments like syntax structure.
+## [0.0.36]
+
+- [**Bug**] fix view of dothttp notebook view of unknown mimetype
+- change download dothttp notification from lower to progress
+## [0.0.35]
+- [**Bug**] fix activation of extension on first time
+
 ## [0.0.34]
 
 - [**New**] show information message when ever http file is opened. to switch to httpbook

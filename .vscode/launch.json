@@ -29,6 +29,18 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "npm: test-watch"
-		}
+		},
+		{
+			"name": "Extension Tests in VS Code Web",
+			"type": "extensionHost",
+			"request": "launch",
+			"debugWebWorkerHost": true,
+			"args": [
+			  "--extensionDevelopmentPath=${workspaceFolder}",
+			  "--extensionDevelopmentKind=web",
+			],
+			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+			// "preLaunchTask": "npm: watch-web"
+		  }
 	]
 }

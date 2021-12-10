@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLangForHttpFile } from "./commands/export/generate";
 import { exportToPostman } from "./commands/export/postman";
-import { saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./commands/http_httpbookConvertions";
+import { createNewNotebook, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./commands/http_httpbookConvertions";
 import { importRequests } from "./commands/import";
 import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
 import { setUp, updateDothttpIfAvailable } from './downloader';
@@ -13,15 +13,26 @@ import {
 import { Constants } from './models/constants';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
 import { ApplicationServices } from './services/global';
-import { NotebookKernel, NotebookSerializer } from './services/notebook';
+import { NotebookKernel } from './services/notebook';
 import DotHttpEditorView from './views/editor';
-
+import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 export async function activate(context: vscode.ExtensionContext) {
+	if (!vscode.workspace.isTrusted) {
+		webExtensionActivate(context);
+		return
+	}
 	await bootStrap(context);
 
 	const appServices = ApplicationServices.get();
 
 	loadNoteBookControllerSafely(context);
+	try {
+		const notebookkernel = new NotebookKernel();
+		ApplicationServices.get().setNotebookkernel(notebookkernel);
+	} catch {
+		// notebook is a recent feature
+		// for supporting old version vscode, ignoring
+	}
 
 
 	context.subscriptions.push(
@@ -55,7 +66,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.RUN_NOTEBOOK_TARGET_IN_CELL, runTargetInCell),
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFileFromCommand),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
-		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook)
+		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
+		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, createNewNotebook)
 	])
 
 
@@ -112,22 +124,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 }
 
-
-function loadNoteBookControllerSafely(_context: vscode.ExtensionContext) {
-	try {
-		const notebookSerializer = new NotebookSerializer();
-		const notebookkernel = new NotebookKernel();
-		ApplicationServices.get().setNotebookkernel(notebookkernel);
-		vscode.workspace.registerNotebookSerializer(Constants.NOTEBOOK_ID, notebookSerializer, {
-			transientOutputs: false,
-			transientCellMetadata: {
-				inputCollapsed: true,
-				outputCollapsed: true,
-			}
-		});
-	} catch (error) {
-	}
-}
 
 async function bootStrap(context: vscode.ExtensionContext) {
 	const version = await setUp(context);
