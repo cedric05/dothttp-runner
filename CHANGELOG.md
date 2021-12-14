@@ -4,6 +4,16 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.38]
+- [**Improvement**] better code outline and easy filtering 
+  - use '^' to filter urls
+  - use '#' to filter by name
+- [**Improvement**] test script completion provided using request forwarding to javascript.
+- [**Improvement**] bump dothttp version to 0.0.40a2
+
+
+
+
 ## [0.0.37]
 
 - [**New**] added `create new notebook command`

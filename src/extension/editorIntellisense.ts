@@ -238,12 +238,14 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
                     })
             }
             return (result.names ?? []).map(element =>
-                new SymbolInformation(element.name, vscode.SymbolKind.Class,
+                // gives feasibilty to filter just url targets names
+                new SymbolInformation("#" + element.name, vscode.SymbolKind.Class,
                     new Range(
                         document.positionAt(element.start),
                         document.positionAt(element.end)),
                 )).concat((result.urls ?? []).map(element =>
-                    new SymbolInformation(element.method + " " + element.url, vscode.SymbolKind.Field,
+                // gives feasibilty to filter just url
+                    new SymbolInformation("^" + element.url + " -- " + element.method, vscode.SymbolKind.Field,
                         new Range(
                             document.positionAt(element.start),
                             document.positionAt(element.end)),

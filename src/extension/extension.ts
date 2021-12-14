@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { workspace } from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLangForHttpFile } from "./commands/export/generate";
 import { exportToPostman } from "./commands/export/postman";
@@ -11,7 +12,7 @@ import {
 	UrlExpander
 } from './editorIntellisense';
 import { Constants } from './models/constants';
-import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
+import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, ScriptCompletionProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
 import { ApplicationServices } from './services/global';
 import { NotebookKernel } from './services/notebook';
 import DotHttpEditorView from './views/editor';
@@ -111,12 +112,24 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider()),
 
 
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
+		// vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
+		// vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters),
+		// vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
 
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
+		// vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new ScriptCompletionProvider())
+
 	]);
+
+	workspace.registerTextDocumentContentProvider('embedded-content', {
+		provideTextDocumentContent: uri => {
+			const originalUri = uri.path.slice(1).slice(0, -3);
+			const map = ApplicationServices.get().embeddedContent;
+			console.log(`recv url uri ${originalUri}`);
+			const content = map.get(originalUri);
+			return content;
+		}
+	});
 
 
 
