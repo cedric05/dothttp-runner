@@ -248,7 +248,7 @@ export async function importRequests() {
             } else if (linkOrFileType === 'file') {
                 const filters: { [ram: string]: any; } = {};
                 if (pickType === ImportOptions.swagger) {
-                    filters.Swagger = ["json", "yaml"];
+                    filters.Swagger = ["json", "yaml", "yml"];
                 } else if (pickType === ImportOptions.har) {
                     filters.har = ["har", "har.json", "json"];
                 } else {

@@ -13,6 +13,7 @@
   - supports script suggestions
 - [**bump**] swagger-to-har2 to 1.0.4
   - fixes openapi3 import request payloads
+- [**Bug**] swagger import is not showing '.yml' files while import
 
 
 
