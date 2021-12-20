@@ -9,7 +9,10 @@
   - use '^' to filter urls
   - use '#' to filter by name
 - [**Improvement**] test script completion provided using request forwarding to javascript.
-- [**Improvement**] bump dothttp version to 0.0.40a2
+- [**bump**] dothttp version to 0.0.40a2
+  - supports script suggestions
+- [**bump**] swagger-to-har2 to 1.0.4
+  - fixes openapi3 import request payloads
 
 
 
