@@ -14,6 +14,7 @@
 - [**bump**] swagger-to-har2 to 1.0.4
   - fixes openapi3 import request payloads
 - [**Bug**] swagger import is not showing '.yml' files while import
+- [**Bug**] renaming target in notebook or reording notebook is causing failure with `incorrect target`  fixed
 
 
 

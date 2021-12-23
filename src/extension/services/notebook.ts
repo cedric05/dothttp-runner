@@ -75,19 +75,19 @@ export class NotebookKernel {
     private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
-
-        const cellNo = parseInt(cell.document.uri.fragment.substring(2));
-        const { uri } = cell.document;
-        const target: string = ApplicationServices.get().getStorageService().getValue(`notebooktarget:${uri.fsPath}:${cellNo}`) ?? '1';
-
         const start = Date.now();
         execution.start(start);
+
+        const { uri, fileName: filename } = cell.document;
+        const cellNo = parseInt(uri.fragment.substring(2));
         const httpDef = cell.document.getText();
-        const filename = cell.document.fileName;
+
         const contexts = cell.notebook
             .getCells()
             .filter(cell => cell.kind == vscode.NotebookCellKind.Code)
             .map(cell => cell.document.getText());
+
+        const target: string = await this._getTarget(uri, cellNo, httpDef);
         execution.token.onCancellationRequested(() => {
             // incase of cancellation, there is no need to replace out.
             // may appending could help
@@ -116,7 +116,7 @@ export class NotebookKernel {
             date: dateFormat(start, 'hh:MM:ss'),
             target: target,
             executionTime: ((end - start) / 1000).toFixed(1),
-        }
+        };
         if (out.script_result && out.script_result.properties) {
             ApplicationServices.get().getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
             // const totalProps = out.script_result!.properties;
@@ -168,6 +168,24 @@ export class NotebookKernel {
         }
 
     }
+    private async _getTarget(uri: vscode.Uri, cellNo: number, httpDef: string) {
+        const app = ApplicationServices.get();
+        let target: string = app.getStorageService().getValue(`notebooktarget:${uri.fsPath}:${cellNo}`) ?? '1';
+        const availabileTargets = (await app.getClientHandler().getVirtualDocumentSymbols(httpDef)).names?.map(x => x.name);
+        if (availabileTargets) {
+            let intTarget: number = 0;
+            try {
+                intTarget = parseInt(target);
+            } catch (_ignored) {
+            }
+            if (availabileTargets?.indexOf(target) == -1 || (
+                intTarget > availabileTargets?.length)) {
+                target = '1';
+            }
+        }
+        return target;
+    }
+
     parseAndAdd(response: Response): Array<vscode.NotebookCellOutputItem> {
         if (response.headers) {
             return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type')
