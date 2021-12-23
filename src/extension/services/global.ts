@@ -32,6 +32,7 @@ export class ApplicationServices {
     private urlStore: UrlStore;
     private notebookkernel!: NotebookKernel;
     private context: vscode.ExtensionContext;
+    embeddedContent: Map<string, string>;
 
     constructor(context: vscode.ExtensionContext) {
         this.storageService = new LocalStorageService(context.workspaceState);
@@ -54,6 +55,7 @@ export class ApplicationServices {
         this.versionInfo = new VersionInfo(this.globalstorageService);
         this.config = Configuration.instance();
         this.context = context;
+        this.embeddedContent = new Map<string, string>();
         context.subscriptions.push(this.diagnostics);
     }
 
@@ -80,6 +82,10 @@ export class ApplicationServices {
         this.dothttpSymbolProvier.setClientHandler(this.clientHanler);
         this.dothttpSymbolProvier.setDiagnostics(this.diagnostics);
 
+    }
+
+    public setEmbeddedContent(uri: string, content: string) {
+        this.embeddedContent.set(uri, content);
     }
 
     getClientHandler(): ClientHandler {

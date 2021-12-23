@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp Http Client",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.37",
+	"version": "0.0.38",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -728,7 +728,7 @@
 		"mime-types": "^2.1.30",
 		"path-browserify": "^1.0.1",
 		"semver": "^7.3.4",
-		"swagger-to-har2": "^1.0.3",
+		"swagger-to-har2": "^1.0.4",
 		"temp": "^0.9.4",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",

@@ -4,6 +4,21 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.38]
+- [**Improvement**] better code outline and easy filtering 
+  - use '^' to filter urls
+  - use '#' to filter by name
+- [**Improvement**] test script completion provided using request forwarding to javascript.
+- [**bump**] dothttp version to 0.0.40a2
+  - supports script suggestions
+- [**bump**] swagger-to-har2 to 1.0.4
+  - fixes openapi3 import request payloads
+- [**Bug**] swagger import is not showing '.yml' files while import
+- [**Bug**] renaming target in notebook or reording notebook is causing failure with `incorrect target`  fixed
+
+
+
+
 ## [0.0.37]
 
 - [**New**] added `create new notebook command`

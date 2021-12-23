@@ -4,7 +4,7 @@
  * see https://github.com/tanhakabir/rest-book/blob/5b519c618c707d0087a55e99605131583cd81375/LICENSE for license 
  */
 
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, Position, ProviderResult, SnippetString, TextDocument } from 'vscode';
+import { CancellationToken, commands, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, Position, ProviderResult, SnippetString, TextDocument, Uri } from 'vscode';
 import { ApplicationServices } from './global';
 import * as parser from 'jsonc-parser';
 import * as fs from 'fs';
@@ -13,9 +13,59 @@ import * as util from 'util';
 import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../models/completiontypes';
 import { UrlStore } from './UrlStorage';
+import { Constants } from '../models/constants';
+import { TypeResult } from '../lib/client';
 
 
 const readFileProm = util.promisify(fs.readFile);
+
+
+export class ScriptCompletionProvider implements CompletionItemProvider {
+    async provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, context: CompletionContext): Promise<CompletionList | undefined> {
+
+        const app = ApplicationServices.get();
+        const client = app.getClientHandler();
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+        const offset = document.offsetAt(position);
+        let positionInfo: TypeResult & { start?: number, end?: number };
+
+        const documentText = document.getText();
+        if (isNotebook) {
+            positionInfo = await client.getTypeFromContentPosition(offset, documentText, "script completion provider")
+        } else {
+            positionInfo = await client.getTypeFromFilePosition(offset, document.fileName, "script completion provider");
+        }
+        console.log(`sending`);
+        if (positionInfo.type == "script" && positionInfo.start && positionInfo.end) {
+            let content = documentText
+                .split('\n')
+                .map(line => {
+                    return ' '.repeat(line.length);
+                }).join('\n');
+
+            content = content.slice(0, positionInfo.start) + documentText.slice(positionInfo.start, positionInfo.end) + content.slice(positionInfo.end);
+            const originalUri = document.uri.toString();
+
+            app.setEmbeddedContent(
+                originalUri,
+                content
+            );
+            console.log(`orignal uri ${originalUri}`);
+
+            const vdocUriString = `embedded-content://javascript/${encodeURIComponent(originalUri)}.js`;
+            const vdocUri = Uri.parse(vdocUriString);
+            const results = await commands.executeCommand<CompletionList>(
+                'vscode.executeCompletionItemProvider',
+                vdocUri,
+                position,
+                context.triggerCharacter
+            );
+            app.embeddedContent.delete(originalUri);
+            return results;
+        }
+    }
+
+}
 
 
 
