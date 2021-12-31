@@ -50,7 +50,7 @@ export enum Constants {
     copyEnvValueCommand = 'dothttpEnvView.copyPropertyValue',
     openEnvFileCommmand = 'dothttpEnvView.opendothttpjson',
     disableAllEnvCommmand = "dothttpEnvView.disableAllEnv",
-    
+
 
     enableEnvViewVar = 'dothttpEnvViewEnabled',
 
@@ -77,7 +77,7 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.38",
+    EXTENSION_VERSION = "0.0.39",
 
     dothttpNotebook = "dothttp-book",
 
