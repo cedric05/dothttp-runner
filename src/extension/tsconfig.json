@@ -4,6 +4,7 @@
 		"module": "commonjs",
 		"rootDir": ".",
 		"outDir": "../../out/extension",
+		"target": "es2020",
 		"lib": [
 			"es6"
 		],
