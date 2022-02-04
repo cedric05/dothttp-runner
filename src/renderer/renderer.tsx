@@ -5,7 +5,6 @@ import * as LinkExternal from '@vscode/codicons/src/icons/code.svg';
 import * as OpenInEditor from '@vscode/codicons/src/icons/open-preview.svg';
 import "ace-builds/src-noconflict/ext-language_tools";
 import modelList from 'ace-builds/src-noconflict/ext-modelist';
-import 'ace-builds/src-noconflict/ext-searchbox';
 import 'ace-builds/src-noconflict/mode-asciidoc';
 import 'ace-builds/src-noconflict/mode-css';
 import 'ace-builds/src-noconflict/mode-graphqlschema';

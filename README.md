@@ -37,7 +37,7 @@ Save and re-use later
 
 ## dothttp notebook
 
-<img src="https://user-images.githubusercontent.com/11557066/117543419-6724f880-b03a-11eb-9b7b-d81db7938fd9.png">
+<img src="notebook.png">
 
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
