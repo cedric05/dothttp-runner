@@ -3,7 +3,7 @@ import { workspace } from 'vscode';
 import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
 import { generateLangForHttpFile } from "./commands/export/generate";
 import { exportToPostman } from "./commands/export/postman";
-import { createNewNotebook, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./commands/http_httpbookConvertions";
+import { createNewNotebook, FileTypes, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./commands/http_httpbookConvertions";
 import { importRequests } from "./commands/import";
 import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
 import { setUp, updateDothttpIfAvailable } from './downloader';
@@ -68,7 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFileFromCommand),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
-		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, createNewNotebook)
+		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, ()=>createNewNotebook(FileTypes.DotNotebook)),
+		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, ()=>createNewNotebook(FileTypes.DotHttp))
 	])
 
 

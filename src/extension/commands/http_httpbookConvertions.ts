@@ -74,28 +74,62 @@ ${text}
     }
 }
 
+export enum FileTypes {
+    DotNotebook,
+    DotHttp
+}
 
-export async function createNewNotebook() {
+function newFileOptions(filetype: FileTypes) {
+    if (filetype == FileTypes.DotNotebook) {
+        return {
+            folderDialoge: "Select Folder To Create Notebook",
+            fileNameDialoge: "Enter Notebook File Name",
+            defaultFileName: "api.hnbk",
+            errorDialogue: "extension has to be `httpbook` or `hnbk` like api.httpbook",
+            acceptedFileExts: [".hnbk", ".httpbook"]
+        }
+    } else {
+        return {
+            folderDialoge: "Select Folder To Create HttpFile",
+            fileNameDialoge: "Enter Http File Name",
+            defaultFileName: "dev.http",
+            errorDialogue: "extension has to be `http` or `dothttp` like dev.http",
+            acceptedFileExts: [".dhttp", ".http"]
+        }
+    }
+}
+
+export async function createNewNotebook(filetype: FileTypes) {
+    const {
+        folderDialoge,
+        fileNameDialoge,
+        defaultFileName,
+        errorDialogue,
+        acceptedFileExts,
+    } = newFileOptions(filetype);
+
     const directory = await vscode.window.showOpenDialog({
         canSelectFolders: true,
         canSelectFiles: false,
-        title: "Select Folder To Create Notebook",
+        title: folderDialoge,
         canSelectMany: false,
-        openLabel: "Select Folder To Create Notebook"
+        openLabel: folderDialoge,
     })
     if (!directory) {
         return;
     }
     const filename = await vscode.window.showInputBox({
-        title: "enter notebook file name",
-        prompt: "enter notebook file name",
+        title: fileNameDialoge,
+        prompt: fileNameDialoge,
         ignoreFocusOut: true,
-        placeHolder: "api.hnbk",
-        validateInput: (filename) => filename.endsWith(".hnbk") || filename.endsWith(".httpbook") ? null : "extension has to be `httpbook` or `hnbk` like api.httpbook",
-        value: "api.hnbk"
+        placeHolder: defaultFileName,
+        validateInput: (filename) => acceptedFileExts.indexOf(path.extname(filename)) > -1 ? null : errorDialogue,
+        value: defaultFileName
     })
     if (!filename) return
-    await fs.writeFile(path.join(directory[0].fsPath, filename), "");
+    const abosolutePath = path.join(directory[0].fsPath, filename);
+    await fs.writeFile(abosolutePath, "");
+    await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(abosolutePath));
 }
 
 export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
@@ -131,3 +165,4 @@ export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
     // use this instead of editor edit and show document
     await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(httpbookFileName));
 };
+

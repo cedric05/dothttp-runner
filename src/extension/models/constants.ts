@@ -36,6 +36,8 @@ export enum Constants {
     HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
     HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
     NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
+    NEW_HTTP_FILE_COMMAND = "dothttp.command.newHttpFile",
+    
 
     //    env tree
     envTreeView = 'dothttpEnvView',
@@ -77,7 +79,7 @@ export enum Constants {
     NOTEBOOK_ID = 'dothttp-book',
 
     // download stuff
-    EXTENSION_VERSION = "0.0.40",
+    EXTENSION_VERSION = "0.0.41",
 
     dothttpNotebook = "dothttp-book",
 
