@@ -23,12 +23,17 @@ jobs:
             - name: Install
               run: |
                 npm install
-                npm install vsce@1.103.1 --global
-                npm install ovsx --global
+                npm install vsce ovsx --global
             - name: Package extension
               run: |
-                npx vsce@1.103.1 package
-                npx vsce@1.103.1 publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
+                npx vsce package
+            - name: Upload to visualstudio
+              continue-on-error: true
+              run: |
+                npx vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
+            - name: Upload to openvsx
+              continue-on-error: true
+              run: |
                 ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
             - name: Create GitHub release
               id: create_release
