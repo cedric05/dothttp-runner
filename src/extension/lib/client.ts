@@ -70,11 +70,22 @@ abstract class BaseSpanClient implements ICommandClient {
 export class StdoutClient extends BaseSpanClient {
     rl!: Interface;
     eventS: EventEmitter = new EventEmitter();
+    version: string = "unknown";
 
     constructor(options: { pythonpath: string, stdargs: string[], type: RunType }) {
         super(options);
         this.setup();
         this.healInstallation(options);
+
+        once(this.eventS, "-1").then(result => {
+            if (result.length != 1){
+                console.log('unknown dothttp cli')
+            } else {
+                this.version = result[0].result.dothttp_version;
+                console.log(`detected dothttp cli with version: ${this.version}`,)
+            }
+        });
+
     }
     private setup() {
         this.rl = createInterface({

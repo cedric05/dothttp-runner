@@ -20,6 +20,7 @@ export enum DothttpTypes {
     URL = "url",
     BASIC_AUTH = "basic_auth",
     DIGEST_AUTH = "digest_auth",
+    NTLM_AUTH = "ntlm_auth",
     CERTIFICATE = "certificate",
     HEADER = "header",
     URL_PARAMS = "urlparams",
@@ -65,13 +66,21 @@ visit [docs](https://docs.dothttp.dev/docs/flags)`),
 1. name (Opitonal) \`@name\`
 1. flags(@insecure/@clear) (Optional) \`@insecure\`, \`@clear\`
 1. Url (required)
-1. basicauth/digestauth (Optional) \`basicauth\`, \`digestauth\`
+1. basicauth/digestauth (Optional) \`basicauth\`, \`digestauth\`, \`ntlmauth\`, \`awsauth\`
 1. certificate (Optional) \`certificate(cert="", key="")\` or \`certificate(cert="")\` or  \`p12(file="", password="")\`
 1. headers (Optional) \`Authorization: "secretkey"\`
 1. urlparams (Optional) \`? page = 20\`
 1. payload (Optional)  \`data("some")\`, \`json({"a":"b"})\` , \`urlencode({"a":"b"})\`, \`files( (key, value), ..)\`, \`fileinput("path to file")\`
 1. script (Optional)
     
+`),
+    "ntlm_auth": new MarkdownString(`Configured with HttpDef Basic authentication mechanism
+
+example:
+\`ntlmauth("<username>", "<password>")\`
+
+visit [docs](https://docs.dothttp.dev/docs/auth/#ntlm-authentication)
+
 `),
     "basic_auth": new MarkdownString(`Configured with HttpDef Basic authentication mechanism
 
@@ -166,6 +175,8 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#multipart)`),
 
 `),
     "script": new MarkdownString(`Run Javascript script after execution of httpdef
+
+\`> {% client.log("sample script") %}\`
 
 visit [docs](https://docs.dothttp.dev/docs/scripts)`),
     "comment": new MarkdownString("Comment"),
