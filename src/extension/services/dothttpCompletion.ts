@@ -136,6 +136,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
 
     static readonly randomSuggesstionsList: ReadonlyArray<string> = ["$randomStr",
+        "$randomFloat", "$guid", "$randomLoremSlug",
         "$randomInt", "$randomBool", "$randomSlug", "$uuid", "$timestamp"]
 
 
@@ -247,6 +248,7 @@ export class KeywordCompletionItemProvider implements CompletionItemProvider {
         "json",
         "urlencoded",
         "files",
+        "file",
         "multipart",
         "text",
         "form",
@@ -254,15 +256,17 @@ export class KeywordCompletionItemProvider implements CompletionItemProvider {
         "fileinput",
         "digestauth",
         "ntlmauth",
-        "cert",
+        "key",
         "p12",
         "certificate",
         "cert",
         "password",
         "@insecure",
         "@name(",
-        "@clear"
-
+        "@clear",
+        "header",
+        "query",
+        "output"
     ];
 
     provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {

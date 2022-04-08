@@ -3,6 +3,7 @@ import { Constants } from './models/constants';
 import { NotebookSerializer } from "./services/NotebookSerializer";
 
 export async function activate(context: vscode.ExtensionContext) {
+    vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "web");
     loadNoteBookControllerSafely(context);
 }
 

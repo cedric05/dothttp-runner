@@ -3,6 +3,14 @@
 
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
+## [0.0.42]
+- [**Improvement**] NTLM auth suggestions and other
+- [**Improvements**] Notebook
+  - Generate curl/code from cell itself
+  - Now output of cell creates new presentation view for most used content types (simple view)
+  - Actions to Reveal history/Variables view && Restart cli with ease
+- [**Bug**] web extension show commands only which works
+- [**Bug**] Earlier history is always recorded. now it respsects configuration
 
 ## [0.0.41]
 - [**Improvement**] New Walkthroughs to setup dothttp easily

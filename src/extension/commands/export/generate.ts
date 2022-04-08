@@ -7,7 +7,7 @@ import { cacheAndGetTarget, showEditor } from '../run';
 import HTTPSnippet = require("httpsnippet");
 import { QuickPickItem } from 'vscode';
 
-const LANG_GEN_TARGETS: Array<QuickPickItem & { options?: Array<string>, filext?: string, description?: string }> = [
+export const LANG_GEN_TARGETS: Array<QuickPickItem & { options?: Array<string>, filext?: string, description?: string }> = [
     { label: "python", options: ["requests", "python3",], filext: ".py", description: "python :(requests, python3)", },
     { label: "node", options: ["fetch", "axios", "native", "request", "unirest"], filext: ".js", description: "node: (fetch, axios, native, request, unirest)" },
     { label: "javascript", options: ["fetch", "axios", "jquery", "xhr"], filext: ".js", description: "javascript: (fetch, axios, jquery, xhr)" },
@@ -42,7 +42,7 @@ export async function generateLangForHttpFile(uri: vscode.Uri) {
 
 }
 
-export async function generateLang(options: { filename: string, target: string, content?: string }): Promise<void> {
+export async function generateLangFromOptions(options: { filename: string, target: string, content?: string }): Promise<{ code: string, language: string, error: false } | void> {
     const { filename, target, content } = options;
     const clientHanler = ApplicationServices.get().getClientHandler();
     const fileStateService = ApplicationServices.get().getFileStateService();
@@ -56,6 +56,9 @@ export async function generateLang(options: { filename: string, target: string, 
         env: fileStateService.getEnv(filename)! ?? [],
     });
     try {
+        if (out.error) {
+            return
+        }
         const targetHttpDef = out.target[target ?? '1']! as HttpTargetDef;
         const snippet = new HTTPSnippet({
             method: targetHttpDef.method, url: targetHttpDef.url,
@@ -76,14 +79,30 @@ export async function generateLang(options: { filename: string, target: string, 
         const langSpec = snippet.convert(pickLanguage.label!, pickImpl, {
             indent: '\t'
         });
-        // TODO only gives out python file name now.
-        const outputBodyURI = vscode.Uri.parse("untitled:" + filename + ".gen" + pickLanguage.filext);
-        vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
-            showEditor(textDoc, langSpec as string);
-        });
+        if (langSpec) {
+            return { "code": langSpec as string, "language": pickLanguage.label, error: false }
+        } return;
+
     } catch (error) {
         console.log(error);
     }
 
+    return;
+}
+
+
+
+export async function generateLang(options: { filename: string, target: string, content?: string }): Promise<void> {
+    try {
+        const langSpec = await generateLangFromOptions(options)
+        if (langSpec && !langSpec.error) {
+            const outputBodyURI = vscode.Uri.parse("untitled:" + options.filename + ".gen" + langSpec.language);
+            vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
+                showEditor(textDoc, langSpec.code as string);
+            });
+        }
+    } catch (error) {
+        console.log(error);
+    }
     return;
 }

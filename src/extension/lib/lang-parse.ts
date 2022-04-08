@@ -31,4 +31,5 @@ export interface Param {
 
 export interface HttpFileTargetsDef {
     target: Targets;
+    error: boolean
 }

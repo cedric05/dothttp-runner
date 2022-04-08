@@ -6,7 +6,6 @@ import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
 import { IHistoryService } from '../tingohelpers';
 import querystring = require('querystring');
-var mime = require('mime-types');
 
 
 export default class DotHttpEditorView implements vscode.TextDocumentContentProvider {

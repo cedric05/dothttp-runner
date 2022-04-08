@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata, Response } from '../../common/response';
-import { generateLang } from "../commands/export/generate";
+import { generateLang, generateLangFromOptions } from "../commands/export/generate";
 import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
 import { ClientHandler } from "../lib/client";
 import { Constants } from "../models/constants";
@@ -26,7 +26,7 @@ export class NotebookKernel {
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = [Constants.LANG_CODE];
+        this._controller.supportedLanguages = [Constants.LANG_CODE, "python"];
         this._controller.supportsExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
@@ -72,7 +72,7 @@ export class NotebookKernel {
         }
     }
 
-    private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
+    private async _doExecution(cell: vscode.NotebookCell, curl = false): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
         const start = Date.now();
@@ -106,7 +106,7 @@ export class NotebookKernel {
             env: this.fileStateService.getEnv(filename),
             properties: DotHttpEditorView.getEnabledProperties(cell.document.fileName),
             target,
-            curl: false,
+            curl,
             contexts: contexts
         }) as DothttpExecuteResponse;
         const end = Date.now();
@@ -146,15 +146,22 @@ export class NotebookKernel {
                 ]);
                 execution.end(false, end);
             } else {
-                out.body = "";
-                out.headers = {};
-                const outs: Array<vscode.NotebookCellOutputItem> = [];
-                const nativeContentTypes = this.parseAndAdd(out.response);
-                outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
-                outs.push(...nativeContentTypes);
-                execution.replaceOutput([
-                    new vscode.NotebookCellOutput(outs)
-                ]);
+                if (curl) {
+                    execution.replaceOutput([
+                        new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
+                    ]);
+                } else {
+                    out.body = "";
+                    out.headers = {};
+                    const outs: Array<vscode.NotebookCellOutputItem> = [];
+                    const nativeContentTypes = this.parseAndAdd(out.response);
+                    outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
+                    outs.push(...nativeContentTypes);
+                    execution.replaceOutput([
+                        new vscode.NotebookCellOutput(outs)
+                    ]);
+                }
+
                 execution.end(true, end)
             }
         } catch (error) {
@@ -192,19 +199,42 @@ export class NotebookKernel {
                 .map(key => mime.extension(response.headers![key]))
                 .filter(key => key)
                 .map(extension => {
-                    const mimeType = mime.lookup(extension)
-                    // this is a hack
-                    // unless its called, it will not be available
-                    // and its not customary to call this function
-                    response.contentType = mimeType;
-                    const ret = vscode.NotebookCellOutputItem.text(response.body, mimeType);
-                    return ret;
-
+                    response.contentType = mime.lookup(extension);
+                    return vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`);
                 })
         }
         return [];
     }
 
+    async generateCurl(cell: vscode.NotebookCell) {
+        return this._doExecution(cell, true)
+    }
+
+    async generateProgrammingLang(cell: vscode.NotebookCell) {
+        const execution = this._controller.createNotebookCellExecution(cell);
+        try {
+            execution.start(Date.now());
+            const cellUri = cell.document.uri;
+            const cellNo = parseInt(cellUri.fragment.substring(2));
+            const content = cell.document.getText();
+            const target: string = await this._getTarget(cellUri, cellNo, content);
+            const langspec = await generateLangFromOptions({ content, filename: cell.document.fileName, target });
+            if (langspec && langspec.code) {
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, `text/x-${langspec.language}`)])
+                ]);
+            } else {
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr("Failed to generate code, Probably syntax error")])
+                ]);
+            }
+        } catch (error) {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr(`Failed to generate code. error: ${error}`)])
+            ]);
+        }
+        execution.end(true, Date.now());
+    }
 }
 
 

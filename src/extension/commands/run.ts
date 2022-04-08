@@ -180,17 +180,20 @@ function getBaseFileNameToSave(config: Configuration, filename: string) {
 }
 
 export function addHistory(out: any, filename: string, options: { target: string; }) {
-    const history = {
-        url: out.url as string,
-        http: out.http as string,
-        filename: filename as string,
-        target: options.target as string,
-        time: new Date(),
-        status_code: out.status as number
-    };
-    ApplicationServices.get().getHistoryService().addNew(
-        history);
-    ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
+    if (ApplicationServices.get().getConfig().history) {
+        const history = {
+            url: out.url as string,
+            http: out.http as string,
+            filename: filename as string,
+            target: options.target as string,
+            time: new Date(),
+            status_code: out.status as number
+        };
+        ApplicationServices.get().getHistoryService().addNew(
+            history);
+        ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
+    }
+
 }
 
 export function showInUntitledView(scriptFileName: string, headerURI: string, out: DothttpExecuteResponse) {

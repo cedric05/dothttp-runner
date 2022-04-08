@@ -31,8 +31,8 @@
 			"preLaunchTask": "npm: test-watch"
 		},
 		{
-			"name": "Extension Tests in VS Code Web",
-			"type": "extensionHost",
+			"name": "Web Extension Tests",
+			"type": "pwa-extensionHost",
 			"request": "launch",
 			"debugWebWorkerHost": true,
 			"args": [

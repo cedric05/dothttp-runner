@@ -1,8 +1,8 @@
 {
 	"name": "dothttp-code",
-	"displayName": "Dothttp Http Client",
+	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.41",
+	"version": "0.0.42",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -159,206 +159,285 @@
 		"commands": [
 			{
 				"command": "dothttp.command.newHttpBook",
-				"title": "New Notebook",
+				"title": "Notebook",
+				"shortTitle": "Dothttp Notebook",
 				"icon": "$(notebook)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.newHttpFile",
-				"title": "New Http File",
-				"category": "Dothttp"
+				"title": "File",
+				"shortTitle": "Dothttp File",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.run",
 				"title": "Run Target",
 				"icon": "$(rocket)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.notebook.run",
 				"title": "Run Target in Notebook",
 				"icon": "$(rocket)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.text.run",
 				"title": "Run Target CodeLens",
 				"icon": "$(rocket)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.gencurl",
 				"title": "Generate Curl",
 				"icon": "$(mirror)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.reuse",
 				"title": "Toggles Reuse Tab Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.runrecent",
 				"title": "Toggles Run Recent Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.experimental",
 				"title": "Toggles Experimental Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.showheaders",
 				"title": "Toggles Showheaders Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.history",
 				"title": "Toggles History Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.nocookie",
 				"title": "Toggles Cookie Setting",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.toggle.unstable",
 				"title": "Toggles Unstable dothttp build",
 				"category": "Dothttp",
-				"icon": "$(gear)"
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.import.external",
 				"title": "Dothttp: Import Resource To Http",
 				"category": "Dothttp",
-				"icon": "$(cloud-download)"
+				"icon": "$(cloud-download)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.refresh",
 				"title": "Refresh",
-				"icon": "$(refresh)"
+				"icon": "$(refresh)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.enableenv",
 				"title": "Enable Environment",
-				"icon": "$(add)"
+				"icon": "$(add)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.disableenv",
 				"title": "Disable Environment",
-				"icon": "$(remove)"
+				"icon": "$(remove)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.add",
 				"title": "Add Property",
-				"icon": "$(new-file)"
+				"icon": "$(new-file)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.enableproperty",
 				"title": "Enable Property",
-				"icon": "$(add)"
+				"icon": "$(add)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.disableproperty",
 				"title": "Disable Property",
-				"icon": "$(remove)"
+				"icon": "$(remove)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.copyPropertyValue",
 				"title": "Copy Property Value",
-				"icon": "$(chrome-restore)"
+				"icon": "$(chrome-restore)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.updateproperty",
 				"title": "Update Property",
-				"icon": "$(edit)"
+				"icon": "$(edit)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.disableAllProperties",
 				"title": "Disable All Properties",
-				"icon": "$(close-all)"
+				"icon": "$(close-all)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.disableAllEnv",
 				"title": "Disable All Environment",
-				"icon": "$(close-all)"
+				"icon": "$(close-all)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpPropView.removeproperty",
 				"title": "Remove Property",
-				"icon": "$(trash)"
+				"icon": "$(trash)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.opendothttpjson",
 				"title": "Open",
-				"icon": "$(edit)"
+				"icon": "$(edit)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttpEnvView.copyPropertyValue",
 				"title": "Copy Environment Value",
-				"icon": "$(chrome-restore)"
+				"icon": "$(chrome-restore)",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.generatelang",
 				"title": "Dothttp: Generate General Programming Languages For Request",
 				"icon": "$(extensions)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.restartcli",
 				"title": "Restart Cli Server",
 				"icon": "$(debug-restart)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.export.postman",
 				"title": "Dothttp: Export Http To Postman",
 				"icon": "$(extensions)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.notebook.tohttpfile",
 				"title": "Dothttp: Notebook To Httpfile",
 				"icon": "$(archive)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			},
 			{
 				"command": "dothttp.command.openAsHttpBook",
 				"title": "Dothttp: Open as a Httpbook",
 				"icon": "$(book)",
-				"category": "Dothttp"
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.openVariableView",
+				"title": "Reveal Vairables",
+				"icon": "$(eye)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.notebook.prog",
+				"title": "Generate Code",
+				"icon": "$(mirror)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.notebook.gencurl",
+				"title": "Generate Quick Curl",
+				"icon": "$(mirror)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
 			}
 		],
 		"menus": {
-			"file/newFile": [
+			"notebook/toolbar": [
 				{
-					"command": "dothttp.command.newHttpBook"
+					"command": "dothttp.command.restartcli",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'",
+					"group": "navigation/execute@1"
 				},
 				{
-					"command": "dothttp.command.newHttpFile"
+					"command": "dothttp.command.openVariableView",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'",
+					"group": "navigation/execute@2"
+				}
+			],
+			"notebook/cell/execute": [
+				{
+					"command": "dothttp.command.notebook.prog",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
+				},
+				{
+					"command": "dothttp.command.notebook.gencurl",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
+				}
+			],
+			"file/newFile": [
+				{
+					"command": "dothttp.command.newHttpBook",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"command": "dothttp.command.newHttpFile",
+					"when": "dothttpRunMode == full"
 				}
 			],
 			"editor/title": [
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full",
 					"group": "navigation@1"
 				},
 				{
 					"command": "dothttp.command.gencurl",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp",
+					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full",
 					"group": "navigation@2"
 				},
 				{
 					"command": "dothttp.command.notebook.tohttpfile",
-					"when": "resourceExtname == .httpbook || resourceExtname == .hnbk",
+					"when": "(resourceExtname == .httpbook || resourceExtname == .hnbk) && dothttpRunMode == full",
 					"group": "navigation@1"
 				}
 			],
@@ -367,76 +446,103 @@
 					"command": "dothttp.command.export.postman",
 					"title": "Export http to postman",
 					"group": "Export",
-					"icon": "$(extensions)"
+					"icon": "$(extensions)",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"command": "dothttp.command.openVariableView",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.import.external",
 					"title": "Dothttp: Import Resource To Http",
 					"group": "Import",
-					"icon": "$(cloud-download)"
+					"icon": "$(cloud-download)",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.generatelang",
 					"title": "Generate General Programming Languages For Request",
 					"group": "Export",
 					"icon": "$(extensions)",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"when": "resourceLangId == 'dothttp-vscode' && dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.run",
 					"title": "Run Target",
 					"icon": "$(rocket)",
 					"group": "Dothttp",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"when": "resourceLangId == 'dothttp-vscode' && dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.openAsHttpBook",
 					"title": "Open as a Httpbook",
 					"icon": "$(book)",
 					"group": "Export",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"when": "resourceLangId == 'dothttp-vscode' && dothttpRunMode == full"
 				}
 			],
 			"commandPalette": [
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.reuse"
+					"command": "dothttp.command.toggle.reuse",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"command": "dothttp.command.openVariableView",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.notebook.prog",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.notebook.gencurl",
+					"when": "never"
 				},
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.runrecent"
+					"command": "dothttp.command.toggle.runrecent",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"group": "dothttp",
-					"command": "dothttp.command.newHttpBook"
+					"command": "dothttp.command.newHttpBook",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"group": "dothttp",
-					"command": "dothttp.command.newHttpFile"
+					"command": "dothttp.command.newHttpFile",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.run",
-					"when": "resourceExtname == .http || resourceExtname == .dhttp"
+					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full"
 				},
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.experimental"
+					"command": "dothttp.command.toggle.experimental",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.nocookie"
+					"command": "dothttp.command.toggle.nocookie",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.history"
+					"command": "dothttp.command.toggle.history",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"group": "toggle",
-					"command": "dothttp.command.toggle.showheaders"
+					"command": "dothttp.command.toggle.showheaders",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.openAsHttpBook",
-					"group": "export"
+					"group": "export",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttpEnvView.enableenv",
@@ -496,15 +602,18 @@
 				},
 				{
 					"command": "dothttp.command.export.postman",
-					"group": "export"
+					"group": "export",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.import.external",
-					"group": "export"
+					"group": "export",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.generatelang",
-					"group": "export"
+					"group": "export",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.notebook.run",
@@ -550,19 +659,20 @@
 				{
 					"command": "dothttp.command.export.postman",
 					"title": "Export Http To Postman",
-					"icon": "$(extensions)"
+					"icon": "$(extensions)",
+					"when": "dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.generatelang",
 					"title": "Generate General Programming Languages For Request",
 					"icon": "$(book)",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"when": "resourceLangId == 'dothttp-vscode' && dothttpRunMode == full"
 				},
 				{
 					"command": "dothttp.command.openAsHttpBook",
 					"title": "Open as a Httpbook",
 					"icon": "$(book)",
-					"when": "resourceLangId == 'dothttp-vscode'"
+					"when": "resourceLangId == 'dothttp-vscode' && dothttpRunMode == full"
 				}
 			],
 			"view/item/context": [
@@ -640,7 +750,7 @@
 					"dothttp.conf.path": {
 						"type": "string",
 						"default": "/usr/bin/dothttp",
-						"description": "dothttp installation location"
+						"description": "Dothttp Installation Location"
 					},
 					"dothttp.conf.experimental": {
 						"type": "boolean",
@@ -654,18 +764,13 @@
 					},
 					"dothttp.conf.history": {
 						"type": "boolean",
-						"default": false,
+						"default": true,
 						"description": "Save history of requests by setting to `ture`"
-					},
-					"dothttp.conf.curl": {
-						"type": "boolean",
-						"default": false,
-						"description": "Genererate curl command only!"
 					},
 					"dothttp.conf.showheaders": {
 						"type": "boolean",
 						"default": false,
-						"description": "Show headers in seperate view"
+						"description": "Show Headers In Seperate View"
 					}
 				},
 				"label": "dothttp",
@@ -689,7 +794,8 @@
 				},
 				{
 					"id": "dothttpHistory",
-					"name": "Dothttp history"
+					"name": "Dothttp history",
+					"when": "dothttpRunMode == full"
 				}
 			]
 		},

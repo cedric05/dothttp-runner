@@ -88,6 +88,7 @@ export class Configuration {
     showHeaders = false;
     noCookies = false;
     isExperimental = false;
+    history = true;
     configchange = vscode.workspace.onDidChangeConfiguration(() => this.update());
     pythonPath!: string;
     dothttpPath!: string;
@@ -107,6 +108,7 @@ export class Configuration {
         this.pythonPath = vsCodeconfig.get(Constants.pythonPath) as string;
         this.dothttpPath = vsCodeconfig.get(Constants.dothttpPath) as string;
         this.responseSaveDirectory = vsCodeconfig.get(Constants.responseDirectory) as string;
+        this.history = vsCodeconfig.get(Constants.history) as boolean;
     }
 
     public update() {

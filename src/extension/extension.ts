@@ -21,6 +21,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (!vscode.workspace.isTrusted) {
 		webExtensionActivate(context);
 		return
+	} else {
+		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
 	await bootStrap(context);
 
@@ -61,6 +63,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.IMPORT_RESOURCE_COMMAND, importRequests),
 		vscode.commands.registerCommand(Constants.EXPORT_RESOURCE_COMMAND, exportToPostman),
 		vscode.commands.registerCommand(Constants.GENERATE_PROG_LANG_COMMAND, generateLangForHttpFile),
+
+		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_GEN_CURL, async (cell) =>
+			ApplicationServices.get().getNotebookkernel().generateCurl(cell)
+		),
+		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_GEN_PROGRAM, async (cell) =>
+			ApplicationServices.get().getNotebookkernel().generateProgrammingLang(cell)
+		),
+		vscode.commands.registerCommand(Constants.REVEAL_HISTORY_VIEW, () => {
+			vscode.commands.executeCommand('dothttpHistory.focus');
+		}),
 		vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
 			appServices.getClientHandler().restart();
 		}),
@@ -68,8 +80,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFileFromCommand),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
-		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, ()=>createNewNotebook(FileTypes.DotNotebook)),
-		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, ()=>createNewNotebook(FileTypes.DotHttp))
+		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
+		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp))
 	])
 
 
