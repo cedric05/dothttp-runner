@@ -205,11 +205,19 @@ export async function setUp(context: ExtensionContext) {
         console.log('download successfull ', downloadLocation);
         var exePath = path.join(downloadLocation, 'cli');
         exePath = getExePath(exePath);
-        Configuration.setDothttpPath(exePath)
+        // in scenarios where folder is not opened as folder, it will fail
+        // TODO seperate
+        try { Configuration.setDothttpPath(exePath) } catch (ignored) { }
         console.log('dothttp path set to', exePath);
         context.globalState.update("dothttp.downloadContentCompleted", true);
-        await wait(4000);
-        return acceptableVersion.version;
+        ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(acceptableVersion.version)
+        const shouldReload = await vscode.window.showInformationMessage(
+            'Dothttp dependencies have been installed, reload to start using extension', 'reload')
+        if (shouldReload === 'reload') {
+            vscode.commands.executeCommand(
+                'workbench.action.reloadWindow',
+            );
+        }
     }
 }
 

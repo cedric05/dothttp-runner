@@ -1,8 +1,18 @@
 # Change Log
 
-
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
+
+
+## [0.0.43]
+- [ **Improvements** ] activates everytime.
+  - helps if developer wants to import/export without having no http notebooks/files.
+- [ **BUG** ] [Windows] import postman/har as notebook shows error warning
+- [ **BUG** ] [Windows] Fix for Using extension opens cmd
+- [ **BUG** ] Fix for extension not working when installed first time.
+
+Checkout dothttp notebook [collections](https://github.com/cedric05/api-collections)
+
 ## [0.0.42]
 - [**Improvement**] NTLM auth suggestions and other
 - [**Improvements**] Notebook

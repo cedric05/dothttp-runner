@@ -24,8 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	} else {
 		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
-	await bootStrap(context);
-
+	ApplicationServices.initialize(context);
 	const appServices = ApplicationServices.get();
 
 	loadNoteBookControllerSafely(context);
@@ -143,20 +142,12 @@ export async function activate(context: vscode.ExtensionContext) {
 			return content;
 		}
 	});
-
-
-
-
-
+	bootStrap(context);
 }
 
 
 async function bootStrap(context: vscode.ExtensionContext) {
-	const version = await setUp(context);
-	ApplicationServices.initialize(context);
-	if (version) {
-		ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(version);
-	}
+	await setUp(context);
 	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
 }
 

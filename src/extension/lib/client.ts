@@ -42,7 +42,11 @@ abstract class BaseSpanClient implements ICommandClient {
     constructor(options: { pythonpath: string, stdargs: string[] }) {
         this.proc = child_process.spawn(options.pythonpath,
             options.stdargs,
-            { stdio: ["pipe", "pipe", "inherit"] }
+            {
+                stdio: ["pipe", "pipe", "inherit"],
+                // not sure why, totally unrelated to latest changes, but started opening in new window
+                detached: true
+            },
         );
 
         this.channel = vscode.window.createOutputChannel('dothttp-code');
@@ -78,7 +82,7 @@ export class StdoutClient extends BaseSpanClient {
         this.healInstallation(options);
 
         once(this.eventS, "-1").then(result => {
-            if (result.length != 1){
+            if (result.length != 1) {
                 console.log('unknown dothttp cli')
             } else {
                 this.version = result[0].result.dothttp_version;

@@ -1,48 +1,38 @@
 # Http Client for vscode (dothttp-runner)
 
+## Principle / WHY
 
-Checkout [docs](https://docs.dothttp.dev)
+Invoking http requests is typical job of frontend/backed dev. This extension aims in making http requests in vscode (most loved editor) without loosing privacy (like insomnia/postman, stores collection in remote, needs account and many more).
 
-checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
+Main aim is to *Save and re-use*. 
 
-Checkout [playground](http://ghpage.dothttp.dev/)
+Checkout simple example [here](#example)
 
-view product post [here](https://www.producthunt.com/posts/dothttp)
-
-## OUR MOTO
-
-Save and re-use later
+For docs visit [here](#docs-and-more)
 
 ## Features
 
-- Run http file in editor itself
-- load .dothttp.json into editor
-- open `.dothttp.json` from env view for easy edit
-- set environements from editor (copy property)
-- properties from editor (add, update, delete, copy, disable all)
-- change environments priority
-- open executed file in seperate tab with content-type
-- creates history entry for requests, can be viewable
-- http notebook, view requests & response in single pane itself(like repl)
-- import postman collection
-- import swagger collection
-- import curl
-- export to postman collection
-- export to most well known programming languages
-- InLine show errors
-- InLine suggestion
+- Make http requests in vscode.
+- configure variables and reuse in dothttp.
+  - properties from editor (add, update, delete, copy, disable all)
+- Request history to view past requests
+- [Http Notebook](https://docs.dothttp.dev/docs/dothttp-runner-notebook)
+- Import collections
+  - [From postman collection](https://docs.dothttp.dev/docs/import-export#postman-collections)
+  - [From swagger spec (2/3)](https://docs.dothttp.dev/docs/import-export#openapiswagger)
+  - [Import curl](https://docs.dothttp.dev/docs/import-export#curl)
+  - [Import Har](https://docs.dothttp.dev/docs/import-export#curl) // TODO
+- [Export To most popular programming languages](https://docs.dothttp.dev/docs/import-export)
 
 <img src="./demo.gif" >
 
 
-## dothttp notebook
+## Http Notebook
 
 <img src="notebook.png">
 
-## Known issues
-- notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
-
+## Example
 example http file
 ```
 # users.http
@@ -117,6 +107,28 @@ data({
 support us via upvoting in [producthunt](https://www.producthunt.com/posts/dothttp) & starring in [github](https://github.com/cedric05/dothttp-runner)
 
 -----------
+
+
+## Docs and more
+
+Checkout Most Popular http collections [here](https://github.com/cedric05/the-api-evanglist/)
+
+Checkout other http [collections](https://github.com/cedric05/api-collections)
+
+Checkout [docs](https://docs.dothttp.dev)  language for better understanding.
+
+Checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp). 
+
+Checkout [playground](http://ghpage.dothttp.dev/)
+
+view product post [here](https://www.producthunt.com/posts/dothttp)
+
+
+## Known issues
+- notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
+
+
+
 ### Vscode alternatives
 
 - [rest-client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) written in typescript
@@ -127,3 +139,4 @@ support us via upvoting in [producthunt](https://www.producthunt.com/posts/dotht
 ### Non Vscode alternatives
 - [http-client](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html)  closed source
 - [dothttp](https://github.com/tonsV2/dothttp)  written in python
+

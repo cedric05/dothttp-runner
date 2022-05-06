@@ -163,7 +163,7 @@ async function importCurl(version: string, isNotebook: string) {
             vscode.window.showErrorMessage(`import curl failed with error, ${result}`);
             return;
         }
-        await vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(result.filename));
+        await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(result.filename));
     }
 }
 export async function pickDirectoryToImport() {
@@ -221,11 +221,13 @@ export async function importRequests() {
         }
         const linkOrFile = await vscode.window.showQuickPick([{
             label: ImportType.link,
+            // @ts-ignore
             description: IMPORTOPTION_MESSAGES[ImportType.link][pickType],
             picked: true,
             alwaysShow: true,
         }, {
             label: ImportType.file,
+            // @ts-ignore
             description: IMPORTOPTION_MESSAGES[ImportType.file][pickType],
             picked: false,
             alwaysShow: true,
@@ -235,6 +237,7 @@ export async function importRequests() {
             const linkOrFileType = linkOrFile['label'];
             if (linkOrFileType === 'link') {
                 filenameToimport = await vscode.window.showInputBox({
+                    // @ts-ignore
                     prompt: IMPORTOPTION_MESSAGES[linkOrFileType][pickType],
                     ignoreFocusOut: true,
                     // validateInput: (value) => {
@@ -257,6 +260,7 @@ export async function importRequests() {
                 const importUri = await vscode.window.showOpenDialog({
                     canSelectFolders: false,
                     canSelectFiles: true,
+                    // @ts-ignore
                     title: IMPORTOPTION_MESSAGES[linkOrFileType][pickType],
                     filters: filters,
                     canSelectMany: false,
@@ -295,7 +299,7 @@ export async function importRequests() {
                     }
                     // show after import 
                     vscode.window.showInformationMessage(`import ${pickType} successfull`);
-                    const newNotebookOrHttp = vscode.Uri.parse(result.filename);
+                    const newNotebookOrHttp = vscode.Uri.file(result.filename);
                     await vscode.commands.executeCommand("vscode.open", newNotebookOrHttp);
                 } catch (error) {
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${error}. create bug`);
