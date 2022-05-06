@@ -582,6 +582,10 @@
         "0.0.43": {
             "maxVersion": "0.0.40",
             "minVersion": "0.0.8"
+        },
+        "0.0.44": {
+            "maxVersion": "0.0.40",
+            "minVersion": "0.0.8"
         }
     }
 }
