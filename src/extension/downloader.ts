@@ -11,6 +11,7 @@ import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import path = require('path');
 import child_process = require('child_process')
+import { ClientLaunchParams, RunType } from './lib/client';
 
 interface version {
     downloadUrls: {
@@ -175,12 +176,12 @@ async function wait(time = 1000) {
     });
 }
 
-
-export async function setUp(context: ExtensionContext) {
-    const dothttpConfigured = isDothttpConfigured();
+export async function setUp(context: ExtensionContext): Promise<ClientLaunchParams> {
+    const dothttpPath = Configuration.getDothttpPath();
+    const pythonPath = Configuration.getPath();
     const pythonConfigured = isPythonConfigured();
-    if (!pythonConfigured && !dothttpConfigured) {
-        console.log('dothttpConfigured', dothttpConfigured);
+    if (!pythonConfigured && !fs.existsSync(dothttpPath)) {
+        console.log('dothttpConfigured', dothttpPath);
         console.log('pythonConfigured', pythonConfigured);
         const globalStorageDir = context.globalStorageUri.fsPath;
         if (!fs.existsSync(globalStorageDir)) {
@@ -210,14 +211,11 @@ export async function setUp(context: ExtensionContext) {
         try { Configuration.setDothttpPath(exePath) } catch (ignored) { }
         console.log('dothttp path set to', exePath);
         context.globalState.update("dothttp.downloadContentCompleted", true);
-        ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(acceptableVersion.version)
-        const shouldReload = await vscode.window.showInformationMessage(
-            'Dothttp dependencies have been installed, reload to start using extension', 'reload')
-        if (shouldReload === 'reload') {
-            vscode.commands.executeCommand(
-                'workbench.action.reloadWindow',
-            );
-        }
+        return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
+    } else if (dothttpPath) {
+        return { path: dothttpPath, type: RunType.binary }
+    } else {
+        return { path: pythonPath, type: RunType.python }
     }
 }
 

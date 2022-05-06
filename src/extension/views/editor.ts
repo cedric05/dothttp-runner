@@ -1,7 +1,6 @@
 import { existsSync } from 'fs';
 import { extname } from 'path';
 import * as vscode from 'vscode';
-import { isDotHttpCorrect, isPythonConfigured } from '../models/config';
 import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
 import { IHistoryService } from '../tingohelpers';
@@ -54,7 +53,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
     }
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
-        if (DotHttpEditorView.isHttpFile(kwargs.filename) && (isPythonConfigured() || isDotHttpCorrect())) {
+        if (DotHttpEditorView.isHttpFile(kwargs.filename) && ApplicationServices.get().clientHanler.isRunning()) {
             const app = ApplicationServices.get();
             const clientHandler = app.getClientHandler();
             const filestateService = app.getFileStateService();

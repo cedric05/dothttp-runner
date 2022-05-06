@@ -3,7 +3,8 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
-
+## [0.0.44]
+- [ **BUG** ] fixed extension not working (caused by 0.0.43)
 ## [0.0.43]
 - [ **Improvements** ] activates everytime.
   - helps if developer wants to import/export without having no http notebooks/files.
