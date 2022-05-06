@@ -2,8 +2,10 @@ name: Publish Stable
 
 on:
     push:
-       tags:
-           - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      # branches:
+      #     - deploy
+      tags:
+          - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
     build:
@@ -23,7 +25,6 @@ jobs:
             - name: Install
               run: |
                 npm install
-                npm install vsce ovsx --global
             - name: Package extension
               run: |
                 npx vsce package
@@ -34,7 +35,7 @@ jobs:
             - name: Upload to openvsx
               continue-on-error: true
               run: |
-                ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
+                npx ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
             - name: Create GitHub release
               id: create_release
               uses: actions/create-release@v1
