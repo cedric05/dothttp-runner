@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { DothttpNameSymbolProvider } from "../editorIntellisense";
-import { ClientHandler } from "../lib/client";
+import { ClientHandler, ClientHandler2 } from "../lib/client";
 import { LocalStorageService } from "../services/storage";
 import { IHistoryService, TingoHistoryService } from "../tingohelpers";
 import DotHttpEditorView from "../views/editor";
@@ -17,6 +17,7 @@ export class ApplicationServices {
     private static _state: ApplicationServices;
 
     public clientHanler: ClientHandler
+    public clientHandler2: ClientHandler2
     private storageService: LocalStorageService;
     private fileStateService: IFileState;
     private envTree: EnvTree
@@ -38,6 +39,9 @@ export class ApplicationServices {
         this.storageService = new LocalStorageService(context.workspaceState);
         this.globalstorageService = new LocalStorageService(context.globalState);
         this.clientHanler = new ClientHandler({
+            std: true,
+        });
+        this.clientHandler2 = new ClientHandler2({
             std: true,
         });
         this.fileStateService = new FileState(this.storageService);

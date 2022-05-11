@@ -18,7 +18,7 @@ import { NotebookKernel } from './services/notebook';
 import DotHttpEditorView from './views/editor';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 export async function activate(context: vscode.ExtensionContext) {
-	if (!vscode.workspace.isTrusted) {
+	if (true) {
 		webExtensionActivate(context);
 		return
 	} else {
@@ -30,6 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	loadNoteBookControllerSafely(context);
 	try {
 		const notebookkernel = new NotebookKernel();
+		notebookkernel.configure();
 		ApplicationServices.get().setNotebookkernel(notebookkernel);
 	} catch {
 		// notebook is a recent feature
@@ -148,6 +149,7 @@ export async function activate(context: vscode.ExtensionContext) {
 async function bootStrap(app: ApplicationServices, context: vscode.ExtensionContext) {
 	let launchParams = await setUp(context);
 	app.clientHanler.setLaunchParams(launchParams).start();
+	app.clientHandler2.setLaunchParams(launchParams).start();
 	if (launchParams.version) {
 		app.getVersionInfo().setVersionDothttpInfo(launchParams.version);
 	} else {

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation, Command } from 'vscode';
-import { ClientHandler, DotTttpSymbol } from './lib/client';
+import { ClientHandler } from './lib/client';
+import { DotTttpSymbol } from "./lib/types";
 import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';
 import { parseURL } from 'whatwg-url';

@@ -1,206 +1,17 @@
 // import axios, { AxiosResponse } from 'axios';
-import * as child_process from 'child_process';
-import { once } from 'events';
-import { createInterface, Interface } from 'readline';
-import * as vscode from 'vscode';
 import { DothttpExecuteResponse } from '../../common/response';
-import { runSync } from '../downloader';
-import { Configuration, isDotHttpCorrect } from '../models/config';
-import { DothttpRunOptions, DothttpTypes } from '../models/misc';
+import { DothttpRunOptions } from '../models/misc';
 import { HttpFileTargetsDef } from './lang-parse';
-import EventEmitter = require('events');
+import { ICommandClient, RunType, ClientLaunchParams, DotTttpSymbol, TypeResult, ImportHarResult } from './types';
+import * as vscode from 'vscode';
+import { TextDecoder } from 'util';
+
 var mime = require('mime-types');
 
 
-interface ICommandClient {
-    request(method: string, params: {}): Promise<{}>;
-    stop(): void;
-}
-
-interface ICommand {
-    method: string,
-    id?: Number,
-    params: {}
-}
-
-
-interface IResult {
-    id: Number,
-    result: {},
-}
-
-class CmdClientError extends Error {
-
-}
-
-
-abstract class BaseSpanClient implements ICommandClient {
-    proc: child_process.ChildProcess;
-    private static count = 1; // restricts only stdserver or httpserver not both!!!!
-    channel: vscode.OutputChannel;
-
-    constructor(options: { pythonpath: string, stdargs: string[] }) {
-        this.proc = child_process.spawn(options.pythonpath,
-            options.stdargs,
-            {
-                stdio: ["pipe", "pipe", "inherit"],
-                // not sure why, totally unrelated to latest changes, but started opening in new window
-                detached: true
-            },
-        );
-
-        this.channel = vscode.window.createOutputChannel('dothttp-code');
-    }
-
-    async request(method: string, params: {}): Promise<any> {
-        const id = BaseSpanClient.count++;
-        const requestData = { method, params, id };
-        this.channel.appendLine(JSON.stringify(requestData));
-        const result = await this.call(requestData);
-        this.channel.appendLine(JSON.stringify(result));
-        if (result.id !== id) {
-            throw new CmdClientError("id's are not same");
-        }
-        return result.result;
-    }
-    abstract call(command: ICommand): Promise<IResult>;
-
-    stop(): void {
-        this.proc.kill();
-    }
-
-}
-
-export class StdoutClient extends BaseSpanClient {
-    rl!: Interface;
-    eventS: EventEmitter = new EventEmitter();
-    version: string = "unknown";
-
-    constructor(options: { pythonpath: string, stdargs: string[], type: RunType }) {
-        super(options);
-        this.setup();
-        this.healInstallation(options);
-
-        once(this.eventS, "-1").then(result => {
-            if (result.length != 1) {
-                console.log('unknown dothttp cli')
-            } else {
-                this.version = result[0].result.dothttp_version;
-                console.log(`detected dothttp cli with version: ${this.version}`,)
-            }
-        });
-
-    }
-    private setup() {
-        this.rl = createInterface({
-            input: this.proc.stdout!,
-            terminal: false
-        });
-        // start readline to listen
-        this.rl.on("line", (line) => {
-            const result: IResult = JSON.parse(line);
-            this.eventS.emit(result.id + '', result);
-        });
-    }
-
-    async call(command: ICommand): Promise<IResult> {
-        const commandInString = JSON.stringify(command) + '\n';
-        this.proc.stdin!.write(commandInString);
-        const results = await once(this.eventS, command.id + '');
-        // once retruns multiple at a time.
-        // technically you should recive only one.
-        if (results.length > 1) throw new CmdClientError("inconsistant state");
-        return results[0] as unknown as IResult;
-    }
-
-
-    async healInstallation(options: { pythonpath: string, stdargs: string[], type: RunType }) {
-        if (
-            // @ts-ignore
-            !this.proc.pid
-        ) {
-            if (options.type === RunType.python) {
-                // install
-                await runSync(options.pythonpath, ["-m", "pip", "install", 'dothttp-req']);
-                this.proc = child_process.spawn(options.pythonpath, options.stdargs,
-                    { stdio: ["pipe", "pipe", "inherit"] });
-                this.setup();
-            }
-        }
-    }
-
-}
-
-
-// export class HttpClient extends BaseSpanClient {
-//     constructor(options: { pythonpath: string, stdargs: string[] }) {
-//         super(options);
-//     }
-//     async call(command: ICommand): Promise<IResult> {
-//         const id = command.id;
-//         const axiosResponse: AxiosResponse<IResult> = await axios({
-//             url: new URL(command.method, 'http://localhost:5000/').href,
-//             method: "POST",
-//             params: {
-//                 id
-//             },
-//             data: command.params
-//         });
-//         return axiosResponse.data
-//     }
-// }
-
-
-export type TargetSymbolInfo = {
-    name: string;
-    start: number;
-    end: number;
-};
-
-
-export type UrlSymbolInfo = {
-    start: number;
-    url: string;
-    method: string;
-    end: number;
-};
-
-export interface DotTttpSymbol {
-    names?: Array<TargetSymbolInfo>,
-    urls?: Array<UrlSymbolInfo>,
-    error?: boolean,
-    error_message?: string,
-}
-
-export interface TypeResult {
-    "type": DothttpTypes,
-    "target": string | null,
-    "target_base": string | null,
-    "base_start": number | null
-}
-
-export enum RunType {
-    binary,
-    python
-}
-
-export type ImportHarResult = {
-    error?: boolean;
-    error_message?: string;
-    filename: string;
-    http: string;
-};
-
-
-export interface ClientLaunchParams {
-    version?: string;
-    path: string;
-    type: RunType;
-}
-
 export class ClientHandler {
     running: boolean = false;
-    cli?: BaseSpanClient;
+    cli?: ICommandClient;
     clientLaunchArguments?: { pythonpath: string; stdargs: string[]; type: RunType; };
 
     static FILE_EXECUTE_COMMAND = "/file/execute";
@@ -224,8 +35,15 @@ export class ClientHandler {
 
     start() {
         if (this.clientLaunchArguments) {
-            this.cli = new StdoutClient(this.clientLaunchArguments);
-            this.running = true;
+            if (this.clientLaunchArguments.type == RunType.http) {
+                const { HttpClient } = require('./handlers/HttpClient');
+                this.cli = new HttpClient(this.clientLaunchArguments);
+                this.running = true;
+            } else {
+                const { StdoutClient } = require('./handlers/StdoutClient');
+                this.cli = new StdoutClient(this.clientLaunchArguments);
+                this.running = true;
+            }
         }
     }
 
@@ -360,4 +178,167 @@ export class ClientHandler {
     close() {
         this.cli?.stop();
     }
+}
+
+
+
+type ExecuteFileOptions = {
+    content?: string,
+    noCookie?: boolean,
+    experimental?: boolean,
+    env?: string[],
+    propertyFile?: String,
+    curl: boolean
+    uri: vscode.Uri,
+    target?: string,
+    contexts?: Array<string>,
+    properties?: { [prop: string]: string },
+}
+
+
+export class ClientHandler2 {
+    running: boolean = false;
+    cli?: ICommandClient;
+    clientLaunchArguments?: { pythonpath: string; stdargs: string[]; type: RunType; url?: string };
+    decoder = new TextDecoder();
+
+    constructor(_clientOptions: { std: boolean }) {
+    }
+
+    setLaunchParams(params: ClientLaunchParams) {
+        this._setParams(params);
+        return this;
+    }
+
+    start() {
+        if (this.clientLaunchArguments) {
+            if (this.clientLaunchArguments.type == RunType.http) {
+                const { HttpClient } = require('./handlers/HttpClient');
+                this.cli = new HttpClient(this.clientLaunchArguments.url!);
+                this.running = true;
+            } else {
+                const { StdoutClient } = require('./handlers/StdoutClient');
+                this.cli = new StdoutClient(this.clientLaunchArguments);
+                this.running = true;
+            }
+        }
+    }
+
+
+    restart() {
+        this.cli?.stop();
+        this.start()
+    }
+
+    isRunning() {
+        return this.running
+    }
+
+    private _setParams(params: ClientLaunchParams) {
+        let stdargs = params.type == RunType.python ? ['-m', 'dotextensions.server'] : [];
+        this.clientLaunchArguments = {
+            stdargs: stdargs,
+            pythonpath: params.path,
+            ...params,
+        };
+        console.log("launch params", JSON.stringify(this.clientLaunchArguments));
+    }
+
+    async fileData(file: vscode.Uri) {
+        const data = await vscode.workspace.fs.readFile(file);
+        return this.decoder.decode(data)
+    }
+
+    async execute(options: ExecuteFileOptions): Promise<DothttpExecuteResponse> {
+        if (options.content || !this.cli?.isSupportsNative()) {
+            if (!options.content) {
+                options.content = await this.fileData(options.uri)
+            };
+            return await this.cli?.request(ClientHandler.CONTENT_EXECUTE_COMMAND, {
+                file: null,
+                ...options
+            })
+        } else {
+            return await this.cli?.request(ClientHandler.FILE_EXECUTE_COMMAND, {
+                file: options.uri.fsPath,
+                ...options,
+            })
+        }
+    }
+
+    async executeWithExtension(options: ExecuteFileOptions): Promise<DothttpExecuteResponse> {
+        const out = await this.execute(options);
+        out['filenameExtension'] = 'txt';
+        const headers = out['headers'] ?? {};
+        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+            out['filenameExtension'] = mime.extension(headers[key]);
+        });
+        return out;
+    }
+
+    async documentSymbols(uri: vscode.Uri, content?: string, source?: string): Promise<DotTttpSymbol> {
+        if (this.cli?.isSupportsNative() || content) {
+            if (!content) {
+                content = await this.fileData(uri);
+            }
+            return await this.cli?.request(ClientHandler.CONTENT_TARGETS_COMMAND, { file: "", content: content, source: source || 'default' })
+        } else {
+            return await this.cli?.request(ClientHandler.GET_FILE_TARGETS_COMMAND, { file: uri.fsPath, source: source || 'default' })
+        }
+    }
+
+    async getTypeFromFilePosition(position: number, uri: vscode.Uri, source: string): Promise<TypeResult> {
+        if (this.cli?.isSupportsNative()) {
+            return await this.cli?.request(ClientHandler.CONTENT_TYPE_COMMAND, {
+                filename: uri.fsPath, position: position, source
+            }) as TypeResult
+        } else {
+            return await this.cli?.request(ClientHandler.CONTENT_TYPE_COMMAND, {
+                content: await this.fileData(uri), position: position, source
+            }) as TypeResult
+        }
+    }
+
+    async importPostman(options: { link: string, directory: string, save: boolean, filetype?: string }) {
+        if (this.cli?.isSupportsNative()) {
+            return await this.cli?.request(ClientHandler.IMPORT_POSTMAN_COMMAND, options)
+        } else {
+            throw Error("unsupported error ");
+        }
+    }
+
+    async importHar(har: {}, save_directory: string, save_filename?: string, filetype?: string): Promise<ImportHarResult> {
+        return await this.cli?.request(ClientHandler.HAR_IMPORT_COMMAND, {
+            har, save_directory, save_filename, filetype
+        })
+    }
+
+    async exportToPostman(filename: string) {
+        if (this.cli?.isSupportsNative()) {
+            return await this.cli?.request(ClientHandler.POSTMAN_EXPORT_COMMAND, {
+                filename
+            })
+        } else {
+            throw Error("unsupported");
+        }
+    }
+
+    async generateLangHttp(options: ExecuteFileOptions & { content?: string }): Promise<HttpFileTargetsDef> {
+        if (options.content || !this.cli?.isSupportsNative()) {
+            return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                ...options
+            })
+        } else {
+            return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                file: options.uri.fsPath,
+                ...options
+            })
+        }
+    }
+
+    close() {
+        this.cli?.stop();
+    }
+
+
 }

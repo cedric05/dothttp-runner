@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as vscode from 'vscode';
 import { NotebookCellKind, Uri } from 'vscode';
-import { DotTttpSymbol } from '../lib/client';
+import { DotTttpSymbol } from "../lib/types";
 import { Constants } from '../models/constants';
 import { ApplicationServices } from '../services/global';
 import DotHttpEditorView from '../views/editor';

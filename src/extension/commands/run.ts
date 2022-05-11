@@ -2,7 +2,7 @@ import { existsSync, lstatSync } from 'fs';
 import { zip } from 'lodash';
 import { platform } from 'os';
 import * as vscode from 'vscode';
-import { TargetSymbolInfo } from '../lib/client';
+import { TargetSymbolInfo } from "../lib/types";
 import { Configuration } from '../models/config';
 import { Constants } from '../models/constants';
 import { ApplicationServices } from '../services/global';

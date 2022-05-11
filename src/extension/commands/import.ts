@@ -6,7 +6,7 @@ import * as querystring from 'querystring';
 import { swagger2har } from 'swagger-to-har2';
 import * as temp from 'temp';
 import * as vscode from 'vscode';
-import { ImportHarResult } from '../lib/client';
+import { ImportHarResult } from "../lib/types";
 import { ApplicationServices } from '../services/global';
 import { Collection, PostmanClient, getPostmanClient } from './export/postmanUtils';
 

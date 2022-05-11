@@ -11,7 +11,7 @@ import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import path = require('path');
 import child_process = require('child_process')
-import { ClientLaunchParams, RunType } from './lib/client';
+import { ClientLaunchParams, RunType } from "./lib/types";
 
 interface version {
     downloadUrls: {

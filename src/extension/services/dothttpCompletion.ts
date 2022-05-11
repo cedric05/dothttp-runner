@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../models/completiontypes';
 import { UrlStore } from './UrlStorage';
 import { Constants } from '../models/constants';
-import { TypeResult } from '../lib/client';
+import { TypeResult } from "../lib/types";
 
 
 const readFileProm = util.promisify(fs.readFile);
