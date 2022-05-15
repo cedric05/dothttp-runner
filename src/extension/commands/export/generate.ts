@@ -42,8 +42,10 @@ export async function generateLangForHttpFile(uri: vscode.Uri) {
 
 }
 
-export async function generateLangFromOptions(options: { filename: string, target: string, content?: string }): Promise<{ code: string, language: string, error: false } | void> {
-    const { filename, target, content } = options;
+export async function generateLangFromOptions(
+    options: { filename: string, target: string, content?: string, contexts?: Array<string> })
+    : Promise<{ code: string, language: string, error: false, } | void> {
+    const { filename, target, content, contexts } = options;
     const clientHanler = ApplicationServices.get().getClientHandler();
     const fileStateService = ApplicationServices.get().getFileStateService();
     const func = ((content) ? clientHanler.generateLangFromVirtualDocHttp : clientHanler.generateLangHttp).bind(clientHanler);
@@ -54,6 +56,7 @@ export async function generateLangFromOptions(options: { filename: string, targe
         target: target,
         properties: DotHttpEditorView.getEnabledProperties(filename),
         env: fileStateService.getEnv(filename)! ?? [],
+        contexts
     });
     try {
         if (out.error) {

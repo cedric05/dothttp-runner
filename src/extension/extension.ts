@@ -120,7 +120,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new UrlExpander()),
-		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE }, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, appServices.getDothttpSymbolProvier()),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider()),
 
 
