@@ -1,4 +1,3 @@
-const version = require('./../../../package.json').version;
 export enum Constants {
 	// to notify, these all should be in caps
 	LANG_CODE = 'dothttp-vscode',
@@ -86,7 +85,7 @@ export enum Constants {
 
 	// download stuff
 	// @ts-ignore
-	EXTENSION_VERSION = version,
+	EXTENSION_VERSION = "0.0.45",
 
 	dothttpNotebook = "dothttp-book",
 

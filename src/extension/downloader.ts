@@ -178,11 +178,13 @@ async function wait(time = 1000) {
 
 export async function setUp(context: ExtensionContext): Promise<ClientLaunchParams> {
     const dothttpPath = Configuration.getDothttpPath();
-    const pythonPath = Configuration.getPath();
-    const pythonConfigured = isPythonConfigured();
-    if (!pythonConfigured && !fs.existsSync(dothttpPath)) {
+    if (isPythonConfigured()) {
+        const pythonPath = Configuration.getPath();
+        return { path: pythonPath, type: RunType.python }
+    } else if (fs.existsSync(dothttpPath)) {
+        return { path: dothttpPath, type: RunType.binary }
+    } else {
         console.log('dothttpConfigured', dothttpPath);
-        console.log('pythonConfigured', pythonConfigured);
         const globalStorageDir = context.globalStorageUri.fsPath;
         if (!fs.existsSync(globalStorageDir)) {
             fs.mkdirSync(globalStorageDir);
@@ -212,10 +214,6 @@ export async function setUp(context: ExtensionContext): Promise<ClientLaunchPara
         console.log('dothttp path set to', exePath);
         context.globalState.update("dothttp.downloadContentCompleted", true);
         return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
-    } else if (dothttpPath) {
-        return { path: dothttpPath, type: RunType.binary }
-    } else {
-        return { path: pythonPath, type: RunType.python }
     }
 }
 
