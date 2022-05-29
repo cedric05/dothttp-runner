@@ -26,7 +26,7 @@ export class NotebookKernel {
             Constants.dothttpNotebook,
             'Dothttp Book');
 
-        this._controller.supportedLanguages = [Constants.LANG_CODE, "python"];
+        this._controller.supportedLanguages = [Constants.LANG_CODE as string];
         this._controller.supportsExecutionOrder = true;
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
@@ -215,10 +215,14 @@ export class NotebookKernel {
         try {
             execution.start(Date.now());
             const cellUri = cell.document.uri;
+            const contexts = cell.notebook
+                .getCells()
+                .filter(cell => cell.kind == vscode.NotebookCellKind.Code)
+                .map(cell => cell.document.getText());
             const cellNo = parseInt(cellUri.fragment.substring(2));
             const content = cell.document.getText();
             const target: string = await this._getTarget(cellUri, cellNo, content);
-            const langspec = await generateLangFromOptions({ content, filename: cell.document.fileName, target });
+            const langspec = await generateLangFromOptions({ content, filename: cell.document.fileName, target, contexts });
             if (langspec && langspec.code) {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, `text/x-${langspec.language}`)])

@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
 		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
-		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp))
+		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp)),
 	])
 
 
@@ -120,7 +120,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new UrlExpander()),
-		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE }, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, appServices.getDothttpSymbolProvier()),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider()),
 
 

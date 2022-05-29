@@ -52,7 +52,7 @@ export class ScriptCompletionProvider implements CompletionItemProvider {
             );
             console.log(`orignal uri ${originalUri}`);
 
-            const vdocUriString = `embedded-content://javascript/${encodeURIComponent(originalUri)}.js`;
+            const vdocUriString = `embedded-content://javascript/${encodeURIComponent(originalUri)}.py`;
             const vdocUri = Uri.parse(vdocUriString);
             const results = await commands.executeCommand<CompletionList>(
                 'vscode.executeCompletionItemProvider',
