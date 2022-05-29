@@ -191,14 +191,12 @@ export async function setUp(context: ExtensionContext): Promise<ClientLaunchPara
             console.log('making global storage directory ', globalStorageDir);
         }
         const downloadLocation = path.join(globalStorageDir, 'cli');
-        if (context.globalState.get("dothttp.downloadContentCompleted", false)) {
-            try {
-                if (fs.existsSync(downloadLocation)) {
-                    fs.rmdirSync(downloadLocation, { recursive: true });
-                }
-            } catch (ignored) {
-                console.error(ignored);
+        try {
+            if (fs.existsSync(downloadLocation)) {
+                fs.rmdirSync(downloadLocation, { recursive: true });
             }
+        } catch (ignored) {
+            console.error(ignored);
         }
         context.globalState.update("dothttp.downloadContentCompleted", false)
         console.log('download directory ', downloadLocation);

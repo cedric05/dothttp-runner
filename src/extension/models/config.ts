@@ -4,14 +4,19 @@ import child_process = require('child_process');
 import { Constants } from './constants';
 
 function getPythonVersion(path: string): boolean {
-    const sysout = child_process.execSync(`${path} --version`);
-    if (sysout) {
-        const versionArr = new String(sysout).trim().split(" ");
-        if (versionArr.length === 2) {
-            return parseFloat(versionArr[1]) >= 3.8;
-        }
+    var sysout = child_process.execSync(`${path} --version`);
+    if (!sysout) {
+        return false
     }
-    return false;
+    var versionArr = new String(sysout).trim().split(" ");
+    if (versionArr.length !== 2) {
+        return false;
+    }
+    if (parseFloat(versionArr[1]) < 3.8) {
+        return false;
+    }
+    sysout = child_process.execSync(`${path} -m dotextensions.version`);
+    return true;
 }
 
 export function isPythonConfigured() {

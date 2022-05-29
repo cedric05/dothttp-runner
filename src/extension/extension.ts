@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
 		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
-		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp))
+		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp)),
 	])
 
 
