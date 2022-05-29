@@ -13,7 +13,7 @@ import { DotHovers, DothttpTypes } from './models/misc';
 class RunHttpCommand implements Command {
     title: string = "Run http";
     tooltip: string = "Run http targets this definition";
-    command = Constants.RUN_TARGET_CODE_LENS;
+    command = Constants.RUN_TARGET_CODE_LENS as string;
     arguments: any[];
     curl: boolean = false;
     constructor(target: string, uri: vscode.Uri, cellNo?: number) {
@@ -24,7 +24,7 @@ class RunHttpCommand implements Command {
 class GenerateCurlCommand implements Command {
     title: string = "Generate Curl";
     tooltip: string = "Generate curl targeting this definition";
-    command = Constants.RUN_TARGET_CODE_LENS;
+    command = Constants.RUN_TARGET_CODE_LENS as string;
     curl = true;
     arguments: { target: string; curl: boolean; uri: vscode.Uri; cellNo: number | undefined; }[];
     constructor(target: string, uri: vscode.Uri, cellNo?: number) {
@@ -35,7 +35,7 @@ class GenerateCurlCommand implements Command {
 class RunHttpInNotebook extends RunHttpCommand {
     title = "Run Http";
     tooltip = "Select target in cell";
-    command = Constants.RUN_NOTEBOOK_TARGET_IN_CELL;
+    command = Constants.RUN_NOTEBOOK_TARGET_IN_CELL as string;
 }
 
 class DothttpPositions extends vscode.CodeLens {
@@ -245,7 +245,7 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
                         document.positionAt(element.start),
                         document.positionAt(element.end)),
                 )).concat((result.urls ?? []).map(element =>
-                // gives feasibilty to filter just url
+                    // gives feasibilty to filter just url
                     new SymbolInformation("^" + element.url + " -- " + element.method, vscode.SymbolKind.Field,
                         new Range(
                             document.positionAt(element.start),

@@ -162,6 +162,7 @@ export class ClientHandler {
             properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,
+            contexts: options.contexts,
         })
     }
 
@@ -172,6 +173,7 @@ export class ClientHandler {
             properties: options.properties,
             nocookie: options.noCookie,
             target: options.target,
+            contexts: options.contexts,
         })
     }
 

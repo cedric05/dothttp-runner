@@ -24,7 +24,7 @@ export async function saveNotebookAsHttpFileFromCommand(uri: Uri) {
         uri = editor.document.uri;
     }
     const saveData = await getNotebookUriToHttpContent(uri);
-    const docu = await vscode.workspace.openTextDocument({ language: Constants.LANG_CODE, content: saveData });
+    const docu = await vscode.workspace.openTextDocument({ language: Constants.LANG_CODE as string, content: saveData });
     return await vscode.window.showTextDocument(docu);
 }
 
