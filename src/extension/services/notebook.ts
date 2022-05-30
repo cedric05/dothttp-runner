@@ -40,17 +40,9 @@ export class NotebookKernel {
     configure(client: ClientHandler2, fileStateService: IFileState, treeprovider: PropertyTree) {
         this.client = client;
         this.fileStateService = fileStateService;
-        this.treeprovider = treeprovider;
-    }
-
-    setClient(client: ClientHandler2) {
-        this.client = client;
-    }
-
-    setFileStateService(fileStateService: IFileState) {
-        this.fileStateService = fileStateService;
         // @ts-ignore
         this.storageService = fileStateService.storage;
+        this.treeprovider = treeprovider;
     }
 
     async onMessage(e: any) {

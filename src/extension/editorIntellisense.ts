@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation, Command } from 'vscode';
-import { ClientHandler } from './lib/client';
+import { ClientHandler } from "./lib/ClientHandler";
 import { DotTttpSymbol } from "./lib/types";
 import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';

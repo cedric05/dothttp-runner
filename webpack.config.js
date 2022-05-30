@@ -118,4 +118,4 @@ const rendererConfig = {
 
 
 
-module.exports = [rendererConfig, webConfig];
+module.exports = [rendererConfig, webConfig, nodeconfig];

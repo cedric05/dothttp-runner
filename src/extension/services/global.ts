@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { DothttpNameSymbolProvider } from "../editorIntellisense";
-import { ClientHandler, ClientHandler2 } from "../lib/client";
+import { ClientHandler2 } from "../lib/client";
+import { ClientHandler } from "../lib/ClientHandler";
 import { LocalStorageService } from "../services/storage";
 import { IHistoryService } from "../history";
 import DotHttpEditorView from "../views/editor";

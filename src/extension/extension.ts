@@ -12,7 +12,8 @@ import {
 	DothttpNameSymbolProvider,
 	UrlExpander
 } from './editorIntellisense';
-import { ClientHandler, ClientHandler2 } from './lib/client';
+import { ClientHandler2 } from './lib/client';
+import { ClientHandler } from "./lib/ClientHandler";
 import { HttpClient } from './lib/handlers/HttpClient';
 import { StdoutClient } from './lib/handlers/StdoutClient';
 import { RunType } from './lib/types';
@@ -33,7 +34,7 @@ import { activate as webExtensionActivate, loadNoteBookControllerSafely } from '
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
-	if (false) {
+	if (true) {
 		webExtensionActivate(context);
 		return
 	} else {
