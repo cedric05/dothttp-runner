@@ -9,33 +9,78 @@ import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import {
 	DothttpClickDefinitionProvider,
+	DothttpNameSymbolProvider,
 	UrlExpander
 } from './editorIntellisense';
+import { ClientHandler, ClientHandler2 } from './lib/client';
+import { HttpClient } from './lib/handlers/HttpClient';
+import { StdoutClient } from './lib/handlers/StdoutClient';
+import { RunType } from './lib/types';
+import { Configuration } from './models/config';
 import { Constants } from './models/constants';
+import { ApplicationBuilder } from './services/ApplicationBuilder';
 import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, ScriptCompletionProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
 import { ApplicationServices } from './services/global';
 import { NotebookKernel } from './services/notebook';
+import { FileState, VersionInfo } from './services/state';
+import { LocalStorageService } from './services/storage';
+import { UrlStorageService } from './services/UrlStorage';
+import { TingoHistoryService } from './tingohelpers';
 import DotHttpEditorView from './views/editor';
+import { HistoryTreeProvider } from './views/historytree';
+import { EnvTree, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
+const path = require('path');
+
 export async function activate(context: vscode.ExtensionContext) {
-	if (true) {
+	if (false) {
 		webExtensionActivate(context);
 		return
 	} else {
 		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
-	const appServices = ApplicationServices.initialize(context)
-	bootStrap(appServices, context); // lazy loading
+	const storageService = new LocalStorageService(context.workspaceState);
+	const globalStorageService = new LocalStorageService(context.globalState);
+	const notebookKernel = new NotebookKernel();
+	const envTree = new EnvTree();
+	const propertyTree = new PropertyTree();
+	const symbolProvider = new DothttpNameSymbolProvider();
+	const urlStoreService = new UrlStorageService(storageService);
+	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService);
+	const clientHandler = new ClientHandler();
+	const clientHandler2 = new ClientHandler2();
+	const dothttpEditorView = new DotHttpEditorView();
+	const historyTreeProvider = new HistoryTreeProvider();
+	const fileStateService = new FileState(storageService);
+	const diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
+	envTree.setFileStateService(fileStateService);
+	propertyTree.setFileStateService(fileStateService);
+	historyTreeProvider.setHistoryService(historyService);
+	dothttpEditorView.historyService = historyService;
+	symbolProvider.setClientHandler(clientHandler);
+	symbolProvider.setDiagnostics(diagnostics);
+	const appServices = new ApplicationBuilder()
+		.setStorageService(storageService)
+		.setGlobalstorageService(globalStorageService)
+		.setClientHandler(clientHandler)
+		.setClientHandler2(clientHandler2)
+		.setFileStateService(fileStateService)
+		.setEnvTree(envTree)
+		.setPropTree(propertyTree)
+		.setUrlStore(urlStoreService)
+		.setHistoryService(historyService)
+		.setDotHttpEditorView(dothttpEditorView)
+		.setDiagnostics(diagnostics)
+		.setDothttpSymbolProvier(symbolProvider)
+		.setVersionInfo(new VersionInfo(globalStorageService))
+		.setConfig(Configuration.instance())
+		.setContext(context)
+		.setNotebookkernel(notebookKernel)
+		.setHistoryTreeProvider(historyTreeProvider)
+		.build();
 
+	bootStrap(appServices); // lazy loading
 	loadNoteBookControllerSafely(context);
-	try {
-		const notebookkernel = new NotebookKernel();
-		notebookkernel.configure();
-		ApplicationServices.get().setNotebookkernel(notebookkernel);
-	} catch {
-		// notebook is a recent feature
-		// for supporting old version vscode, ignoring
-	}
 
 
 	context.subscriptions.push(
@@ -52,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerTextEditorCommand(Constants.RUN_FILE_COMMAND, runFileCommand),
 		vscode.commands.registerTextEditorCommand(Constants.GEN_CURL_FILE_COMMAND, genCurlCommand),
 		vscode.commands.registerTextEditorCommand(Constants.RUN_TARGET_CODE_LENS, runHttpCodeLensCommand),
-		vscode.commands.registerCommand(Constants.openEnvFileCommmand, () => appServices.getEnvProvder().openEnvFile()),
+		vscode.commands.registerCommand(Constants.openEnvFileCommmand, () => envTree.openEnvFile()),
 		vscode.commands.registerCommand(Constants.toggleExperimentalCommand, toggleExperimentalFlag(Constants.toggleExperimentalCommand)),
 		vscode.commands.registerCommand(Constants.toggleHistoryCommand, toggleExperimentalFlag(Constants.toggleHistoryCommand)),
 		vscode.commands.registerCommand(Constants.toggleNocookieCommand, toggleExperimentalFlag(Constants.toggleNocookieCommand)),
@@ -65,20 +110,20 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.GENERATE_PROG_LANG_COMMAND, generateLangForHttpFile),
 
 		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_GEN_CURL, async (cell) =>
-			ApplicationServices.get().getNotebookkernel().generateCurl(cell)
+			notebookKernel.generateCurl(cell)
 		),
 		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_GEN_PROGRAM, async (cell) =>
-			ApplicationServices.get().getNotebookkernel().generateProgrammingLang(cell)
+			notebookKernel.generateProgrammingLang(cell)
 		),
 		vscode.commands.registerCommand(Constants.REVEAL_HISTORY_VIEW, () => {
 			vscode.commands.executeCommand('dothttpHistory.focus');
 		}),
 		vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
-			appServices.getClientHandler().restart();
+			clientHandler.restart();
 		}),
 		vscode.commands.registerCommand(Constants.RUN_NOTEBOOK_TARGET_IN_CELL, runTargetInCell),
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFileFromCommand),
-		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, appServices.getDotHttpEditorView()),
+		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, dothttpEditorView),
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
 		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
 		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp)),
@@ -87,42 +132,40 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	// env view commands
-	const envProvider = appServices.getEnvProvder();
 	context.subscriptions.push(...[
-		vscode.window.registerTreeDataProvider(Constants.envTreeView, envProvider),
-		vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envProvider.refresh()),
+		vscode.window.registerTreeDataProvider(Constants.envTreeView, envTree),
+		vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envTree.refresh()),
 		vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand),
 		vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand),
 		vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty),
-		vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envProvider.disableAllEnv() }),
+		vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envTree.disableAllEnv() }),
 	])
 
 
 	// propertiy view commands
-	const propProvider = appServices.getPropTreeProvider();
 	context.subscriptions.push(...[
-		vscode.window.registerTreeDataProvider(Constants.propTreeView, propProvider),
-		vscode.commands.registerCommand(Constants.addPropCommand, () => { propProvider.addProperty() }),
-		vscode.commands.registerCommand(Constants.disableAllPropCommand, () => { propProvider.disableAllProperies() }),
-		vscode.commands.registerCommand(Constants.enablePropCommand, (node) => { propProvider.enableProperty(node) }),
-		vscode.commands.registerCommand(Constants.disablePropCommand, (node) => { propProvider.disableProperty(node) }),
-		vscode.commands.registerCommand(Constants.copyEnvPropCommand, (node) => { propProvider.copyProperty(node) }),
-		vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propProvider.updateProperty(node) }),
-		vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propProvider.removeProperty(node) }),
+		vscode.window.registerTreeDataProvider(Constants.propTreeView, propertyTree),
+		vscode.commands.registerCommand(Constants.addPropCommand, () => { propertyTree.addProperty() }),
+		vscode.commands.registerCommand(Constants.disableAllPropCommand, () => { propertyTree.disableAllProperies() }),
+		vscode.commands.registerCommand(Constants.enablePropCommand, (node) => { propertyTree.enableProperty(node) }),
+		vscode.commands.registerCommand(Constants.disablePropCommand, (node) => { propertyTree.disableProperty(node) }),
+		vscode.commands.registerCommand(Constants.copyEnvPropCommand, (node) => { propertyTree.copyProperty(node) }),
+		vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propertyTree.updateProperty(node) }),
+		vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propertyTree.removeProperty(node) }),
 	]);
 
 
-	const clickProvider = new DothttpClickDefinitionProvider();
+	const clickProvider = new DothttpClickDefinitionProvider(clientHandler);
 	context.subscriptions.push(...[
 
-		vscode.languages.registerCodeLensProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerCodeLensProvider(Constants.LANG_CODE, symbolProvider),
 		vscode.languages.registerDefinitionProvider(Constants.LANG_CODE, clickProvider),
 		vscode.languages.registerHoverProvider(Constants.LANG_CODE, clickProvider),
 
-		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, appServices.getDothttpSymbolProvier()),
+		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, symbolProvider),
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new UrlExpander()),
-		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, appServices.getDothttpSymbolProvier()),
-		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, appServices.getHistoryTreeProvider()),
+		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, symbolProvider),
+		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, historyTreeProvider),
 
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
@@ -137,7 +180,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	workspace.registerTextDocumentContentProvider('embedded-content', {
 		provideTextDocumentContent: uri => {
 			const originalUri = uri.path.slice(1).slice(0, -3);
-			const map = ApplicationServices.get().embeddedContent;
+			const map = appServices.embeddedContent;
 			console.log(`recv url uri ${originalUri}`);
 			const content = map.get(originalUri);
 			return content;
@@ -146,12 +189,21 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 
-async function bootStrap(app: ApplicationServices, context: vscode.ExtensionContext) {
-	let launchParams = await setUp(context);
-	app.clientHanler.setLaunchParams(launchParams).start();
-	app.clientHandler2.setLaunchParams(launchParams).start();
+async function bootStrap(app: ApplicationServices) {
+	const context = app.getContext()!;
+	const launchParams = await setUp(context);
+	const clientLaunchArguments = {
+		stdargs: launchParams.type == RunType.python ? ['-m', 'dotextensions.server'] : [],
+		pythonpath: launchParams.path,
+		...launchParams,
+	};
+	let cli = launchParams.type == RunType.python ? new HttpClient() : new StdoutClient(clientLaunchArguments);
+
+	app.getClientHandler2()?.setCli(cli).start();
+	app.getClientHandler()?.setCli(cli).start();
+
 	if (launchParams.version) {
-		app.getVersionInfo().setVersionDothttpInfo(launchParams.version);
+		app.getVersionInfo()?.setVersionDothttpInfo(launchParams.version);
 	} else {
 		updateDothttpIfAvailable(context.globalStorageUri.fsPath);
 	}
@@ -159,7 +211,7 @@ async function bootStrap(app: ApplicationServices, context: vscode.ExtensionCont
 
 export function deactivate(_context: vscode.ExtensionContext): undefined {
 	const appServices = ApplicationServices.get();
-	appServices.getClientHandler().close();
-
+	appServices.getClientHandler()?.close();
+	appServices.getClientHandler2()?.close();
 	return;
 }

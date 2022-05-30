@@ -158,11 +158,12 @@ async function importCurl(version: string, isNotebook: string) {
     const directory = await pickDirectoryToImport();
     if (directory) {
         const save_filename = getUnSaved(path.join(directory, `from_curl.${isNotebook == 'notebook' ? 'httpbook' : 'http'}`));
-        const result = await ApplicationServices.get().getClientHandler().importHttpFromHar([harType], directory, save_filename, isNotebook);
-        if (result.error) {
+        const result = await ApplicationServices.get().getClientHandler()?.importHttpFromHar([harType], directory, save_filename, isNotebook);
+        if (result?.error) {
             vscode.window.showErrorMessage(`import curl failed with error, ${result}`);
             return;
         }
+        if (result)
         await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(result.filename));
     }
 }
@@ -276,7 +277,7 @@ export async function importRequests() {
         const directory = await pickDirectoryToImport();
         if (directory) {
             if (pickType === ImportOptions.postman) {
-                const result = await ApplicationServices.get().clientHanler.importPostman({ directory, link: filenameToimport!, save: true, filetype: isNotebookImport });
+                const result = await ApplicationServices.get().getClientHandler()?.importPostman({ directory, link: filenameToimport!, save: true, filetype: isNotebookImport });
                 if (result.error == true) {
                     if ((result.error_message as string).indexOf("File exists")) {
                         await vscode.window.showErrorMessage(`file already exists in \`${directory}\`!, pick different directory`);
@@ -294,13 +295,15 @@ export async function importRequests() {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
                     const result = await importSwagger(swaggerInStr, filenameToimport, directory,
                         pickType, isNotebookImport);
-                    if (result.error === true) {
+                    if (result?.error === true) {
                         throw new Error(result.error_message);
                     }
                     // show after import 
                     vscode.window.showInformationMessage(`import ${pickType} successfull`);
-                    const newNotebookOrHttp = vscode.Uri.file(result.filename);
-                    await vscode.commands.executeCommand("vscode.open", newNotebookOrHttp);
+                    if (result){
+                        const newNotebookOrHttp = vscode.Uri.file(result.filename);
+                        await vscode.commands.executeCommand("vscode.open", newNotebookOrHttp);
+                    }
                 } catch (error) {
                     vscode.window.showErrorMessage(`import ${pickType} failed with error ${error}. create bug`);
                     return;
@@ -323,7 +326,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenam
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: string, picktype: ImportOptions, isNotebooK: string): Promise<ImportHarResult> {
+async function importSwagger(data: any, filename: string, directory: string, picktype: ImportOptions, isNotebooK: string): Promise<ImportHarResult|undefined> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -364,7 +367,7 @@ async function importSwagger(data: any, filename: string, directory: string, pic
     } else {
         harFormat = hardata.log.entries.map((entry: { request: any; }) => entry.request);
     }
-    return await ApplicationServices.get().clientHanler.importHttpFromHar(harFormat, directory, saveFilename, isNotebooK);
+    return await ApplicationServices.get().getClientHandler()?.importHttpFromHar(harFormat, directory, saveFilename, isNotebooK);
 }
 
 
@@ -440,7 +443,7 @@ async function importPostmanCollectionHandler(aCollectionInfo: Collection, clien
         const { collection } = collectionResponse.data;
         const tempFileInfo = await temp.open("dothttp_collection");
         await fs.writeFile(tempFileInfo.path, JSON.stringify(collection));
-        await ApplicationServices.get().getClientHandler().importPostman({ link: tempFileInfo.path, directory: directory, save: true, filetype: isNotebookImport });
+        await ApplicationServices.get().getClientHandler()?.importPostman({ link: tempFileInfo.path, directory: directory, save: true, filetype: isNotebookImport });
     } catch (err) {
         const error = new Error(err as unknown as string) as CollectionImportErrorInfo;
         error.id = aCollectionInfo.name;

@@ -1,4 +1,3 @@
-// import axios, { AxiosResponse } from 'axios';
 import { DothttpExecuteResponse } from '../../common/response';
 import { DothttpRunOptions } from '../models/misc';
 import { HttpFileTargetsDef } from './lang-parse';
@@ -25,28 +24,15 @@ export class ClientHandler {
     static POSTMAN_EXPORT_COMMAND = "/export/http2postman";
 
 
-    constructor(_clientOptions: { std: boolean }) {
-    }
-
-    setLaunchParams(params: ClientLaunchParams) {
-        this._setParams(params);
+    setCli(cli: ICommandClient){
+        this.cli = cli;
         return this;
     }
 
     start() {
-        if (this.clientLaunchArguments) {
-            if (this.clientLaunchArguments.type == RunType.http) {
-                const { HttpClient } = require('./handlers/HttpClient');
-                this.cli = new HttpClient(this.clientLaunchArguments);
-                this.running = true;
-            } else {
-                const { StdoutClient } = require('./handlers/StdoutClient');
-                this.cli = new StdoutClient(this.clientLaunchArguments);
-                this.running = true;
-            }
-        }
+        this.running = true;
+        this.cli?.start();
     }
-
 
     restart() {
         this.cli?.stop();
@@ -57,15 +43,7 @@ export class ClientHandler {
         return this.running
     }
 
-    private _setParams(params: ClientLaunchParams) {
-        let stdargs = params.type == RunType.python ? ['-m', 'dotextensions.server'] : [];
-        this.clientLaunchArguments = {
-            stdargs: stdargs,
-            pythonpath: params.path,
-            ...params,
-        };
-        console.log("launch params", JSON.stringify(this.clientLaunchArguments));
-    }
+   
 
     async executeFile(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {
         return await this.cli?.request(ClientHandler.FILE_EXECUTE_COMMAND, {
@@ -204,26 +182,20 @@ export class ClientHandler2 {
     clientLaunchArguments?: { pythonpath: string; stdargs: string[]; type: RunType; url?: string };
     decoder = new TextDecoder();
 
-    constructor(_clientOptions: { std: boolean }) {
-    }
 
     setLaunchParams(params: ClientLaunchParams) {
         this._setParams(params);
         return this;
     }
 
+    setCli(cli: ICommandClient){
+        this.cli = cli;
+        return this;
+    }
+
     start() {
-        if (this.clientLaunchArguments) {
-            if (this.clientLaunchArguments.type == RunType.http) {
-                const { HttpClient } = require('./handlers/HttpClient');
-                this.cli = new HttpClient(this.clientLaunchArguments.url!);
-                this.running = true;
-            } else {
-                const { StdoutClient } = require('./handlers/StdoutClient');
-                this.cli = new StdoutClient(this.clientLaunchArguments);
-                this.running = true;
-            }
-        }
+        this.running = true;
+        this.cli?.start();
     }
 
 

@@ -4,6 +4,7 @@ import { DothttpTypes } from '../models/misc';
 
 export interface ICommandClient {
     request(method: string, params: {}): Promise<any>;
+    start(): void;
     stop(): void;
     isSupportsNative(): boolean;
 }

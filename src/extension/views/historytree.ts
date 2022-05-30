@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { URL } from 'url';
 import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { history, IHistoryService } from "../tingohelpers";
+import { history, IHistoryService } from "../history";
 import transform from '../utils/text-colors';
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
@@ -48,7 +48,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     public get historyService(): IHistoryService {
         return this._historyService;
     }
-    public set historyService(value: IHistoryService) {
+    public setHistoryService(value: IHistoryService) {
         this._historyService = value;
         // this.fetchMore();
     }

@@ -837,6 +837,7 @@
 	"dependencies": {
 		"@types/vscode": "^1.60.0",
 		"axios": "^0.21.2",
+		"buffer": "^6.0.3",
 		"curl-to-har": "^1.0.1",
 		"curl-to-postmanv2": "^0.5.1",
 		"dateformat": "^4.5.1",
@@ -845,11 +846,14 @@
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.30",
 		"path-browserify": "^1.0.1",
+		"querystring-es3": "^0.2.1",
 		"semver": "^7.3.4",
+		"stream-browserify": "^3.0.0",
 		"swagger-to-har2": "^1.0.4",
 		"temp": "^0.9.4",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",
+		"url": "^0.11.0",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
 		"whatwg-url": "^8.5.0"

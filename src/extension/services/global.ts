@@ -2,65 +2,64 @@ import * as vscode from "vscode";
 import { DothttpNameSymbolProvider } from "../editorIntellisense";
 import { ClientHandler, ClientHandler2 } from "../lib/client";
 import { LocalStorageService } from "../services/storage";
-import { IHistoryService, TingoHistoryService } from "../tingohelpers";
+import { IHistoryService } from "../history";
 import DotHttpEditorView from "../views/editor";
 import { HistoryTreeProvider } from "../views/historytree";
 import { EnvTree, PropertyTree } from "../views/tree";
-import { FileState, IFileState, VersionInfo } from "./state";
-import path = require('path');
+import { VersionInfo } from "./state";
+import { IFileState } from "./Iproperties";
 import { Configuration } from "../models/config";
-import * as fs from 'fs';
-import { UrlStorageService, UrlStore } from "./UrlStorage";
+import { UrlStore } from "./UrlsModel";
 import { NotebookKernel } from "./notebook";
+import { ApplicationBuilder } from "./ApplicationBuilder";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
 
-    public clientHanler: ClientHandler
-    public clientHandler2: ClientHandler2
-    private storageService: LocalStorageService;
-    private fileStateService: IFileState;
-    private envTree: EnvTree
-    private propTree: PropertyTree;
-    private historyTreeProvider: HistoryTreeProvider;
-    private historyService: IHistoryService;
-    private dotHttpEditorView: DotHttpEditorView;
-    private dothttpSymbolProvier: DothttpNameSymbolProvider;
-    private diagnostics: vscode.DiagnosticCollection;
-    private globalstorageService: LocalStorageService;
-    private versionInfo: VersionInfo;
-    private config: Configuration;
-    private urlStore: UrlStore;
-    private notebookkernel!: NotebookKernel;
-    private context: vscode.ExtensionContext;
+    private clientHanler?: ClientHandler
+    private clientHandler2?: ClientHandler2;
+    private storageService?: LocalStorageService;
+    private fileStateService?: IFileState;
+    private envTree?: EnvTree
+    private propTree?: PropertyTree;
+    private historyTreeProvider?: HistoryTreeProvider;
+    private historyService?: IHistoryService;
+    private dotHttpEditorView?: DotHttpEditorView;
+    private dothttpSymbolProvier?: DothttpNameSymbolProvider;
+    private diagnostics?: vscode.DiagnosticCollection;
+    private globalstorageService?: LocalStorageService;
+    private versionInfo?: VersionInfo;
+    private config?: Configuration;
+    private urlStore?: UrlStore;
+    private notebookkernel?: NotebookKernel;
+    private context?: vscode.ExtensionContext;
     embeddedContent: Map<string, string>;
 
-    constructor(context: vscode.ExtensionContext) {
-        this.storageService = new LocalStorageService(context.workspaceState);
-        this.globalstorageService = new LocalStorageService(context.globalState);
-        this.clientHanler = new ClientHandler({
-            std: true,
-        });
-        this.clientHandler2 = new ClientHandler2({
-            std: true,
-        });
-        this.fileStateService = new FileState(this.storageService);
-        this.envTree = new EnvTree();
-        this.propTree = new PropertyTree();
-        if (!fs.existsSync(context.globalStorageUri.fsPath)) {
-            fs.mkdirSync(context.globalStorageUri.fsPath);
-        }
-        this.urlStore = new UrlStorageService(this.storageService);
-        this.historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'));
-        this.historyTreeProvider = new HistoryTreeProvider();
-        this.dotHttpEditorView = new DotHttpEditorView();
-        this.diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
-        this.dothttpSymbolProvier = new DothttpNameSymbolProvider();
-        this.versionInfo = new VersionInfo(this.globalstorageService);
-        this.config = Configuration.instance();
-        this.context = context;
+    private constructor(builder: ApplicationBuilder) {
+        this.storageService = builder.storageService;
+        this.globalstorageService = builder.globalstorageService;
+        this.clientHanler = builder.clientHandler;
+        this.clientHandler2 = builder.clientHandler2;
+        this.fileStateService = builder.fileStateService;
+        this.envTree = builder.envTree;
+        this.propTree = builder.propTree;
+        this.urlStore = builder.urlStore;
+        this.historyService = builder.historyService;
+        this.historyTreeProvider = builder.historyTreeProvider;
+        this.dotHttpEditorView = builder.dotHttpEditorView;
+        this.diagnostics = builder.diagnostics;
+        this.dothttpSymbolProvier = builder.dothttpSymbolProvier;
+        this.versionInfo = builder.versionInfo;
+        this.config = builder.config;
+        this.context = builder.context;
         this.embeddedContent = new Map<string, string>();
-        context.subscriptions.push(this.diagnostics);
+        this.context?.subscriptions.push(this.diagnostics!);
+    }
+
+    static initialize(builder: ApplicationBuilder){
+        const app = new ApplicationServices(builder);
+        this._state = app;
+        return app;
     }
 
     static get() {
@@ -71,28 +70,19 @@ export class ApplicationServices {
         }
     }
 
-    static initialize(context: vscode.ExtensionContext) {
-        const state = new ApplicationServices(context);
-        state.postInitialize();
-        ApplicationServices._state = state;
-        return ApplicationServices._state;
+    public getClientHandler2() {
+        return this.clientHandler2;
+    }
+    public setClientHandler2(value: ClientHandler2) {
+        this.clientHandler2 = value;
     }
 
-    postInitialize() {
-        this.envTree.setFileStateService(this);
-        this.propTree.fileStateService = this.fileStateService;
-        this.historyTreeProvider.historyService = this.historyService;
-        this.dotHttpEditorView.historyService = this.historyService;
-        this.dothttpSymbolProvier.setClientHandler(this.clientHanler);
-        this.dothttpSymbolProvier.setDiagnostics(this.diagnostics);
-
-    }
 
     public setEmbeddedContent(uri: string, content: string) {
         this.embeddedContent.set(uri, content);
     }
 
-    getClientHandler(): ClientHandler {
+    getClientHandler() {
         return this.clientHanler;
     }
 
@@ -100,15 +90,12 @@ export class ApplicationServices {
         return this.context;
     }
 
-    setContext(context: vscode.ExtensionContext) {
-        this.context = context;
-    }
 
-    getStorageService(): LocalStorageService {
+    getStorageService() {
         return this.storageService;
     }
 
-    getFileStateService(): IFileState {
+    getFileStateService() {
         return this.fileStateService;
     }
 
@@ -116,79 +103,48 @@ export class ApplicationServices {
         return this.envTree;
     }
 
-    getPropTreeProvider(): PropertyTree {
+    getPropTreeProvider() {
         return this.propTree;
     }
 
-    getHistoryTreeProvider(): HistoryTreeProvider {
+    getHistoryTreeProvider(){
         return this.historyTreeProvider;
     }
-    setHistoryTreeProvider(value: HistoryTreeProvider) {
-        this.historyTreeProvider = value;
-    }
 
-    getDiagnostics(): vscode.DiagnosticCollection {
+    getDiagnostics(){
         return this.diagnostics;
     }
-    setDiagnostics(value: vscode.DiagnosticCollection) {
-        this.diagnostics = value;
-    }
 
-    getDothttpSymbolProvier(): DothttpNameSymbolProvider {
+    getDothttpSymbolProvier(){
         return this.dothttpSymbolProvier;
     }
-    setDothttpSymbolProvier(value: DothttpNameSymbolProvider) {
-        this.dothttpSymbolProvier = value;
-    }
 
-    getDotHttpEditorView(): DotHttpEditorView {
+    getDotHttpEditorView() {
         return this.dotHttpEditorView;
     }
-    setDotHttpEditorView(value: DotHttpEditorView) {
-        this.dotHttpEditorView = value;
-    }
 
-    getHistoryService(): IHistoryService {
+    getHistoryService() {
         return this.historyService;
     }
-    setHistoryService(value: IHistoryService) {
-        this.historyService = value;
-    }
 
-    getGlobalstorageService(): LocalStorageService {
+    getGlobalstorageService(){
         return this.globalstorageService;
     }
-    setGlobalstorageService(value: LocalStorageService) {
-        this.globalstorageService = value;
-    }
 
-    getVersionInfo(): VersionInfo {
+    getVersionInfo(){
         return this.versionInfo;
     }
-    setVersionInfo(value: VersionInfo) {
-        this.versionInfo = value;
-    }
 
-    public getConfig(): Configuration {
+    getConfig(){
         return this.config;
     }
-    public setConfig(value: Configuration) {
-        this.config = value;
-    }
 
-
-    public getUrlStore(): UrlStore {
+    getUrlStore() {
         return this.urlStore;
     }
-    public setUrlStore(value: UrlStore) {
-        this.urlStore = value;
-    }
 
-    public getNotebookkernel(): NotebookKernel {
+    getNotebookkernel(){
         return this.notebookkernel;
-    }
-    public setNotebookkernel(value: NotebookKernel) {
-        this.notebookkernel = value;
     }
 
 }

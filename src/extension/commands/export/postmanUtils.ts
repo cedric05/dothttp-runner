@@ -93,7 +93,7 @@ export class PostmanClient {
             validateStatus: function (status) {
                 const validStatus = status >= 200 && status < 400;
                 if (!validStatus) {
-                    ApplicationServices.get().getContext().secrets.delete(Constants.SECRET_POSTMAN_API_KEY);
+                    ApplicationServices.get().getContext()?.secrets.delete(Constants.SECRET_POSTMAN_API_KEY);
                 }
                 return validStatus; // default
             }
@@ -155,7 +155,7 @@ export async function getPostmanClient(): Promise<PostmanClient> {
     // before saving postmankey into vscode secret data store
     // key will be validated, it will work, unless postman api key is revoked
     // incase of 401, we need to delete secret
-    const postmanApiKey = await ApplicationServices.get().getContext().secrets.get(Constants.SECRET_POSTMAN_API_KEY);
+    const postmanApiKey = await ApplicationServices.get().getContext()?.secrets.get(Constants.SECRET_POSTMAN_API_KEY);
     if (postmanApiKey) {
         return new PostmanClient(postmanApiKey);
     }
@@ -180,7 +180,7 @@ export async function getPostmanClient(): Promise<PostmanClient> {
         const postmanClient = new PostmanClient(key);
         await postmanClient.getCurrentUserInfo();
         // store in to secret data store
-        await ApplicationServices.get().getContext().secrets.store(Constants.SECRET_POSTMAN_API_KEY, key);
+        await ApplicationServices.get().getContext()?.secrets.store(Constants.SECRET_POSTMAN_API_KEY, key);
         return postmanClient;
     }
     throw Error("Key not available");

@@ -1,43 +1,25 @@
 const Db = require('tingodb')().Db;
 import fs = require('fs');
-import { ApplicationServices } from './services/global';
-import { UrlStore } from './services/UrlStorage';
-
-export interface history {
-    http: string,
-    url: string,
-    status_code: number,
-    time: Date,
-    filename: string,
-    target: string
-    _id?: number
-}
-
-
-export interface IHistoryService {
-    getById(id: number): Promise<history>;
-    addNew(history: history): Promise<void>
-    fetchMore(): Promise<history[]>
-    fetchMore(skip: number): Promise<history[]>
-    fetchMore(skip: number, limit: number): Promise<history[]>
-    fetchByFileName(filename: String): Promise<[{ url: string }]>
-}
+import { IHistoryService, history } from './history';
+import { UrlStore } from "./services/UrlsModel";
 
 export class TingoHistoryService implements IHistoryService {
     static readonly collectionName = 'history';
     private _collection: any;
+    _urlStore: UrlStore;
     // adding here is bad.
     // TODO FIXME
 
     private get urlStore(): UrlStore {
-        return ApplicationServices.get().getUrlStore();
+        return this.urlStore;
     }
-    constructor(location: string) {
+    constructor(location: string, urlStore: UrlStore) {
         if (!fs.existsSync(location)) {
             fs.mkdirSync(location);
         }
         const db = new Db(location, {});
         this._collection = db.collection(TingoHistoryService.collectionName);
+        this._urlStore = urlStore;
     }
 
     async fetchByFileName(filename: String): Promise<[{ url: string }]> {

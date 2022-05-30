@@ -1,15 +1,15 @@
 import * as vscode from 'vscode';
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata, Response } from '../../common/response';
-import { generateLang, generateLangFromOptions } from "../commands/export/generate";
-import { addHistory, contructFileName, showInUntitledView } from '../commands/run';
+// import { generateLang, generateLangFromOptions } from "../commands/export/generate";
+// import { addHistory } from '../commands/run';
 import { ClientHandler2 } from "../lib/client";
 import { Constants } from "../models/constants";
-import DotHttpEditorView from "../views/editor";
-import { ApplicationServices } from "./global";
-import { IFileState } from "./state";
+import { IFileState } from "./Iproperties";
 import dateFormat = require("dateformat");
 import { LocalStorageService } from './storage';
 import { PropertyTree } from '../views/tree';
+import { generateLang, generateLangFromOptions } from '../commands/export/generate';
+import { contructFileName, showInUntitledView } from '../commands/run';
 var mime = require('mime-types');
 
 export class NotebookKernel {
@@ -37,12 +37,10 @@ export class NotebookKernel {
         const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
-    configure() {
-        const { ApplicationServices } = require('./global');
-        const app = ApplicationServices.get();
-        this.client = app.clientHandler2;
-        this.fileStateService = app.getFileStateService();
-        this.treeprovider = app.getPropTreeProvider();
+    configure(client: ClientHandler2, fileStateService: IFileState, treeprovider: PropertyTree) {
+        this.client = client;
+        this.fileStateService = fileStateService;
+        this.treeprovider = treeprovider;
     }
 
     setClient(client: ClientHandler2) {
@@ -112,84 +110,86 @@ export class NotebookKernel {
 
         });
         let properties = {}
-        try { properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {}; } catch (error) { }
-        const out = await this.client?.executeWithExtension({
-            content: httpDef,
-            uri: cell.document.uri,
-            env: this.fileStateService?.getEnv(filename) ?? [],
-            properties,
-            target,
-            curl,
-            contexts: contexts
-        }) as DothttpExecuteResponse;
-        const end = Date.now();
-        const metadata: NotebookExecutionMetadata = {
-            uri: cell.document.uri,
-            cellNo: cell.index,
-            date: dateFormat(start, 'hh:MM:ss'),
-            target: target,
-            executionTime: ((end - start) / 1000).toFixed(1),
-        };
-        if (out.script_result && out.script_result.properties) {
-            this.treeprovider?.addProperties(cell.document.fileName, out.script_result.properties);
-            // const totalProps = out.script_result!.properties;
-            // const app = ApplicationServices.get();
-            // const newprops: { [a: string]: string } = {};
-            // (app
-            //     .getFileStateService()
-            //     .getProperties(cell.document.fileName) ?? []
-            // )
-            //     .filter(property => property.enabled)
-            //     .filter(prop =>
-            //         (totalProps[prop.key] !== prop.value))
-            //     .forEach(prop => {
-            //         newprops[prop.key] = totalProps[prop.key]
-            //     });
-            // app.getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
-            // out.script_result.properties = newprops;
-        }
-        if (false) {
-            // TODO
-            addHistory(out, filename + "-notebook-cell.http", { target });
-        }
-
         try {
-            if (out.error) {
+            // properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {}; } catch (error) { }
+            const out = await this.client?.executeWithExtension({
+                content: httpDef,
+                uri: cell.document.uri,
+                env: this.fileStateService?.getEnv(filename) ?? [],
+                properties,
+                target,
+                curl,
+                contexts: contexts
+            }) as DothttpExecuteResponse;
+            const end = Date.now();
+            const metadata: NotebookExecutionMetadata = {
+                uri: cell.document.uri,
+                cellNo: cell.index,
+                date: dateFormat(start, 'hh:MM:ss'),
+                target: target,
+                executionTime: ((end - start) / 1000).toFixed(1),
+            };
+            if (out.script_result && out.script_result.properties) {
+                this.treeprovider?.addProperties(cell.document.fileName, out.script_result.properties);
+                // const totalProps = out.script_result!.properties;
+                // const app = ApplicationServices.get();
+                // const newprops: { [a: string]: string } = {};
+                // (app
+                //     .getFileStateService()
+                //     .getProperties(cell.document.fileName) ?? []
+                // )
+                //     .filter(property => property.enabled)
+                //     .filter(prop =>
+                //         (totalProps[prop.key] !== prop.value))
+                //     .forEach(prop => {
+                //         newprops[prop.key] = totalProps[prop.key]
+                //     });
+                // app.getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
+                // out.script_result.properties = newprops;
+            }
+            if (false) {
+                // TODO
+                // addHistory(out, filename + "-notebook-cell.http", { target });
+            }
+
+            try {
+                if (out.error) {
+                    execution.replaceOutput([
+                        new vscode.NotebookCellOutput([
+                            vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
+                        ])
+                    ]);
+                    execution.end(false, end);
+                } else {
+                    if (curl) {
+                        execution.replaceOutput([
+                            new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
+                        ]);
+                    } else {
+                        out.body = "";
+                        out.headers = {};
+                        const outs: Array<vscode.NotebookCellOutputItem> = [];
+                        const nativeContentTypes = this.parseAndAdd(out.response);
+                        outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
+                        outs.push(...nativeContentTypes);
+                        execution.replaceOutput([
+                            new vscode.NotebookCellOutput(outs)
+                        ]);
+                    }
+
+                    execution.end(true, end)
+                }
+            } catch (error) {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([
-                        vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
+                        // @ts-ignore
+                        vscode.NotebookCellOutputItem.stderr(error), vscode.NotebookCellOutputItem.stdout(error), vscode.NotebookCellOutputItem.text(error)
                     ])
                 ]);
-                execution.end(false, end);
-            } else {
-                if (curl) {
-                    execution.replaceOutput([
-                        new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
-                    ]);
-                } else {
-                    out.body = "";
-                    out.headers = {};
-                    const outs: Array<vscode.NotebookCellOutputItem> = [];
-                    const nativeContentTypes = this.parseAndAdd(out.response);
-                    outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
-                    outs.push(...nativeContentTypes);
-                    execution.replaceOutput([
-                        new vscode.NotebookCellOutput(outs)
-                    ]);
-                }
-
-                execution.end(true, end)
+                execution.end(false, Date.now())
             }
-        } catch (error) {
-            execution.replaceOutput([
-                new vscode.NotebookCellOutput([
-                    // @ts-ignore
-                    vscode.NotebookCellOutputItem.stderr(error), vscode.NotebookCellOutputItem.stdout(error), vscode.NotebookCellOutputItem.text(error)
-                ])
-            ]);
-            execution.end(false, Date.now())
-        }
 
+        } catch(error){}
     }
     private async _getTarget(uri: vscode.Uri, cellNo: number, httpDef: string) {
         let target: string = this.storageService?.getValue(`notebooktarget:${uri.fsPath}:${cellNo}`) ?? '1';
@@ -237,7 +237,7 @@ export class NotebookKernel {
             const cellNo = parseInt(cellUri.fragment.substring(2));
             const content = cell.document.getText();
             const target: string = await this._getTarget(cellUri, cellNo, content);
-            const langspec = await generateLangFromOptions({ content, filename: cell.document.fileName, target, contexts });
+            const langspec = await generateLangFromOptions({ content, uri: cell.document.uri, target, contexts });
             if (langspec && langspec.code) {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, `text/x-${langspec.language}`)])

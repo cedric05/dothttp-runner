@@ -1,17 +1,7 @@
 import { LocalStorageService } from "./storage";
+import { UrlsModel } from "./UrlsModel";
 
 const MAX_STORE = 100;
-
-
-export interface UrlsModel {
-    date: Date,
-    url: string
-}
-
-export interface UrlStore {
-    addUrl(url: string): void;
-    fetchUrls(): Array<UrlsModel>;
-}
 
 
 export class UrlStorageService {

@@ -11,21 +11,25 @@ import EventEmitter = require('events');
 
 
 export abstract class BaseSpanClient implements ICommandClient {
-    proc: child_process.ChildProcess;
+    proc!: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
     channel: vscode.OutputChannel;
+    options: { pythonpath: string, stdargs: string[] }
 
     constructor(options: { pythonpath: string, stdargs: string[] }) {
-        this.proc = child_process.spawn(options.pythonpath,
-            options.stdargs,
+
+        this.options = options;
+        this.channel = vscode.window.createOutputChannel('dothttp-code');
+    }
+    start(): void {
+        this.proc = child_process.spawn(this.options.pythonpath,
+            this.options.stdargs,
             {
                 stdio: ["pipe", "pipe", "inherit"],
                 // not sure why, totally unrelated to latest changes, but started opening in new window
                 detached: true
             },
         );
-
-        this.channel = vscode.window.createOutputChannel('dothttp-code');
     }
     isSupportsNative(): boolean {
         return true;

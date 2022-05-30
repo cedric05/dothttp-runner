@@ -39,7 +39,7 @@ export async function getNotebookUriToHttpContent(uri: Uri): Promise<string> {
                 return getMarkDownCode(text);
             }
             case NotebookCellKind.Code: {
-                return getHttpCode(await client.getVirtualDocumentSymbols(text, "notebook-save"), text, cell.index);
+                return getHttpCode(await client!.getVirtualDocumentSymbols(text, "notebook-save"), text, cell.index);
             };
         }
     }));
@@ -141,7 +141,7 @@ export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
     const document = await vscode.workspace.openTextDocument(uri);
     const text = document.getText();
     const client = ApplicationServices.get().getClientHandler();
-    const symbols = await client.getVirtualDocumentSymbols(text, "http to httpbook");
+    const symbols = await client?.getVirtualDocumentSymbols(text, "http to httpbook");
 
     const parsedPath = path.parse(uri.fsPath);
     const httpbookFileName = getUnSaved(path.format({ ...parsedPath, ext: '.httpbook', base: undefined }));

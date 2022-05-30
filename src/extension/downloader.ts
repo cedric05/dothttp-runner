@@ -6,7 +6,8 @@ import * as semver from 'semver';
 import { Extract as extract } from 'unzipper';
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
-import { Configuration, isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from './models/config';
+import { Configuration } from './models/config';
+import { isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from "./models/getPythonVersion";
 import { Constants } from './models/constants';
 import { ApplicationServices } from './services/global';
 import path = require('path');
@@ -229,7 +230,7 @@ function getExePath(exePath: string) {
 }
 
 export async function updateDothttpIfAvailable(globalStorageDir: string) {
-    const currentVersion: string = ApplicationServices.get().getVersionInfo().getVersionDothttpInfo();
+    const currentVersion: string = ApplicationServices.get().getVersionInfo()!.getVersionDothttpInfo();
     const versionData = await getVersion();
     if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
@@ -245,12 +246,12 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 const url = fetchDownloadUrl(versionData)
                 await downloadDothttp(downloadLocation, url!);
                 const originalLocation = path.join(globalStorageDir, 'cli');
-                ApplicationServices.get().clientHanler.close();
+                ApplicationServices.get().getClientHandler()!.close();
                 fs.rmdirSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
                 getExePath(path.join(originalLocation, 'cli'));
             }
-            ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(versionData.version);
+            ApplicationServices.get().getVersionInfo()!.setVersionDothttpInfo(versionData.version);
             vscode.window.showInformationMessage('dothttp upgrade completed')
             vscode.commands.executeCommand(Constants.RESTART_CLI_COMMAND);
         }

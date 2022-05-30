@@ -107,8 +107,8 @@ export class UrlExpander implements vscode.CodeActionProvider {
 
 export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider, vscode.HoverProvider {
     clientHandler: ClientHandler;
-    constructor() {
-        this.clientHandler = ApplicationServices.get().getClientHandler();
+    constructor(client: ClientHandler) {
+        this.clientHandler = client;
     }
     async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover | null> {
         const result = await this.getTypeResult(document, position);

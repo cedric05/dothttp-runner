@@ -3,7 +3,7 @@ import { basename } from 'path';
 import * as vscode from 'vscode';
 import { Constants } from '../models/constants';
 import { ApplicationServices } from '../services/global';
-import { FileInfo, IFileState } from '../services/state';
+import { FileInfo, IFileState } from "../services/Iproperties";
 import DotHttpEditorView from './editor';
 import path = require('path');
 
@@ -41,7 +41,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     public get fileStateService(): IFileState | undefined {
         return this._fileStateService;
     }
-    public set fileStateService(value: IFileState | undefined) {
+    public setFileStateService(value: IFileState | undefined) {
         this._fileStateService = value;
     }
     private _onDidChangeTreeData: vscode.EventEmitter<PropertyTreeItem | null> = new vscode.EventEmitter<PropertyTreeItem | null>();
@@ -294,8 +294,8 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         }
     }
 
-    setFileStateService(state: ApplicationServices) {
-        this.filestate = state.getFileStateService();
+    setFileStateService(filetateService: IFileState) {
+        this.filestate = filetateService;
     }
 
     private parseTree(): void {

@@ -47,6 +47,11 @@ const webConfig = {
 	},
 	resolve: {
 		fallback: {
+			"stream": require.resolve("stream-browserify"),
+			"buffer": require.resolve("buffer/"),
+			"querystring": require.resolve("querystring-es3"),
+			"path": require.resolve("path-browserify"),
+			"url": require.resolve("url/") 
 		},
 		extensions: ['.ts', '.js']
 	},
@@ -113,4 +118,4 @@ const rendererConfig = {
 
 
 
-module.exports = [rendererConfig, webConfig, nodeconfig];
+module.exports = [rendererConfig, webConfig];

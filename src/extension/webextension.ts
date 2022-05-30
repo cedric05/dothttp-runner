@@ -11,7 +11,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "web");
     loadNoteBookControllerSafely(context);
     let notebookkernel = new NotebookKernel();
-    let client = new ClientHandler2({ std: false });
+    let client = new ClientHandler2();
     client.setLaunchParams({ path: "", type: RunType.http, url: "http://localhost:5000" }).start();
     let localStorage = new LocalStorageService(context.workspaceState);
     let filestateservice = new FileState(localStorage);

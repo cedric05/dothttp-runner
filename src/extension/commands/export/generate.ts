@@ -40,22 +40,22 @@ export async function generateLangFromOptions(
     options: { uri: vscode.Uri, target: string, content?: string, contexts?: Array<string> })
     : Promise<{ code: string, language: string, error: false, } | void> {
     const { uri, target, content, contexts } = options;
-    const clientHanler = ApplicationServices.get().clientHandler2;
+    const clientHanler = ApplicationServices.get().getClientHandler2();
     const fileStateService = ApplicationServices.get().getFileStateService();
-    const out = await clientHanler.generateLangHttp({
+    const out = await clientHanler?.generateLangHttp({
         uri: uri,
         content: content,
         curl: false,
         target: target,
         properties: DotHttpEditorView.getEnabledProperties(uri.fsPath),
-        env: fileStateService.getEnv(uri.fsPath)! ?? [],
+        env: fileStateService?.getEnv(uri.fsPath)! ?? [],
         contexts
     });
     try {
-        if (out.error) {
+        if (out?.error) {
             return
         }
-        const targetHttpDef = out.target[target ?? '1']! as HttpTargetDef;
+        const targetHttpDef = out?.target[target ?? '1']! as HttpTargetDef;
         const snippet = new HTTPSnippet({
             method: targetHttpDef.method, url: targetHttpDef.url,
             queryString: targetHttpDef.query, headers: targetHttpDef.headers,

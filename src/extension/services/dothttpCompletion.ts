@@ -12,9 +12,10 @@ import * as path from 'path';
 import * as util from 'util';
 import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../models/completiontypes';
-import { UrlStore } from './UrlStorage';
+import { UrlStore } from "./UrlsModel";
 import { Constants } from '../models/constants';
 import { TypeResult } from "../lib/types";
+import { IFileState } from './Iproperties';
 
 
 const readFileProm = util.promisify(fs.readFile);
@@ -27,16 +28,16 @@ export class ScriptCompletionProvider implements CompletionItemProvider {
         const client = app.getClientHandler();
         const isNotebook = document.uri.scheme === Constants.notebookscheme;
         const offset = document.offsetAt(position);
-        let positionInfo: TypeResult & { start?: number, end?: number };
+        let positionInfo: TypeResult & { start?: number, end?: number } | undefined;
 
         const documentText = document.getText();
         if (isNotebook) {
-            positionInfo = await client.getTypeFromContentPosition(offset, documentText, "script completion provider")
+            positionInfo = await client?.getTypeFromContentPosition(offset, documentText, "script completion provider")
         } else {
-            positionInfo = await client.getTypeFromFilePosition(offset, document.fileName, "script completion provider");
+            positionInfo = await client?.getTypeFromFilePosition(offset, document.fileName, "script completion provider");
         }
         console.log(`sending`);
-        if (positionInfo.type == "script" && positionInfo.start && positionInfo.end) {
+        if (positionInfo?.type == "script" && positionInfo.start && positionInfo.end) {
             let content = documentText
                 .split('\n')
                 .map(line => {
@@ -81,7 +82,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
     ]
 
     private readonly client;
-    store: UrlStore;
+    store?: UrlStore;
 
     constructor() {
         const appContext = ApplicationServices.get();
@@ -95,7 +96,7 @@ export class UrlCompletionProvider implements CompletionItemProvider {
     }
 
     private async getHistoryUrls(fileName: string): Promise<CompletionItem[]> {
-        const historyUrls = this.store.fetchUrls().map(item => ({
+        const historyUrls = this.store?.fetchUrls().map(item => ({
             insertText: item.url,
             label: item.url,
             kind: CompletionItemKind.Unit,
@@ -103,12 +104,14 @@ export class UrlCompletionProvider implements CompletionItemProvider {
             detail: item.url,
             keepWhitespace: true,
         }));
-        const targets = await this.client.getDocumentSymbols(fileName);
-        if (targets.error) {
-            return historyUrls;
+        const targets = await this.client?.getDocumentSymbols(fileName);
+        if (targets?.error) {
+            return historyUrls??[];
         }
-        return _.concat(_.uniqBy(targets.urls!
-            .map(item => ({
+
+        // @ts-expect-error
+        return _.concat(_.uniqBy(
+            targets?.urls!.map(item => ({
                 ...item,
                 label: `${item.method ?? "GET"} "${item.url}"`
             })), item => item.label)
@@ -132,7 +135,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     private static readonly INFILE_VAR_FINDER = /{{(.*?)(=.*)?}}/gm;
 
 
-    private readonly fileStateService: import("./state").IFileState;
+    private readonly fileStateService?: IFileState;
 
 
     static readonly randomSuggesstionsList: ReadonlyArray<string> = ["$randomStr",
@@ -180,7 +183,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
         const dothttpJson = path.join(path.dirname(fileName), ".dothttp.json");
         var envProperties: CompletionItem[][] = [];
         if (fs.existsSync(dothttpJson)) {
-            const envList = this.fileStateService.getEnv(fileName);
+            const envList = this.fileStateService?.getEnv(fileName)??[];
             const data = await readFileProm(dothttpJson);
             const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
 
@@ -197,8 +200,8 @@ export class VariableCompletionProvider implements CompletionItemProvider {
                 )
         }
 
-        const properties = _.uniq(this.fileStateService
-            .getProperties(fileName)
+        const properties = _.uniq(
+            this.fileStateService?.getProperties(fileName)
             .filter(prop => prop.enabled)
             .map(prop => prop.key))
             .map(this.variableCompletionItem("From Properties"))

@@ -7,21 +7,21 @@ import { Position } from '../views/tree';
 
 
 export function enableCommand(node: Position) {
-    ApplicationServices.get().getFileStateService().addEnv(
+    ApplicationServices.get().getFileStateService()?.addEnv(
         window.activeTextEditor?.document.fileName!, node.env);
-    ApplicationServices.get().getEnvProvder().refresh();
+    ApplicationServices.get().getEnvProvder()?.refresh();
 }
 
 export function disableCommand(node: Position) {
-    ApplicationServices.get().getFileStateService().removeEnv(
+    ApplicationServices.get().getFileStateService()?.removeEnv(
         window.activeTextEditor?.document.fileName!, node.env);
-    ApplicationServices.get().getEnvProvder().refresh();
+    ApplicationServices.get().getEnvProvder()?.refresh();
 }
 
 
 
 export function copyProperty(node: Position) {
-    const value = ApplicationServices.get().getEnvProvder().getProperty(node);
+    const value = ApplicationServices.get().getEnvProvder()?.getProperty(node);
     if (value) {
         vscode.env.clipboard.writeText(value);
     }

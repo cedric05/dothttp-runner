@@ -41,7 +41,7 @@ export async function exportToPostman(uri: vscode.Uri) {
     } else if (uri.fsPath.endsWith('.httpbook') || uri.fsPath.endsWith('.hnbk')) {
         fileName = await notebookFromFile(fileName);
     }
-    const result = await ApplicationServices.get().getClientHandler().exportToPostman(fileName);
+    const result = await ApplicationServices.get().getClientHandler()?.exportToPostman(fileName);
     if (result.error) {
         return vscode.window.showErrorMessage(`export postman failed with error, ${result}`);
     }

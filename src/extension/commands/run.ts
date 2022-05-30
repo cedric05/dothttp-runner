@@ -26,7 +26,7 @@ export async function runTargetInCell(arr: { uri: vscode.Uri, cellNo: number, ta
         const kernel = ApplicationServices.get().getNotebookkernel();
         kernel.executeCell(cell, arr.target);
     */
-    ApplicationServices.get().getStorageService().setValue(`notebooktarget:${uri.fsPath}:${cellNo}`, target)
+    ApplicationServices.get().getStorageService()?.setValue(`notebooktarget:${uri.fsPath}:${cellNo}`, target)
     await vscode.commands.executeCommand("notebook.cell.execute", [{ start: cellNo, end: cellNo }], uri, target)
 }
 
@@ -57,7 +57,7 @@ export async function cacheAndGetTarget(editor: TextEditor, document: vscode.Tex
     if (target) {
         const storage = ApplicationServices.get().getStorageService();
         const filename = editor.document.fileName ?? '';
-        storage.setValue(`httpruntarget://${filename}`, target);
+        storage?.setValue(`httpruntarget://${filename}`, target);
         return target;
     }
 }
@@ -69,12 +69,12 @@ async function getTargetFromQuickPick(editor: TextEditor, document: vscode.TextD
 
     // otherwise ask for user input
     const filename = document.fileName;
-    if (ApplicationServices.get().getConfig().runRecent) {
+    if (ApplicationServices.get().getConfig()?.runRecent) {
         const storage = ApplicationServices.get().getStorageService();
-        return storage.getValue(`httpruntarget://${filename}`, '1');
+        return storage?.getValue(`httpruntarget://${filename}`, '1');
     }
-    const names = await ApplicationServices.get().getClientHandler().getDocumentSymbols(filename);
-    if (names.error) {
+    const names = await ApplicationServices.get().getClientHandler()?.getDocumentSymbols(filename);
+    if (names?.error) {
         return '1';
     }
     // const selectionDone = false;
@@ -129,7 +129,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
     }
     const date = new Date();
     var now = dateFormat(date, 'hh:MM:ss');
-    if (config.reUseOld) {
+    if (config?.reUseOld) {
         now = '';
     }
     vscode.window.withProgress({
@@ -148,7 +148,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
             const out = await prom;
             addHistory(out, filename, options);
             if (!token.isCancellationRequested) {
-                const fileNameWithInfo = contructFileName(getBaseFileNameToSave(config, filename), options, out, now);
+                const fileNameWithInfo = contructFileName(getBaseFileNameToSave(config!, filename), options, out, now);
                 showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, out);
                 progress.report({ increment: 50, message: 'completed' });
             }
@@ -180,7 +180,7 @@ function getBaseFileNameToSave(config: Configuration, filename: string) {
 }
 
 export function addHistory(out: any, filename: string, options: { target: string; }) {
-    if (ApplicationServices.get().getConfig().history) {
+    if (ApplicationServices.get().getConfig()?.history) {
         const history = {
             url: out.url as string,
             http: out.http as string,
@@ -189,9 +189,9 @@ export function addHistory(out: any, filename: string, options: { target: string
             time: new Date(),
             status_code: out.status as number
         };
-        ApplicationServices.get().getHistoryService().addNew(
+        ApplicationServices.get().getHistoryService()?.addNew(
             history);
-        ApplicationServices.get().getHistoryTreeProvider().recentChanged(history);
+        ApplicationServices.get().getHistoryTreeProvider()?.recentChanged(history);
     }
 
 }
@@ -211,7 +211,7 @@ export function showInUntitledView(scriptFileName: string, headerURI: string, ou
     // for http response, body will be in out.response.body
     // for curl response, body will be in out.body
     const body = out.error ? "Unknown Error happened" : out.body || out.response.body;
-    if (ApplicationServices.get().getConfig().reUseOld) {
+    if (ApplicationServices.get().getConfig()?.reUseOld) {
         const editors = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === outputBodyURI);
         if (editors.length !== 0) {
             const editor = editors[0];
@@ -221,7 +221,7 @@ export function showInUntitledView(scriptFileName: string, headerURI: string, ou
     }
     vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
         showEditor(textDoc, out.error ? out.error_message! : body!);
-        if (ApplicationServices.get().getConfig().showHeaders && !out.error) {
+        if (ApplicationServices.get().getConfig()?.showHeaders && !out.error) {
             const outputHeaderURI = vscode.Uri.parse("untitled:" + headerURI);
             vscode.workspace.openTextDocument(outputHeaderURI).then(textDoc => {
                 showEditor(textDoc, JSON.stringify(out.response.headers), -2);
@@ -233,7 +233,7 @@ export function showInUntitledView(scriptFileName: string, headerURI: string, ou
 export function showEditor(textDoc: vscode.TextDocument, scriptContent: string, column = 2) {
     vscode.window.showTextDocument(textDoc, column /** new group */, false /**preserveFocus */).then(e => {
         e.edit(edit => {
-            if (ApplicationServices.get().getConfig().reUseOld) {
+            if (ApplicationServices.get().getConfig()?.reUseOld) {
                 edit.delete(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(textDoc.lineCount + 1, 0)))
             }
             edit.insert(new vscode.Position(0, 0), scriptContent);
