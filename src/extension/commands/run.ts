@@ -123,7 +123,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
         await document.save();
     }
 
-    if (!DotHttpEditorView.isHttpFile(filename) && document.uri.scheme === 'file') {
+    if (!DotHttpEditorView.isHttpUri(options.uri)) {
         vscode.window.showInformationMessage('either python path not set correctly!! or not an .dhttp/.http file or file doesn\'t exist ');
         return;
     }

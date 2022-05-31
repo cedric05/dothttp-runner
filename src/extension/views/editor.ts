@@ -1,5 +1,4 @@
-import { existsSync } from 'fs';
-import { extname } from 'path';
+import { Utils } from 'vscode-uri'
 import * as vscode from 'vscode';
 import { DothttpRunOptions } from '../models/misc';
 import { ApplicationServices } from '../services/global';
@@ -30,19 +29,14 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             }
         });
     }
-
-    public static isHttpFile(filename: string) {
-        const fileExtension = extname(filename);
-        return existsSync(filename)
-            && new Set([".dhttp", ".http"]).has(fileExtension);
+    public static isHttpBookUri(uri: vscode.Uri) {
+        const fileExtension = Utils.extname(uri);
+        return new Set([".httpbook", ".hnbk"]).has(fileExtension);
     }
 
-
-
-    public static isHttpBook(filename: string) {
-        const fileExtension = extname(filename);
-        return existsSync(filename)
-            && new Set([".httpbook", ".hnbk"]).has(fileExtension);
+    public static isHttpUri(uri: vscode.Uri) {
+        const fileExtension = Utils.extname(uri);
+        return new Set([".dhttp", ".http"]).has(fileExtension);
     }
 
     static async runContent(options: { content: string; curl: boolean; target: string; }): Promise<any> {
@@ -51,7 +45,8 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
     }
 
     public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
-        if (DotHttpEditorView.isHttpFile(kwargs.filename) && ApplicationServices.get().getClientHandler()?.isRunning()) {
+        //DotHttpEditorView.isHttpFile(kwargs.filename)
+        if (ApplicationServices.get().getClientHandler()?.isRunning()) {
             const app = ApplicationServices.get();
             const clientHandler = app.getClientHandler();
             const filestateService = app.getFileStateService();

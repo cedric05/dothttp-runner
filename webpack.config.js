@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
 const baseConfig = {
@@ -15,6 +16,12 @@ const baseConfig = {
 		// support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
 		extensions: ['.ts', '.js']
 	},
+	plugins: [
+		new webpack.DefinePlugin({
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+		})
+	],
 	module: {
 		rules: [
 			{
@@ -51,7 +58,9 @@ const webConfig = {
 			"buffer": require.resolve("buffer/"),
 			"querystring": require.resolve("querystring-es3"),
 			"path": require.resolve("path-browserify"),
-			"url": require.resolve("url/") 
+			"url": require.resolve("url/"),
+			"os": require.resolve("os-browserify/browser"),
+
 		},
 		extensions: ['.ts', '.js']
 	},

@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-import { URL } from 'whatwg-url';
 import { ICommandClient, ICommand, IResult } from '../types';
 import * as vscode from 'vscode'
 
@@ -35,7 +34,7 @@ export class HttpClient implements ICommandClient {
     async call(command: ICommand): Promise<IResult> {
         const id = command.id;
         const axiosResponse: AxiosResponse<IResult> = await axios({
-            url: new URL(command.method, this.url).href,
+            url: `${this.url}/${command.method}`,
             method: "POST",
             params: {
                 id

@@ -2,7 +2,6 @@ import { DothttpExecuteResponse } from '../../common/response';
 import { HttpFileTargetsDef } from './lang-parse';
 import { ICommandClient, DotTttpSymbol, TypeResult, ImportHarResult } from './types';
 import * as vscode from 'vscode';
-import { TextDecoder } from 'util';
 import { ExecuteFileOptions, ClientHandler } from './ClientHandler';
 
 var mime = require('mime-types');
@@ -129,4 +128,14 @@ export class ClientHandler2 {
     }
 
 
+}
+
+
+
+declare class TextDecoder {
+    decode(data: Uint8Array): string;
+}
+
+declare class TextEncoder {
+    encode(data: string): Uint8Array;
 }

@@ -13,7 +13,7 @@ export async function saveNotebookAsHttpFileFromCommand(uri: Uri) {
     if (!uri) {
         const editors = vscode.window.visibleTextEditors.filter(editor => {
             const path = editor.document.uri.fsPath;
-            return DotHttpEditorView.isHttpBook(path);
+            return DotHttpEditorView.isHttpUri(uri);
         });
         let editor: vscode.TextEditor | null;
         if (editors.length > 0) {

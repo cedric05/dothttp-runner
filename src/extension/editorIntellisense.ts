@@ -6,7 +6,6 @@ import * as json from 'jsonc-parser';
 import { Constants } from './models/constants';
 import { parseURL } from 'whatwg-url';
 import { parse as parseQueryString } from 'querystring';
-import { ApplicationServices } from './services/global';
 import { DotHovers, DothttpTypes } from './models/misc';
 
 

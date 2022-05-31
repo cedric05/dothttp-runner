@@ -2,7 +2,6 @@ import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
 import { Constants } from '../models/constants';
-import { ApplicationServices } from '../services/global';
 import { FileInfo, IFileState } from "../services/Iproperties";
 import DotHttpEditorView from './editor';
 import path = require('path');
@@ -59,8 +58,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         if (editor) {
             const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const fileName = editor.document.fileName;
-                const enabled = DotHttpEditorView.isHttpFile(fileName) || DotHttpEditorView.isHttpBook(fileName);
+                const enabled = DotHttpEditorView.isHttpBookUri(editor.document.uri) || DotHttpEditorView.isHttpBookUri(editor.document.uri);
                 vscode.commands.executeCommand('setContext', Constants.propViewEnabled, enabled);
                 if (enabled) {
                     this.filename = editor.document.fileName;
@@ -333,8 +331,9 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
                 const fileName = editor.document.fileName;
-                const enabled = DotHttpEditorView.isHttpFile(fileName)
-                    || DotHttpEditorView.isHttpBook(fileName)
+                const uri = editor.document.uri
+                const enabled = DotHttpEditorView.isHttpBookUri(uri)
+                    || DotHttpEditorView.isHttpUri(uri)
                     || basename(fileName) === ".dothttp.json";
                 vscode.commands.executeCommand('setContext', Constants.enableEnvViewVar, enabled);
                 if (enabled) {

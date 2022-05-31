@@ -1,7 +1,12 @@
 
-import { existsSync } from 'fs';
-import path = require('path');
+
+import { fsExists as fsExists } from './fsUtils';
+import { Uri } from 'vscode';
+import { Utils } from 'vscode-uri';
+
 export function getUnSaved(scriptFileName: string) {
+    const existsSync = require('fs')
+    const path = require('path');
     if (!existsSync(scriptFileName)) {
         return scriptFileName;
     }
@@ -14,6 +19,24 @@ export function getUnSaved(scriptFileName: string) {
         i++;
     }
     return path.join(dir, `${fileNameWithOutExt} (${i})${ext}`);
+}
+
+
+export async function getUnSavedUri(uri: Uri) {
+
+    if (!fsExists(uri)) {
+        return uri;
+    }
+    const baseName = Utils.basename(uri);
+    const dir = Utils.dirname(uri);
+    const indexStart = baseName.indexOf('.');
+    const fileNameWithOutExt = baseName.substr(0, indexStart);
+    const ext = baseName.substr(indexStart);
+    var i = 0;
+    while (await fsExists(Utils.joinPath(dir, `${fileNameWithOutExt} (${i})${ext}`))) {
+        i++;
+    }
+    return Utils.joinPath(dir, `${fileNameWithOutExt} (${i})${ext}`);
 }
 
 

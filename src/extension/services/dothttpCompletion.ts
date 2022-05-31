@@ -7,18 +7,16 @@
 import { CancellationToken, commands, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, Position, ProviderResult, SnippetString, TextDocument, Uri } from 'vscode';
 import { ApplicationServices } from './global';
 import * as parser from 'jsonc-parser';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as util from 'util';
 import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../models/completiontypes';
 import { UrlStore } from "./UrlsModel";
 import { Constants } from '../models/constants';
 import { TypeResult } from "../lib/types";
 import { IFileState } from './Iproperties';
+import { Utils } from 'vscode-uri';
+import { fsExists, read } from '../utils/fsUtils';
 
 
-const readFileProm = util.promisify(fs.readFile);
 
 
 export class ScriptCompletionProvider implements CompletionItemProvider {
@@ -162,7 +160,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
     async provideCompletionItems(document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[]> {
         const result = [];
         result.push(...await this.infileCompletions(document));;
-        result.push(...await this.getEnvironmentProperties(document.fileName));
+        result.push(...await this.getEnvironmentProperties(document));
         result.push(...VariableCompletionProvider.randomSuggestions);
         return result
     }
@@ -179,13 +177,13 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
 
 
-    private async getEnvironmentProperties(fileName: string): Promise<Array<CompletionItem>> {
-        const dothttpJson = path.join(path.dirname(fileName), ".dothttp.json");
+    private async getEnvironmentProperties(document: TextDocument): Promise<Array<CompletionItem>> {
+        const dothttpJsonUri = Utils.joinPath(document.uri, ".dothttp.json");
         var envProperties: CompletionItem[][] = [];
-        if (fs.existsSync(dothttpJson)) {
-            const envList = this.fileStateService?.getEnv(fileName)??[];
-            const data = await readFileProm(dothttpJson);
-            const envFile: { [envName: string]: { propName: string } } = parser.parse(data.toString());
+        if (await fsExists(dothttpJsonUri)) {
+            const envList = this.fileStateService?.getEnv(document.uri.fsPath)??[];
+            const data = await read(dothttpJsonUri);
+            const envFile: { [envName: string]: { propName: string } } = parser.parse(data);
 
 
             // add default environment properties
@@ -201,7 +199,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
         }
 
         const properties = _.uniq(
-            this.fileStateService?.getProperties(fileName)
+            this.fileStateService?.getProperties(document.uri.fsPath)
             .filter(prop => prop.enabled)
             .map(prop => prop.key))
             .map(this.variableCompletionItem("From Properties"))
