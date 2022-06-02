@@ -1,11 +1,13 @@
 import { NotebookKernel } from "../../web/services/notebookkernel";
 import * as vscode from 'vscode'
-import { MessageType, NotebookExecutionMetadata } from "../../../common/response";
+import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from "../../../common/response";
 import { generateLang, generateLangFromOptions } from "../commands/export/generate";
 import { contructFileName, showInUntitledView } from "../commands/run";
+import { ClientHandler } from "./client";
 
 
 export class ProNotebookKernel extends NotebookKernel {
+    client1!: ClientHandler;
 
 
     constructor() {
@@ -13,6 +15,23 @@ export class ProNotebookKernel extends NotebookKernel {
         const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
+
+    configureClient(client: ClientHandler) {
+        this.client1 = client;
+    }
+
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
+        return await this.client1?.executeContentWithExtension({
+            content: httpDef,
+            file: filename,
+            env: this.fileStateService?.getEnv(filename) ?? [],
+            properties,
+            target,
+            curl,
+            contexts: contexts
+        });
+    }
+
 
     async onMessage(e: any) {
         const { metadata, response } = e.message;

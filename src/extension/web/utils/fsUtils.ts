@@ -2,8 +2,12 @@ import { FileType, Uri, workspace } from "vscode";
 import { Utils } from 'vscode-uri';
 
 export async function fsExists(uri: Uri) {
-    const stat = await workspace.fs.stat(uri);
-    return stat ? true : false;
+    try {
+        const stat = await workspace.fs.stat(uri);
+        return stat ? true : false;
+    } catch (error) {
+        return false;
+    }
 }
 
 export async function read(uri: Uri) {
@@ -14,8 +18,12 @@ export async function read(uri: Uri) {
 
 
 export async function isDirectory(uri: Uri) {
-    const stat = await workspace.fs.stat(uri);
-    return stat?.type == FileType.Directory
+    try {
+        const stat = await workspace.fs.stat(uri);
+        return stat?.type == FileType.Directory
+    } catch (error) {
+        return false;
+    }
 }
 
 

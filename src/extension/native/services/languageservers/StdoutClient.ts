@@ -14,10 +14,9 @@ export abstract class BaseSpanClient implements ICommandClient {
     proc!: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
     channel: vscode.OutputChannel;
-    options: { pythonpath: string, stdargs: string[] }
+    options: { pythonpath: string, stdargs: string[], type: RunType; }
 
-    constructor(options: { pythonpath: string, stdargs: string[] }) {
-
+    constructor(options: { pythonpath: string, stdargs: string[], type: RunType; }) {
         this.options = options;
         this.channel = vscode.window.createOutputChannel('dothttp-code');
     }
@@ -63,9 +62,12 @@ export class StdoutClient extends BaseSpanClient {
 
     constructor(options: { pythonpath: string; stdargs: string[]; type: RunType; }) {
         super(options);
-        this.setup();
-        this.healInstallation(options);
+    }
 
+    start(): void {
+        super.start();
+        this.setup();
+        this.healInstallation(this.options);
         once(this.eventS, "-1").then(result => {
             if (result.length != 1) {
                 console.log('unknown dothttp cli');
@@ -74,7 +76,6 @@ export class StdoutClient extends BaseSpanClient {
                 console.log(`detected dothttp cli with version: ${this.version}`);
             }
         });
-
     }
     private setup() {
         this.rl = createInterface({

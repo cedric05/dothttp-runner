@@ -1,6 +1,6 @@
 
+const { existsSync } = require('fs');
 export function getUnSaved(scriptFileName: string) {
-    const existsSync = require('fs');
     const path = require('path');
     if (!existsSync(scriptFileName)) {
         return scriptFileName;

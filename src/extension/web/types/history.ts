@@ -1,5 +1,5 @@
 
-export interface history {
+export interface HistoryItem {
     http: string;
     url: string;
     status_code: number;
@@ -11,10 +11,10 @@ export interface history {
 
 
 export interface IHistoryService {
-    getById(id: number): Promise<history>;
-    addNew(history: history): Promise<void>;
-    fetchMore(): Promise<history[]>;
-    fetchMore(skip: number): Promise<history[]>;
-    fetchMore(skip: number, limit: number): Promise<history[]>;
+    getById(id: number): Promise<HistoryItem>;
+    addNew(history: HistoryItem): Promise<void>;
+    fetchMore(): Promise<HistoryItem[]>;
+    fetchMore(skip: number): Promise<HistoryItem[]>;
+    fetchMore(skip: number, limit: number): Promise<HistoryItem[]>;
     fetchByFileName(filename: String): Promise<[{ url: string; }]>;
 }

@@ -30,7 +30,7 @@ export class NotebookKernel {
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
     }
-    configure(client: ClientHandler2, fileStateService: IFileState, treeprovider: PropertyTree) {
+    configure(client: ClientHandler2 | undefined, fileStateService: IFileState, treeprovider: PropertyTree) {
         this.client = client;
         this.fileStateService = fileStateService;
         // @ts-ignore
@@ -77,15 +77,7 @@ export class NotebookKernel {
         let properties = {}
         try {
             // properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {}; } catch (error) { }
-            const out = await this.client?.executeWithExtension({
-                content: httpDef,
-                uri: cell.document.uri,
-                env: this.fileStateService?.getEnv(filename) ?? [],
-                properties,
-                target,
-                curl,
-                contexts: contexts
-            }) as DothttpExecuteResponse;
+            const out = await this.getResponse(httpDef, cell, filename, properties, target, curl, contexts) as DothttpExecuteResponse;
             const end = Date.now();
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
@@ -156,6 +148,18 @@ export class NotebookKernel {
 
         } catch (error) { }
     }
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
+        return await this.client?.executeWithExtension({
+            content: httpDef,
+            uri: cell.document.uri,
+            env: this.fileStateService?.getEnv(filename) ?? [],
+            properties,
+            target,
+            curl,
+            contexts: contexts
+        });
+    }
+
     async _getTarget(uri: vscode.Uri, cellNo: number, httpDef: string) {
         let target: string = this.storageService?.getValue(`notebooktarget:${uri.fsPath}:${cellNo}`) ?? '1';
         const availabileTargets = ((await this.client?.documentSymbols(uri, httpDef)) ?? {}).names?.map(x => x.name);

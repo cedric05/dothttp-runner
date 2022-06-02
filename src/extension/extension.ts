@@ -31,28 +31,32 @@ import { EnvTree, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
+// import { HistoryItem } from './web/types/history';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
-	if (false) {
+	if (!vscode.workspace.isTrusted) {
 		webExtensionActivate(context);
 		return
 	} else {
 		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
+	// const historyEmitter = new vscode.EventEmitter<HistoryItem>();
 	const storageService = new LocalStorageService(context.workspaceState);
 	const globalStorageService = new LocalStorageService(context.globalState);
-	const notebookKernel = new ProNotebookKernel();
 	const envTree = new EnvTree();
 	const propertyTree = new PropertyTree();
 	const symbolProvider = new DothttpNameSymbolProvider();
 	const urlStoreService = new UrlStorageService(storageService);
-	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService);
+	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService, 
+	//historyEmitter
+	);
 	const clientHandler = new ClientHandler();
 	const clientHandler2 = new ClientHandler2();
 	const dothttpEditorView = new DotHttpEditorView();
 	const historyTreeProvider = new HistoryTreeProvider();
 	const fileStateService = new FileState(storageService);
+	const notebookKernel = new ProNotebookKernel();
 	const diagnostics = vscode.languages.createDiagnosticCollection("dothttp-syntax-errors");
 	envTree.setFileStateService(fileStateService);
 	propertyTree.setFileStateService(fileStateService);
@@ -60,6 +64,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	dothttpEditorView.historyService = historyService;
 	symbolProvider.setClientHandler(clientHandler);
 	symbolProvider.setDiagnostics(diagnostics);
+	notebookKernel.configure(undefined, fileStateService, propertyTree);
+	notebookKernel.configureClient(clientHandler);
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
 		.setGlobalstorageService(globalStorageService)

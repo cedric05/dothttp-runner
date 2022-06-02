@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.45",
+	"version": "0.0.46",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -580,7 +580,7 @@
 				{
 					"command": "dothttp.command.generatelang",
 					"group": "export",
-					"when": "dothttpRunMode == full"
+					"when": "never"
 				},
 				{
 					"command": "dothttp.command.notebook.run",

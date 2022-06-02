@@ -13,7 +13,7 @@ import { Constants } from '../utils/constants';
 export async function saveNotebookAsHttpFileFromCommand(uri: Uri) {
     if (!uri) {
         const editors = vscode.window.visibleTextEditors.filter(editor => {
-            return DotHttpEditorView.isHttpUri(uri);
+            return DotHttpEditorView.isHttpUri(editor.document.uri);
         });
         let editor: vscode.TextEditor | null;
         if (editors.length > 0) {

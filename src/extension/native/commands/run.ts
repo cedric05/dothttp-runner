@@ -203,10 +203,12 @@ export async function showInUntitledView(scriptFileName: vscode.Uri, headerURI: 
      * i will keep showinUntitedView default, and other one as configrable, 
      * after some feedback one of both will be removed
      */
-    var outputBodyURI = vscode.Uri.parse("untitled:" + scriptFileName);
-    const ifsavedFileName = vscode.Uri.parse("file:" + scriptFileName);
-    if (await fsExists(ifsavedFileName)) {
-        outputBodyURI = vscode.Uri.parse("untitled:" + getUnSavedUri(scriptFileName));
+    var outputBodyURI: vscode.Uri;
+    if (await fsExists(scriptFileName)) {
+        outputBodyURI = (await getUnSavedUri(scriptFileName)).with({ scheme: 'untitled' });
+    } else {
+        outputBodyURI = scriptFileName.with({ scheme: 'untitled' })
+
     }
     // for http response, body will be in out.response.body
     // for curl response, body will be in out.body
@@ -245,11 +247,11 @@ export function contructFileName(filename: vscode.Uri, options: { curl: boolean;
     var middlepart = 'error';
     options.target = (options.target ?? '').replace(/[^\w\s]/gi, '')
     if (!out.error_message) {
-        middlepart = `${'(target:' + options.target + ')'}${options.curl ? '-curl' : ''}${out.status ? '-(status:' + out.status + ')' : ''}-${now}`
+        middlepart = `${'target-' + options.target}${options.curl ? '-curl' : ''}${out.status ? '__status-' + out.status : ''}__${now}`
     }
     return {
         filename: Utils.joinPath(Utils.dirname(filename), `${Utils.basename(filename)}-${middlepart}.${out.filenameExtension}`),
-        header: `${filename}-${middlepart}-headers.json`,
+        header: `${filename}__${middlepart}-headers.json`,
     };
 }
 
