@@ -16,22 +16,6 @@ export class ProNotebookKernel extends NotebookKernel {
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
 
-    configureClient(client: ClientHandler) {
-        this.client1 = client;
-    }
-
-    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
-        return await this.client1?.executeContentWithExtension({
-            content: httpDef,
-            file: filename,
-            env: this.fileStateService?.getEnv(filename) ?? [],
-            properties,
-            target,
-            curl,
-            contexts: contexts
-        });
-    }
-
 
     async onMessage(e: any) {
         const { metadata, response } = e.message;
