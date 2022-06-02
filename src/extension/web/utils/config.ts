@@ -1,3 +1,4 @@
+import { string } from 'prop-types';
 import * as vscode from 'vscode';
 import { Constants } from './constants';
 
@@ -40,6 +41,10 @@ export class Configuration {
         return vscode.workspace.getConfiguration().get(Constants.CONFIG_DOTHTTP_USE_STABLE) as boolean;
     }
 
+    static get agent(){
+        return vscode.workspace.getConfiguration().get(Constants.CONFIG_HTTP_AGENT) as string;
+    }
+
 
     reUseOld = false;
     runRecent = false;
@@ -51,6 +56,7 @@ export class Configuration {
     pythonPath!: string;
     dothttpPath!: string;
     responseSaveDirectory!: string;
+    agent!: string;
 
 
     private constructor() {
@@ -67,6 +73,7 @@ export class Configuration {
         this.dothttpPath = vsCodeconfig.get(Constants.dothttpPath) as string;
         this.responseSaveDirectory = vsCodeconfig.get(Constants.responseDirectory) as string;
         this.history = vsCodeconfig.get(Constants.history) as boolean;
+        this.agent = vsCodeconfig.get(Constants.CONFIG_HTTP_AGENT) as string;
     }
 
     public update() {

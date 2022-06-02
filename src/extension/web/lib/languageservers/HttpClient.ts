@@ -8,7 +8,7 @@ export class HttpClient implements ICommandClient {
     url: string;
     channel: vscode.OutputChannel;
 
-    constructor(url: string = 'http://localhost:5000',) {
+    constructor(url: string) {
         this.id = 0;
         this.url = url;
         this.channel = vscode.window.createOutputChannel('dothttp-code');

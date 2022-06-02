@@ -13,6 +13,7 @@ export enum Constants {
 	reUseOldTab = "dothttp.conf.run.reuseold",
 	responseDirectory = "dothttp.conf.response.savedirectory",
 	CONFIG_DOTHTTP_USE_STABLE = "dothttp.conf.useunstable",
+	CONFIG_HTTP_AGENT = "dothttp.conf.agent",
 	// view props
 	// commands
 	RUN_FILE_COMMAND = 'dothttp.command.run',

@@ -202,7 +202,7 @@ async function bootStrap(app: ApplicationServices) {
 		pythonpath: launchParams.path,
 		...launchParams,
 	};
-	let cli = launchParams.type == RunType.python ? new HttpClient() : new StdoutClient(clientLaunchArguments);
+	let cli = launchParams.type == RunType.python ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
 
 	app.getClientHandler2()?.setCli(cli).start();
 	app.getClientHandler()?.setCli(cli).start();

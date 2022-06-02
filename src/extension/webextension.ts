@@ -8,12 +8,13 @@ import { LocalStorageService } from './web/services/storage';
 import { PropertyTree } from './views/tree';
 import { ApplicationBuilder } from './web/services/builder';
 import { Constants } from './web/utils/constants';
+import { Configuration } from './web/utils/config';
 
 export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "web");
     loadNoteBookControllerSafely(context);
     let client = new ClientHandler2();
-    client.setCli(new HttpClient( "http://localhost:5000"));
+    client.setCli(new HttpClient(Configuration.agent));
     let localStorage = new LocalStorageService(context.workspaceState);
     let filestateservice = new FileState(localStorage);
     let propertyTree = new PropertyTree();

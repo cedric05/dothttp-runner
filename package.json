@@ -738,6 +738,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Show Headers In Seperate View"
+					},
+					"dothttp.conf.agent": {
+						"type": "string",
+						"default": "http://localhost:5000/",
+						"description": "Agent For Running Requests (Web Extension)"
 					}
 				},
 				"label": "dothttp",
