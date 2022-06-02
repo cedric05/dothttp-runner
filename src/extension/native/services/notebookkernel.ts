@@ -53,6 +53,9 @@ export class ProNotebookKernel extends NotebookKernel {
             const target: string = await this._getTarget(cellUri, cellNo, content);
             const langspec = await generateLangFromOptions({ content, uri: cell.document.uri, target, contexts });
             if (langspec && langspec.code) {
+                if (langspec.language == 'node') {
+                    langspec.language = 'javascript'
+                }
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, `text/x-${langspec.language}`)])
                 ]);
