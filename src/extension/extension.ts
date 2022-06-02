@@ -1,40 +1,40 @@
 import * as vscode from 'vscode';
 import { workspace } from 'vscode';
-import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './commands/enable';
-import { generateLangForHttpFile } from "./commands/export/generate";
-import { exportToPostman } from "./commands/export/postman";
-import { createNewNotebook, FileTypes, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./commands/http_httpbookConvertions";
-import { importRequests } from "./commands/import";
-import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './commands/run';
+import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './web/commands/enable';
+import { generateLangForHttpFile } from "./native/commands/export/generate";
+import { exportToPostman } from "./native/commands/export/postman";
+import { createNewNotebook, FileTypes, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./web/lib/http2book";
+import { importRequests } from "./native/commands/import";
+import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './native/commands/run';
 import { setUp, updateDothttpIfAvailable } from './downloader';
 import {
 	DothttpClickDefinitionProvider,
 	DothttpNameSymbolProvider,
 	UrlExpander
-} from './editorIntellisense';
-import { ClientHandler2 } from './lib/client';
-import { ClientHandler } from "./lib/ClientHandler";
-import { HttpClient } from './lib/handlers/HttpClient';
-import { StdoutClient } from './lib/handlers/StdoutClient';
-import { RunType } from './lib/types';
-import { Configuration } from './models/config';
-import { Constants } from './models/constants';
-import { ApplicationBuilder } from './services/ApplicationBuilder';
-import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, ScriptCompletionProvider, UrlCompletionProvider, VariableCompletionProvider } from './services/dothttpCompletion';
-import { ApplicationServices } from './services/global';
-import { NotebookKernel } from './services/notebook';
-import { FileState, VersionInfo } from './services/state';
-import { LocalStorageService } from './services/storage';
-import { UrlStorageService } from './services/UrlStorage';
-import { TingoHistoryService } from './tingohelpers';
+} from './native/services/editorIntellisense';
+import { ClientHandler2 } from './web/services/client';
+import { ClientHandler } from "./native/services/client";
+import { HttpClient } from './web/lib/languageservers/HttpClient';
+import { StdoutClient } from './native/services/languageservers/StdoutClient';
+import { RunType } from './web/types/types';
+import { Configuration } from './web/utils/config';
+import { ApplicationBuilder } from './web/services/builder';
+import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './native/services/completion';
+import { ApplicationServices } from './web/services/global';
+import { FileState, VersionInfo } from './web/services/state';
+import { LocalStorageService } from './web/services/storage';
+import { UrlStorageService } from './web/services/url';
+import { TingoHistoryService } from './native/services/tingohelpers';
 import DotHttpEditorView from './views/editor';
 import { HistoryTreeProvider } from './views/historytree';
 import { EnvTree, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
+import { Constants } from './web/utils/constants';
+import { ProNotebookKernel } from './native/services/notebookkernel';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
-	if (true) {
+	if (false) {
 		webExtensionActivate(context);
 		return
 	} else {
@@ -42,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 	const storageService = new LocalStorageService(context.workspaceState);
 	const globalStorageService = new LocalStorageService(context.globalState);
-	const notebookKernel = new NotebookKernel();
+	const notebookKernel = new ProNotebookKernel();
 	const envTree = new EnvTree();
 	const propertyTree = new PropertyTree();
 	const symbolProvider = new DothttpNameSymbolProvider();
@@ -169,12 +169,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, historyTreeProvider),
 
 
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(), ...UrlCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(), ...VariableCompletionProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(clientHandler, urlStoreService), ...UrlCompletionProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(fileStateService), ...VariableCompletionProvider.triggerCharacters),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new ScriptCompletionProvider())
 
 	]);
 

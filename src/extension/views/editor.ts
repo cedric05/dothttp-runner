@@ -1,8 +1,8 @@
 import { Utils } from 'vscode-uri'
 import * as vscode from 'vscode';
-import { DothttpRunOptions } from '../models/misc';
-import { ApplicationServices } from '../services/global';
-import { IHistoryService } from "../history";
+import { DothttpRunOptions } from '../web/types/misc';
+import { ApplicationServices } from '../web/services/global';
+import { IHistoryService } from "../web/types/history";
 import querystring = require('querystring');
 
 

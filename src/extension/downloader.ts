@@ -6,13 +6,13 @@ import * as semver from 'semver';
 import { Extract as extract } from 'unzipper';
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
-import { Configuration } from './models/config';
-import { isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from "./models/getPythonVersion";
-import { Constants } from './models/constants';
-import { ApplicationServices } from './services/global';
+import { Configuration } from './web/utils/config';
+import { isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from "./native/utils/installUtils";
+import { ApplicationServices } from './web/services/global';
 import path = require('path');
 import child_process = require('child_process')
-import { ClientLaunchParams, RunType } from "./lib/types";
+import { ClientLaunchParams, RunType } from "./web/types/types";
+import { Constants } from './web/utils/constants';
 
 interface version {
     downloadUrls: {

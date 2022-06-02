@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { URL } from 'url';
 import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { history, IHistoryService } from "../history";
-import transform from '../utils/text-colors';
+import { history, IHistoryService } from "../web/types/history";
+import transform from '../web/utils/text-colors';
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');

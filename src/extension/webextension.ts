@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import { ClientHandler2 } from './lib/client';
-import { HttpClient } from './lib/handlers/HttpClient';
-import { Constants } from './models/constants';
-import { ApplicationBuilder } from './services/ApplicationBuilder';
-import { NotebookKernel } from './services/notebook';
-import { NotebookSerializer } from "./services/NotebookSerializer";
-import { FileState } from './services/state';
-import { LocalStorageService } from './services/storage';
+import { ClientHandler2 } from './web/services/client';
+import { HttpClient } from './web/lib/languageservers/HttpClient';
+import { NotebookKernel } from './web/services/notebookkernel';
+import { NotebookSerializer } from "./web/services/notebookserializer";
+import { FileState } from './web/services/state';
+import { LocalStorageService } from './web/services/storage';
 import { PropertyTree } from './views/tree';
+import { ApplicationBuilder } from './web/services/builder';
+import { Constants } from './web/utils/constants';
 
 export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "web");

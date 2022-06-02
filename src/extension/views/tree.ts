@@ -1,10 +1,10 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
-import { Constants } from '../models/constants';
-import { FileInfo, IFileState } from "../services/Iproperties";
+import { FileInfo, IFileState } from "../web/types/properties";
 import DotHttpEditorView from './editor';
 import path = require('path');
+import { Constants } from '../web/utils/constants';
 
 
 export interface Position {
