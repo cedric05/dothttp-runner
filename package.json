@@ -12,6 +12,9 @@
 	"engines": {
 		"vscode": "^1.63.0"
 	},
+        "sponsor": {
+		"url": "https://github.com/sponsors/nvaccess"
+	},
 	"categories": [
 		"Programming Languages",
 		"Notebooks",

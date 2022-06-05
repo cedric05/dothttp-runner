@@ -42,7 +42,7 @@ export class ClientHandler2 {
                 options.content = await this.fileData(options.uri)
             };
             return await this.cli?.request(ClientHandler.CONTENT_EXECUTE_COMMAND, {
-                file: null,
+                file: options.uri.fsPath,
                 ...options
             })
         } else {
