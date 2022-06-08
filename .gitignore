@@ -13,3 +13,4 @@ yarn.lock
 test-resources/.vscode/settings.json
 *.webm
 .vscode-test-web
+target/npmlist.json
