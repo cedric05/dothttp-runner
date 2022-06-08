@@ -4,6 +4,16 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## [0.0.48] (insiders)
+- [ **Bug**] fix(httpnotebook): open as http file fixed
+- [ **Bug**] fix: save output as file has filename ending with (0)
+
+## [0.0.47] (insiders)
+- [ **Bug**] fix(generation): code generation fails when language is nodejs
+- [ **Bug**] fix: variables not working fixed
+## [0.0.46] (insiders)
+- [ **Feature**] web extension has notebook support
+
 ## [0.0.46]
 - [ **Feature** ] support webextension
 - [ **Bug** ] Fix code generation for node js not working.

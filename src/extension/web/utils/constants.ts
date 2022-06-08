@@ -86,7 +86,7 @@ export enum Constants {
 
 	// download stuff
 	// @ts-ignore
-	EXTENSION_VERSION = "0.0.46",
+	EXTENSION_VERSION = "0.0.48",
 
 	dothttpNotebook = "dothttp-book",
 
