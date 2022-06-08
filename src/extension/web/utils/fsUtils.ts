@@ -34,7 +34,7 @@ export async function writeFile(uri: Uri, s: string) {
 
 export async function getUnSavedUri(uri: Uri) {
 
-    if (!fsExists(uri)) {
+    if (!await fsExists(uri)) {
         return uri;
     }
     const baseName = Utils.basename(uri);

@@ -1,14 +1,13 @@
 import * as vscode from 'vscode';
 import { ApplicationServices } from '../../../web/services/global';
 import { getUnSavedUri } from "../../../web/utils/fsUtils";
-import { getUnSaved } from "../../utils/fsUtils";
 import { getNotebookUriToHttpContent } from '../../../web/lib/http2book';
 import { pickDirectoryToImport } from "../import";
 import { showEditor } from '../run';
 import { getPostmanClient, Workspace } from '../../export/postmanUtils';
-import path = require('path');
 import { isDirectory, writeFile } from '../../../web/utils/fsUtils';
 import { Constants } from '../../../web/utils/constants';
+import { Utils } from 'vscode-uri';
 
 
 enum PostmanUploadType {
@@ -67,13 +66,14 @@ export async function exportToPostman(uri: vscode.Uri) {
 
 
 
-async function showInLocalFolder(parent: vscode.Uri, collection: any) {
+async function showInLocalFolder(origin: vscode.Uri, collection: any) {
     const directory = await pickDirectoryToImport();
     if (!directory) {
         return;
     }
-    const uri = vscode.Uri.parse("untitled:" + getUnSaved(path.join(directory.fsPath, path.parse(parent.fsPath).base) + ".postman_collection.json"));
-    const collectionDoc = await vscode.workspace.openTextDocument(uri);
+    const assumedFileName = Utils.joinPath(directory, Utils.basename(origin) + ".postman_collection.json");
+    const postmanCollectionFileName = await getUnSavedUri(assumedFileName);
+    const collectionDoc = await vscode.workspace.openTextDocument(postmanCollectionFileName.with({ scheme: "untitled" }));
     showEditor(collectionDoc, JSON.stringify(collection));
 }
 
