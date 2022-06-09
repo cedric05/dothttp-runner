@@ -118,7 +118,7 @@ export class TestScriptSuggetions implements vscode.CodeActionProvider {
         return is200Action;
 
     }
-    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
+    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, _context: vscode.CodeActionContext, _token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
         const result = await this.getTypeResult(document, range.start);
         if (result.type !== DothttpTypes.SCRIPT) {
             return []
