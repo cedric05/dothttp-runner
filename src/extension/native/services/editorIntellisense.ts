@@ -104,6 +104,55 @@ export class UrlExpander implements vscode.CodeActionProvider {
 
 }
 
+export class TestScriptSuggetions implements vscode.CodeActionProvider {
+    clientHandler: ClientHandler;
+    constructor(client: ClientHandler) {
+        this.clientHandler = client;
+    }
+
+    action(suggestionName: string, codeFix: string, uri: vscode.Uri, range: vscode.Range) {
+        const is200Action = new vscode.CodeAction(suggestionName, vscode.CodeActionKind.QuickFix);
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(uri, range, codeFix);
+        is200Action.edit = edit;
+        return is200Action;
+
+    }
+    async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
+        const result = await this.getTypeResult(document, range.start);
+        if (result.type !== DothttpTypes.SCRIPT) {
+            return []
+        }
+        return [
+            this.action("add status code 200 test", `
+def test_has_key_in_json():
+    assert client.response.status_code == 200, "Non 200 status code"
+`, document.uri, range),
+            this.action("add has key in json", `
+def test_has_key_in_json():
+    json_data = client.response.json()
+    assert (json_data.get('key')) == "value", "invalid value"
+`, document.uri, range),
+            this.action("check response time", `
+def test_response_time():
+    assert client.response.elapsed.total_seconds() < 0.2, "response time >200 ms"
+`, document.uri, range)
+        ];
+
+    }
+
+    private async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+        const offset = document.offsetAt(position);
+        if (isNotebook) {
+            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
+        } else {
+            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
+        }
+
+    }
+}
+
 export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider, vscode.HoverProvider {
     clientHandler: ClientHandler;
     constructor(client: ClientHandler) {

@@ -25,11 +25,14 @@ export class NotebookSerializer implements vscode.NotebookSerializer {
 
 
         // Read file contents
-        let raw: RawNotebookCell[];
+        let raw: RawNotebookCell[] = [];
         try {
-            try{
+            try {
                 raw = <RawNotebookCell[]>loadYaml(contents)
-            } catch(error){
+                if (!raw) {
+                    raw = [];
+                }
+            } catch (error) {
                 raw = <RawNotebookCell[]>JSON.parse(contents);
             }
         } catch {
