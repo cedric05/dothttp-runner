@@ -15,10 +15,14 @@ export abstract class BaseSpanClient implements ICommandClient {
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
     channel: vscode.OutputChannel;
     options: { pythonpath: string, stdargs: string[], type: RunType; }
+    running: boolean = false;
 
     constructor(options: { pythonpath: string, stdargs: string[], type: RunType; }) {
         this.options = options;
         this.channel = vscode.window.createOutputChannel('dothttp-code');
+    }
+    isRunning(): boolean {
+        return this.running
     }
     start(): void {
         this.proc = child_process.spawn(this.options.pythonpath,
@@ -29,6 +33,7 @@ export abstract class BaseSpanClient implements ICommandClient {
                 detached: true
             },
         );
+        this.running = true;
     }
     isSupportsNative(): boolean {
         return true;
@@ -49,6 +54,7 @@ export abstract class BaseSpanClient implements ICommandClient {
 
     stop(): void {
         this.proc.kill();
+        this.running = false;
     }
 
 }
@@ -59,6 +65,7 @@ export class StdoutClient extends BaseSpanClient {
     rl!: Interface;
     eventS: EventEmitter = new EventEmitter();
     version: string = "unknown";
+    running = true;
 
     constructor(options: { pythonpath: string; stdargs: string[]; type: RunType; }) {
         super(options);

@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 import { platform } from 'os';
@@ -142,7 +143,7 @@ async function downloadDothttp(downloadLocation: string, url: string) {
     }
     var contentDownloaded = 0;
     await vscode.window.withProgress({
-        title: `Downloading Dothttp lannguage Server from ${url}`,
+        title: `Downloading Dothttp lannguage Server from [github](${url})`,
         cancellable: false,
         location: vscode.ProgressLocation.Notification
     }, async function (progress) {
@@ -178,42 +179,44 @@ async function wait(time = 1000) {
 }
 
 export async function setUp(context: ExtensionContext): Promise<ClientLaunchParams> {
-    const dothttpPath = Configuration.getDothttpPath();
+    const configureddothttpPath = Configuration.getDothttpPath();
+    const workspacedothttPath = context.workspaceState.get(Constants.dothttpPath) as string;
+    const globalStorageDir = context.globalStorageUri.fsPath;
+    const defaultLocation = path.join(globalStorageDir, 'cli');
     if (isPythonConfigured()) {
         const pythonPath = Configuration.getPath();
         return { path: pythonPath, type: RunType.python }
-    } else if (fs.existsSync(dothttpPath)) {
-        return { path: dothttpPath, type: RunType.binary }
-    } else {
-        console.log('dothttpConfigured', dothttpPath);
-        const globalStorageDir = context.globalStorageUri.fsPath;
-        if (!fs.existsSync(globalStorageDir)) {
-            fs.mkdirSync(globalStorageDir);
-            console.log('making global storage directory ', globalStorageDir);
-        }
-        const downloadLocation = path.join(globalStorageDir, 'cli');
-        try {
-            if (fs.existsSync(downloadLocation)) {
-                fs.rmdirSync(downloadLocation, { recursive: true });
-            }
-        } catch (ignored) {
-            console.error(ignored);
-        }
-        context.globalState.update("dothttp.downloadContentCompleted", false)
-        console.log('download directory ', downloadLocation);
-        const acceptableVersion = await getVersion();
-        const url = fetchDownloadUrl(acceptableVersion);
-        await downloadDothttp(downloadLocation, url!);
-        console.log('download successfull ', downloadLocation);
-        var exePath = path.join(downloadLocation, 'cli');
-        exePath = getExePath(exePath);
-        // in scenarios where folder is not opened as folder, it will fail
-        // TODO seperate
-        try { Configuration.setDothttpPath(exePath) } catch (ignored) { }
-        console.log('dothttp path set to', exePath);
-        context.globalState.update("dothttp.downloadContentCompleted", true);
-        return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
     }
+    for (const assumedPath of [configureddothttpPath, workspacedothttPath, defaultLocation]) {
+        if (assumedPath && fs.existsSync(assumedPath)) {
+            return { path: assumedPath, type: RunType.binary }
+        }
+    }
+    console.log('dothttpConfigured', workspacedothttPath);
+    if (!fs.existsSync(globalStorageDir)) {
+        fs.mkdirSync(globalStorageDir);
+        console.log('making global storage directory ', globalStorageDir);
+    }
+    try {
+        if (fs.existsSync(defaultLocation)) {
+            await fsPromises.rm(defaultLocation, { recursive: true })
+        }
+    } catch (ignored) {
+        console.error(ignored);
+    }
+    context.globalState.update("dothttp.downloadContentCompleted", false)
+    console.log('download directory ', defaultLocation);
+    const acceptableVersion = await getVersion();
+    const url = fetchDownloadUrl(acceptableVersion);
+    await downloadDothttp(defaultLocation, url!);
+    console.log('download successfull ', defaultLocation);
+    var exePath = path.join(defaultLocation, 'cli');
+    exePath = getExePath(exePath);
+    Configuration.setDothttpPath(exePath)
+    console.log('dothttp path set to', exePath);
+    context.globalState.update("dothttp.downloadContentCompleted", true);
+    context.workspaceState.update('dothttp.conf.path', exePath);
+    return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
 }
 
 function getExePath(exePath: string) {

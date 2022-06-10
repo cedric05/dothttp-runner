@@ -6,6 +6,7 @@
 
 ## [0.0.49] 
 - [ **Fetaure**] suggestions of test scripts
+- [ **Improvement**] removes annoying setting of dothttp path in `.settings.json`
 
 
 ## [0.0.48] (insiders)

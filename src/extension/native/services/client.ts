@@ -39,7 +39,7 @@ export class ClientHandler {
     }
 
     isRunning() {
-        return this.running;
+        return this.cli?.isRunning;
     }
 
 

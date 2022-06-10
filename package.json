@@ -848,7 +848,7 @@
 		"@types/lodash": "^4.14.168",
 		"@types/mime-types": "^2.1.0",
 		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.20.12",
+		"@types/node": "^v16.11.7",
 		"@types/prop-types": "^15.7.4",
 		"@types/semver": "^7.3.4",
 		"@types/temp": "^0.9.1",

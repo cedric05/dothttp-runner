@@ -8,20 +8,11 @@ import { Constants } from './constants';
 
 export class Configuration {
     static getConfiguredValue(key: string) {
-        if (vscode.env.remoteName) {
-            return vscode.workspace.getConfiguration().get(key, vscode.ConfigurationTarget.Workspace) || vscode.workspace.getConfiguration().get(key, vscode.ConfigurationTarget.WorkspaceFolder);
-        } else {
-            return vscode.workspace.getConfiguration().get(key) as string;
-        }
+        return vscode.workspace.getConfiguration().get(key) as string;
     }
 
     static setGlobalValue(key: string, value: string) {
-        if (vscode.env.remoteName) {
-            vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Workspace);
-            return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.WorkspaceFolder);
-        } else {
-            return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
-        }
+        return vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
     }
 
     // isConfiguredPathCorrect?
@@ -34,7 +25,9 @@ export class Configuration {
     }
 
     static setDothttpPath(value: string) {
-        return Configuration.setGlobalValue(Constants.dothttpPath, value);
+        if (!vscode.env.remoteName){
+            return Configuration.setGlobalValue(Constants.dothttpPath, value);
+        }
     }
 
     static get isToUseUnStable() {

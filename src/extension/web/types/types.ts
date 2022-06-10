@@ -4,6 +4,7 @@ export interface ICommandClient {
     request(method: string, params: {}): Promise<any>;
     start(): void;
     stop(): void;
+    isRunning(): boolean;
     isSupportsNative(): boolean;
 }
 

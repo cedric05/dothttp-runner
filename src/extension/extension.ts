@@ -205,9 +205,9 @@ async function bootStrap(app: ApplicationServices) {
 		...launchParams,
 	};
 	let cli = launchParams.type == RunType.python ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
-
-	app.getClientHandler2()?.setCli(cli).start();
-	app.getClientHandler()?.setCli(cli).start();
+	cli.start();
+	app.getClientHandler2()?.setCli(cli);
+	app.getClientHandler()?.setCli(cli);
 
 	if (launchParams.version) {
 		app.getVersionInfo()?.setVersionDothttpInfo(launchParams.version);

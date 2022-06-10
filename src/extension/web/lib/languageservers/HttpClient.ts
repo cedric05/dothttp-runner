@@ -8,6 +8,10 @@ export class HttpClient implements ICommandClient {
     url: string;
     channel: vscode.OutputChannel;
 
+    isRunning(){
+        return true;
+    }
+
     constructor(url: string) {
         this.id = 0;
         this.url = url;

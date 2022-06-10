@@ -7,7 +7,6 @@ import { ExecuteFileOptions, ClientHandler } from '../../native/services/client'
 var mime = require('mime-types');
 
 export class ClientHandler2 {
-    running: boolean = false;
     cli?: ICommandClient;
     decoder = new TextDecoder();
 
@@ -17,7 +16,6 @@ export class ClientHandler2 {
     }
 
     start() {
-        this.running = true;
         this.cli?.start();
     }
 
@@ -28,7 +26,7 @@ export class ClientHandler2 {
     }
 
     isRunning() {
-        return this.running
+        return this.cli?.isRunning()
     }
 
     async fileData(file: vscode.Uri) {
