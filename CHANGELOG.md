@@ -7,6 +7,7 @@
 ## [0.0.49] 
 - [ **Fetaure**] suggestions of test scripts
 - [ **Improvement**] removes annoying setting of dothttp path in `.settings.json`
+- [ **Bug**] Fix for http as httpbook is not assigning correct file extension
 
 
 ## [0.0.48] (insiders)

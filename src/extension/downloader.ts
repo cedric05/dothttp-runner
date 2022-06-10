@@ -183,21 +183,19 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
     const workspacedothttPath = context.workspaceState.get(Constants.dothttpPath) as string;
     const globalStorageDir = context.globalStorageUri.fsPath;
     const downloadLocation = path.join(globalStorageDir, 'cli');
-    const defaultPath = getExePath(path.join(downloadLocation, 'cli'));
+    const defaultExePath = getExePath(path.join(downloadLocation, 'cli'));
     if (isPythonConfigured()) {
         const pythonPath = Configuration.getPath();
         return { path: pythonPath, type: RunType.python }
     }
-    for (const assumedPath of [configureddothttpPath, workspacedothttPath, defaultPath]) {
+    for (const [lookupLocation, assumedPath] of Object.entries({ configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
+        console.log(`checking ${lookupLocation}: ${assumedPath}`);
         if (assumedPath && fs.existsSync(assumedPath)) {
+            console.log(`working ${lookupLocation}: ${assumedPath}`);
             return { path: assumedPath, type: RunType.binary }
         }
     }
-    console.log('dothttpConfigured', workspacedothttPath);
-    if (!fs.existsSync(globalStorageDir)) {
-        fs.mkdirSync(globalStorageDir);
-        console.log('making global storage directory ', globalStorageDir);
-    }
+    console.log('no installation found, will download and install');
     try {
         if (fs.existsSync(downloadLocation)) {
             await fsPromises.rm(downloadLocation, { recursive: true })
@@ -211,24 +209,29 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
     const url = fetchDownloadUrl(acceptableVersion);
     await downloadDothttp(downloadLocation, url!);
     console.log('download successfull ', downloadLocation);
-    Configuration.setDothttpPath(defaultPath)
-    console.log('dothttp path set to', defaultPath);
+    Configuration.setDothttpPath(defaultExePath)
+    console.log('dothttp path set to', defaultExePath);
     context.globalState.update("dothttp.downloadContentCompleted", true);
-    context.workspaceState.update('dothttp.conf.path', defaultPath);
-    return { version: acceptableVersion.version, path: defaultPath, type: RunType.binary }
+    context.workspaceState.update('dothttp.conf.path', defaultExePath);
+    if (platform() !== 'win32') {
+        fs.chmodSync(defaultExePath, 0o755);
+    }
+    return { version: acceptableVersion.version, path: defaultExePath, type: RunType.binary }
 }
 
-function getExePath(exePath: string) {
-    if (platform() === 'win32') {
-        exePath = path.join(exePath, 'cli.exe');
-    } else if (platform() === "linux") {
-        exePath = path.join(exePath, 'cli');
-        fs.chmodSync(exePath, 0o755);
-    } else {
-        exePath = path.join(exePath, 'cli');
-        fs.chmodSync(exePath, 0o755);
+function getExePath(downloadLocation: string) {
+    switch (platform()) {
+        case "win32": {
+            return path.join(downloadLocation, 'cli.exe');
+        }
+        case "linux":
+        case 'darwin': {
+            return path.join(downloadLocation, 'cli');
+        }
+        default:
+            return path.join(downloadLocation, 'cli');
     }
-    return exePath;
+
 }
 
 export async function updateDothttpIfAvailable(globalStorageDir: string) {
@@ -251,7 +254,10 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 ApplicationServices.get().getClientHandler()!.close();
                 fs.rmdirSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
-                getExePath(path.join(originalLocation, 'cli'));
+                const location = getExePath(path.join(originalLocation, 'cli'));
+                if (platform() !== 'win32') {
+                    fs.chmodSync(location, 0o755);
+                }
             }
             ApplicationServices.get().getVersionInfo()!.setVersionDothttpInfo(versionData.version);
             vscode.window.showInformationMessage('dothttp upgrade completed')

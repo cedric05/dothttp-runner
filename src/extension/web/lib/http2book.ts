@@ -143,8 +143,8 @@ export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
     const client = ApplicationServices.get().getClientHandler();
     const symbols = await client?.getVirtualDocumentSymbols(text, "http to httpbook");
 
-    const httpbookFileName = await getUnSavedUri(uri);
-    vscode.Uri.file(uri.fsPath + ".httpbook");
+    const targetUri = vscode.Uri.file(uri.fsPath + ".httpbook");
+    let httpbookFileName = await getUnSavedUri(targetUri);
     if (symbols && !symbols.error && symbols.names) {
         const { names: targets } = symbols; let prev = 0;
         const cells = targets.map(target => {

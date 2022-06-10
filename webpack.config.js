@@ -4,7 +4,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-
+const NODE_ENV = process.env.NODE_ENV ?? "PRODUCTION";
 /**@type {import('webpack').Configuration}*/
 const baseConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -19,7 +19,7 @@ const baseConfig = {
 	plugins: [
 		new webpack.DefinePlugin({
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+			'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
 		})
 	],
 	module: {

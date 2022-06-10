@@ -32,6 +32,7 @@ import { EnvTree, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
+import * as fs from 'fs'
 // import { HistoryItem } from './web/types/history';
 const path = require('path');
 
@@ -42,6 +43,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	} else {
 		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
+
+	await fs.promises.mkdir(context.globalStorageUri.fsPath, { recursive: true });
 	// const historyEmitter = new vscode.EventEmitter<HistoryItem>();
 	const storageService = new LocalStorageService(context.workspaceState);
 	const globalStorageService = new LocalStorageService(context.globalState);
@@ -49,8 +52,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	const propertyTree = new PropertyTree();
 	const symbolProvider = new DothttpNameSymbolProvider();
 	const urlStoreService = new UrlStorageService(storageService);
-	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService, 
-	//historyEmitter
+	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService,
+		//historyEmitter
 	);
 	const clientHandler = new ClientHandler();
 	const clientHandler2 = new ClientHandler2();
