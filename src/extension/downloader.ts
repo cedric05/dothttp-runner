@@ -208,14 +208,14 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
     const acceptableVersion = await getVersion();
     const url = fetchDownloadUrl(acceptableVersion);
     await downloadDothttp(downloadLocation, url!);
+    if (platform() !== 'win32') {
+        await fsPromises.chmod(defaultExePath, 0o755);
+    }
     console.log('download successfull ', downloadLocation);
     Configuration.setDothttpPath(defaultExePath)
     console.log('dothttp path set to', defaultExePath);
     context.globalState.update("dothttp.downloadContentCompleted", true);
     context.workspaceState.update('dothttp.conf.path', defaultExePath);
-    if (platform() !== 'win32') {
-        fs.chmodSync(defaultExePath, 0o755);
-    }
     return { version: acceptableVersion.version, path: defaultExePath, type: RunType.binary }
 }
 
