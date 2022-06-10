@@ -8,7 +8,6 @@ import { parse as parseQueryString } from 'querystring';
 import { DotHovers, DothttpTypes } from '../../web/types/misc';
 import { Constants } from '../../web/utils/constants';
 
-
 class RunHttpCommand implements Command {
     title: string = "Run http";
     tooltip: string = "Run http targets this definition";
@@ -104,11 +103,25 @@ export class UrlExpander implements vscode.CodeActionProvider {
 
 }
 
-export class TestScriptSuggetions implements vscode.CodeActionProvider {
+class TypeResultMixin {
     clientHandler: ClientHandler;
     constructor(client: ClientHandler) {
         this.clientHandler = client;
     }
+
+    public async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+        const offset = document.offsetAt(position);
+        if (isNotebook) {
+            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
+        } else {
+            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
+        }
+
+    }
+}
+
+export class TestScriptSuggetions extends TypeResultMixin implements vscode.CodeActionProvider {
 
     action(suggestionName: string, codeFix: string, uri: vscode.Uri, range: vscode.Range) {
         const is200Action = new vscode.CodeAction(suggestionName, vscode.CodeActionKind.QuickFix);
@@ -140,24 +153,9 @@ def test_response_time():
         ];
 
     }
-
-    private async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
-        const isNotebook = document.uri.scheme === Constants.notebookscheme;
-        const offset = document.offsetAt(position);
-        if (isNotebook) {
-            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
-        } else {
-            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
-        }
-
-    }
 }
 
-export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider, vscode.HoverProvider {
-    clientHandler: ClientHandler;
-    constructor(client: ClientHandler) {
-        this.clientHandler = client;
-    }
+export class DothttpClickDefinitionProvider extends TypeResultMixin implements vscode.DefinitionProvider, vscode.HoverProvider {
     async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover | null> {
         const result = await this.getTypeResult(document, position);
         const typeAtPos = result.type;
@@ -175,17 +173,6 @@ export class DothttpClickDefinitionProvider implements vscode.DefinitionProvider
         return [];
     }
 
-
-    private async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
-        const isNotebook = document.uri.scheme === Constants.notebookscheme;
-        const offset = document.offsetAt(position);
-        if (isNotebook) {
-            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
-        } else {
-            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
-        }
-
-    }
 }
 
 export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<DothttpPositions>, vscode.DocumentSymbolProvider, vscode.CodeActionProvider {

@@ -8,5 +8,4 @@
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
     "typescript.tsc.autoDetect": "off",
-    "dothttp.conf.path": "/home/prasanth/.vscode-server/data/User/globalStorage/shivaprasanth.dothttp-code/cli/cli/cli"
 }

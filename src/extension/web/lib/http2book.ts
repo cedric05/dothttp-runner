@@ -8,6 +8,7 @@ import { getUnSavedUri } from "../utils/fsUtils";
 import { Utils } from 'vscode-uri';
 import { writeFile } from '../utils/fsUtils';
 import { Constants } from '../utils/constants';
+import { dump as dumpYaml } from 'js-yaml';
 
 
 export async function saveNotebookAsHttpFileFromCommand(uri: Uri) {
@@ -158,7 +159,7 @@ export const saveHttpFileasNotebook = async (uri?: vscode.Uri) => {
             };
         });
 
-        await writeFile(httpbookFileName, JSON.stringify(cells));
+        await writeFile(httpbookFileName, dumpYaml(cells));
     }
     // show notebook
     // use this instead of editor edit and show document
