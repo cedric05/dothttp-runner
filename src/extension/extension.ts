@@ -6,7 +6,7 @@ import { exportToPostman } from "./native/commands/export/postman";
 import { createNewNotebook, FileTypes, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./web/lib/http2book";
 import { importRequests } from "./native/commands/import";
 import { genCurlCommand, runFileCommand, runHttpCodeLensCommand, runTargetInCell } from './native/commands/run';
-import { setUp, updateDothttpIfAvailable } from './downloader';
+import { getLaunchArgs, updateDothttpIfAvailable } from './downloader';
 import {
 	DothttpClickDefinitionProvider,
 	DothttpNameSymbolProvider,
@@ -198,12 +198,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
 async function bootStrap(app: ApplicationServices) {
 	const context = app.getContext()!;
-	const launchParams = await setUp(context);
+	const launchParams = await getLaunchArgs(context);
 	const clientLaunchArguments = {
 		stdargs: launchParams.type == RunType.python ? ['-m', 'dotextensions.server'] : [],
 		pythonpath: launchParams.path,
 		...launchParams,
 	};
+	console.log(`launch args are ${JSON.stringify(clientLaunchArguments)}`)
 	let cli = launchParams.type == RunType.python ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
 	cli.start();
 	app.getClientHandler2()?.setCli(cli);

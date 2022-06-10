@@ -178,16 +178,17 @@ async function wait(time = 1000) {
     });
 }
 
-export async function setUp(context: ExtensionContext): Promise<ClientLaunchParams> {
+export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLaunchParams> {
     const configureddothttpPath = Configuration.getDothttpPath();
     const workspacedothttPath = context.workspaceState.get(Constants.dothttpPath) as string;
     const globalStorageDir = context.globalStorageUri.fsPath;
-    const defaultLocation = path.join(globalStorageDir, 'cli');
+    const downloadLocation = path.join(globalStorageDir, 'cli');
+    const defaultPath = getExePath(path.join(downloadLocation, 'cli'));
     if (isPythonConfigured()) {
         const pythonPath = Configuration.getPath();
         return { path: pythonPath, type: RunType.python }
     }
-    for (const assumedPath of [configureddothttpPath, workspacedothttPath, defaultLocation]) {
+    for (const assumedPath of [configureddothttpPath, workspacedothttPath, defaultPath]) {
         if (assumedPath && fs.existsSync(assumedPath)) {
             return { path: assumedPath, type: RunType.binary }
         }
@@ -198,25 +199,23 @@ export async function setUp(context: ExtensionContext): Promise<ClientLaunchPara
         console.log('making global storage directory ', globalStorageDir);
     }
     try {
-        if (fs.existsSync(defaultLocation)) {
-            await fsPromises.rm(defaultLocation, { recursive: true })
+        if (fs.existsSync(downloadLocation)) {
+            await fsPromises.rm(downloadLocation, { recursive: true })
         }
     } catch (ignored) {
         console.error(ignored);
     }
     context.globalState.update("dothttp.downloadContentCompleted", false)
-    console.log('download directory ', defaultLocation);
+    console.log('download directory ', downloadLocation);
     const acceptableVersion = await getVersion();
     const url = fetchDownloadUrl(acceptableVersion);
-    await downloadDothttp(defaultLocation, url!);
-    console.log('download successfull ', defaultLocation);
-    var exePath = path.join(defaultLocation, 'cli');
-    exePath = getExePath(exePath);
-    Configuration.setDothttpPath(exePath)
-    console.log('dothttp path set to', exePath);
+    await downloadDothttp(downloadLocation, url!);
+    console.log('download successfull ', downloadLocation);
+    Configuration.setDothttpPath(defaultPath)
+    console.log('dothttp path set to', defaultPath);
     context.globalState.update("dothttp.downloadContentCompleted", true);
-    context.workspaceState.update('dothttp.conf.path', exePath);
-    return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
+    context.workspaceState.update('dothttp.conf.path', defaultPath);
+    return { version: acceptableVersion.version, path: defaultPath, type: RunType.binary }
 }
 
 function getExePath(exePath: string) {
