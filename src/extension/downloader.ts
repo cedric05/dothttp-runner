@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
 import { platform } from 'os';
@@ -6,12 +7,13 @@ import * as semver from 'semver';
 import { Extract as extract } from 'unzipper';
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
-import { Configuration, isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from './models/config';
-import { Constants } from './models/constants';
-import { ApplicationServices } from './services/global';
+import { Configuration } from './web/utils/config';
+import { isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from "./native/utils/installUtils";
+import { ApplicationServices } from './web/services/global';
 import path = require('path');
 import child_process = require('child_process')
-import { ClientLaunchParams, RunType } from './lib/client';
+import { ClientLaunchParams, RunType } from "./web/types/types";
+import { Constants } from './web/utils/constants';
 
 interface version {
     downloadUrls: {
@@ -141,7 +143,7 @@ async function downloadDothttp(downloadLocation: string, url: string) {
     }
     var contentDownloaded = 0;
     await vscode.window.withProgress({
-        title: `Downloading Dothttp lannguage Server from ${url}`,
+        title: `Downloading Dothttp lannguage Server from [github](${url})`,
         cancellable: false,
         location: vscode.ProgressLocation.Notification
     }, async function (progress) {
@@ -176,60 +178,64 @@ async function wait(time = 1000) {
     });
 }
 
-export async function setUp(context: ExtensionContext): Promise<ClientLaunchParams> {
-    const dothttpPath = Configuration.getDothttpPath();
+export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLaunchParams> {
+    const configureddothttpPath = Configuration.getDothttpPath();
+    const workspacedothttPath = context.workspaceState.get(Constants.dothttpPath) as string;
+    const globalStorageDir = context.globalStorageUri.fsPath;
+    const downloadLocation = path.join(globalStorageDir, 'cli');
+    const defaultExePath = getExePath(path.join(downloadLocation, 'cli'));
     if (isPythonConfigured()) {
         const pythonPath = Configuration.getPath();
         return { path: pythonPath, type: RunType.python }
-    } else if (fs.existsSync(dothttpPath)) {
-        return { path: dothttpPath, type: RunType.binary }
-    } else {
-        console.log('dothttpConfigured', dothttpPath);
-        const globalStorageDir = context.globalStorageUri.fsPath;
-        if (!fs.existsSync(globalStorageDir)) {
-            fs.mkdirSync(globalStorageDir);
-            console.log('making global storage directory ', globalStorageDir);
-        }
-        const downloadLocation = path.join(globalStorageDir, 'cli');
-        try {
-            if (fs.existsSync(downloadLocation)) {
-                fs.rmdirSync(downloadLocation, { recursive: true });
-            }
-        } catch (ignored) {
-            console.error(ignored);
-        }
-        context.globalState.update("dothttp.downloadContentCompleted", false)
-        console.log('download directory ', downloadLocation);
-        const acceptableVersion = await getVersion();
-        const url = fetchDownloadUrl(acceptableVersion);
-        await downloadDothttp(downloadLocation, url!);
-        console.log('download successfull ', downloadLocation);
-        var exePath = path.join(downloadLocation, 'cli');
-        exePath = getExePath(exePath);
-        // in scenarios where folder is not opened as folder, it will fail
-        // TODO seperate
-        try { Configuration.setDothttpPath(exePath) } catch (ignored) { }
-        console.log('dothttp path set to', exePath);
-        context.globalState.update("dothttp.downloadContentCompleted", true);
-        return { version: acceptableVersion.version, path: exePath, type: RunType.binary }
     }
+    for (const [lookupLocation, assumedPath] of Object.entries({ configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
+        console.log(`checking ${lookupLocation}: ${assumedPath}`);
+        if (assumedPath && fs.existsSync(assumedPath)) {
+            console.log(`working ${lookupLocation}: ${assumedPath}`);
+            return { path: assumedPath, type: RunType.binary }
+        }
+    }
+    console.log('no installation found, will download and install');
+    try {
+        if (fs.existsSync(downloadLocation)) {
+            await fsPromises.rm(downloadLocation, { recursive: true })
+        }
+    } catch (ignored) {
+        console.error(ignored);
+    }
+    context.globalState.update("dothttp.downloadContentCompleted", false)
+    console.log('download directory ', downloadLocation);
+    const acceptableVersion = await getVersion();
+    const url = fetchDownloadUrl(acceptableVersion);
+    await downloadDothttp(downloadLocation, url!);
+    if (platform() !== 'win32') {
+        await fsPromises.chmod(defaultExePath, 0o755);
+    }
+    console.log('download successfull ', downloadLocation);
+    Configuration.setDothttpPath(defaultExePath)
+    console.log('dothttp path set to', defaultExePath);
+    context.globalState.update("dothttp.downloadContentCompleted", true);
+    context.workspaceState.update('dothttp.conf.path', defaultExePath);
+    return { version: acceptableVersion.version, path: defaultExePath, type: RunType.binary }
 }
 
-function getExePath(exePath: string) {
-    if (platform() === 'win32') {
-        exePath = path.join(exePath, 'cli.exe');
-    } else if (platform() === "linux") {
-        exePath = path.join(exePath, 'cli');
-        fs.chmodSync(exePath, 0o755);
-    } else {
-        exePath = path.join(exePath, 'cli');
-        fs.chmodSync(exePath, 0o755);
+function getExePath(downloadLocation: string) {
+    switch (platform()) {
+        case "win32": {
+            return path.join(downloadLocation, 'cli.exe');
+        }
+        case "linux":
+        case 'darwin': {
+            return path.join(downloadLocation, 'cli');
+        }
+        default:
+            return path.join(downloadLocation, 'cli');
     }
-    return exePath;
+
 }
 
 export async function updateDothttpIfAvailable(globalStorageDir: string) {
-    const currentVersion: string = ApplicationServices.get().getVersionInfo().getVersionDothttpInfo();
+    const currentVersion: string = ApplicationServices.get().getVersionInfo()!.getVersionDothttpInfo();
     const versionData = await getVersion();
     if (semver.lt(currentVersion, versionData.version)) {
         const accepted = await vscode.window.showInformationMessage(
@@ -245,12 +251,15 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 const url = fetchDownloadUrl(versionData)
                 await downloadDothttp(downloadLocation, url!);
                 const originalLocation = path.join(globalStorageDir, 'cli');
-                ApplicationServices.get().clientHanler.close();
+                ApplicationServices.get().getClientHandler()?.close();
                 fs.rmdirSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
-                getExePath(path.join(originalLocation, 'cli'));
+                const location = getExePath(path.join(originalLocation, 'cli'));
+                if (platform() !== 'win32') {
+                    fs.chmodSync(location, 0o755);
+                }
             }
-            ApplicationServices.get().getVersionInfo().setVersionDothttpInfo(versionData.version);
+            ApplicationServices.get().getVersionInfo()!.setVersionDothttpInfo(versionData.version);
             vscode.window.showInformationMessage('dothttp upgrade completed')
             vscode.commands.executeCommand(Constants.RESTART_CLI_COMMAND);
         }

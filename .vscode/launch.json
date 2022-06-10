@@ -33,14 +33,13 @@
 		{
 			"name": "Web Extension Tests",
 			"type": "pwa-extensionHost",
-			"request": "launch",
 			"debugWebWorkerHost": true,
+			"request": "launch",
 			"args": [
 			  "--extensionDevelopmentPath=${workspaceFolder}",
 			  "--extensionDevelopmentKind=web",
 			],
-			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
-			// "preLaunchTask": "npm: watch-web"
-		  }
+			"outFiles": ["${workspaceFolder}/dist/*.js"],
+		}
 	]
 }

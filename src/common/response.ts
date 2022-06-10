@@ -1,4 +1,4 @@
-
+import { Uri } from "vscode";
 export interface Headers {
     [key: string]: string
 }
@@ -16,7 +16,7 @@ export interface Response {
 export interface NotebookExecutionMetadata {
     target: string;
     date: string;
-    fileName: string;
+    uri: Uri,
     cellNo: number;
     executionTime: string;
 }

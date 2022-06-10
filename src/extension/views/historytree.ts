@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { URL } from 'url';
 import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { history, IHistoryService } from "../tingohelpers";
-import transform from '../utils/text-colors';
+import { HistoryItem, IHistoryService } from "../web/types/history";
+import transform from '../web/utils/text-colors';
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
@@ -26,7 +26,7 @@ const historyItemicons = {
 interface HistoryTreeItem {
     type: TreeType
     label: string,
-    item?: history
+    item?: HistoryItem
 }
 
 
@@ -35,7 +35,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     private readonly emitter = new EventEmitter<HistoryTreeItem | null>();
     public onDidChangeTreeData: Event<null | HistoryTreeItem> = this.emitter.event;
     private _historyService!: IHistoryService;
-    map: Map<string, history[]> = new Map();
+    map: Map<string, HistoryItem[]> = new Map();
     fetcedCount: number = 0;
 
     private readonly dateFormat = "yyyy-mm-dd";
@@ -48,12 +48,12 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     public get historyService(): IHistoryService {
         return this._historyService;
     }
-    public set historyService(value: IHistoryService) {
+    public setHistoryService(value: IHistoryService) {
         this._historyService = value;
         // this.fetchMore();
     }
 
-    recentChanged(history: history) {
+    recentChanged(history: HistoryItem) {
         if (!this.map.has('recent')) {
             this.map.set('recent', []);
         }

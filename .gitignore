@@ -12,4 +12,5 @@ yarn.lock
 .idea/inspectionProfiles/Project_Default.xml
 test-resources/.vscode/settings.json
 *.webm
-.vscode-test-web/
+.vscode-test-web
+target/npmlist.json

@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.45",
+	"version": "0.0.49",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -10,7 +10,10 @@
 	},
 	"icon": "rocket.png",
 	"engines": {
-		"vscode": "^1.50.0"
+		"vscode": "^1.63.0"
+	},
+        "sponsor": {
+		"url": "https://github.com/sponsors/cedric05"
 	},
 	"categories": [
 		"Programming Languages",
@@ -18,6 +21,41 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onNotebook:dothttp-book",
+		"onLanguage:dothttp-vscode",
+		"workspaceContains:**/*.http",
+		"workspaceContains:**/*.httpbook",
+		"workspaceContains:**/*.hnbk",
+		"onView:dothttpEnvView",
+		"onCommand:dothttp.command.run",
+		"onView:dothttpPropView",
+		"onView:dothttpHistory",
+		"onCommand:dothttp.command.run",
+		"onCommand:dothttp.command.gencurl",
+		"onCommand:dothttp.command.toggle.reuse",
+		"onCommand:dothttp.command.toggle.runrecent",
+		"onCommand:dothttp.command.toggle.experimental",
+		"onCommand:dothttp.command.toggle.showheaders",
+		"onCommand:dothttp.command.toggle.history",
+		"onCommand:dothttp.command.toggle.nocookie",
+		"onCommand:dothttp.command.toggle.unstable",
+		"onCommand:dothttp.command.import.external",
+		"onCommand:dothttpEnvView.refresh",
+		"onCommand:dothttpEnvView.enableenv",
+		"onCommand:dothttpEnvView.disableenv",
+		"onCommand:dothttpPropView.add",
+		"onCommand:dothttpPropView.enableproperty",
+		"onCommand:dothttpPropView.disableproperty",
+		"onCommand:dothttpPropView.copyPropertyValue",
+		"onCommand:dothttpPropView.updateproperty",
+		"onCommand:dothttpPropView.disableAllProperties",
+		"onCommand:dothttpEnvView.disableAllEnv",
+		"onCommand:dothttpPropView.removeproperty",
+		"onCommand:dothttpEnvView.opendothttpjson",
+		"onCommand:dothttpEnvView.copyPropertyValue",
+		"onCommand:dothttp.command.newHttpBook",
+		"onCommand:dothttp.command.newHttpFile",
+		"onCommand:dothttp.command.generatelang",
 		"onStartupFinished"
 	],
 	"main": "./dist/extension-node.js",
@@ -391,20 +429,20 @@
 					"when": "dothttpRunMode == full"
 				}
 			],
-			"editor/title": [
+			"editor/title/run": [
 				{
 					"command": "dothttp.command.run",
-					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp && dothttpRunMode == full",
 					"group": "navigation@1"
 				},
 				{
 					"command": "dothttp.command.gencurl",
-					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full",
+					"when": "resourceExtname == .http || resourceExtname == .dhttp && dothttpRunMode == full",
 					"group": "navigation@2"
 				},
 				{
 					"command": "dothttp.command.notebook.tohttpfile",
-					"when": "(resourceExtname == .httpbook || resourceExtname == .hnbk) && dothttpRunMode == full",
+					"when": "resourceExtname == .httpbook || resourceExtname == .hnbk && dothttpRunMode == full",
 					"group": "navigation@1"
 				}
 			],
@@ -484,7 +522,7 @@
 				},
 				{
 					"command": "dothttp.command.run",
-					"when": "(resourceExtname == .http || resourceExtname == .dhttp) && dothttpRunMode == full"
+					"when": "resourceExtname == .http || resourceExtname == .dhttp && dothttpRunMode == full"
 				},
 				{
 					"group": "toggle",
@@ -580,7 +618,7 @@
 				{
 					"command": "dothttp.command.generatelang",
 					"group": "export",
-					"when": "dothttpRunMode == full"
+					"when": "never"
 				},
 				{
 					"command": "dothttp.command.notebook.run",
@@ -738,6 +776,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Show Headers In Seperate View"
+					},
+					"dothttp.conf.agent": {
+						"type": "string",
+						"default": "http://localhost:5000/",
+						"description": "Agent For Running Requests (Web Extension)"
 					}
 				},
 				"label": "dothttp",
@@ -805,7 +848,7 @@
 		"@types/lodash": "^4.14.168",
 		"@types/mime-types": "^2.1.0",
 		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.20.12",
+		"@types/node": "^v16.11.7",
 		"@types/prop-types": "^15.7.4",
 		"@types/semver": "^7.3.4",
 		"@types/temp": "^0.9.1",
@@ -837,6 +880,7 @@
 	"dependencies": {
 		"@types/vscode": "^1.60.0",
 		"axios": "^0.21.2",
+		"buffer": "^6.0.3",
 		"curl-to-har": "^1.0.1",
 		"curl-to-postmanv2": "^0.5.1",
 		"dateformat": "^4.5.1",
@@ -844,14 +888,19 @@
 		"json-stringify-safe": "^5.0.1",
 		"jsonc-parser": "^3.0.0",
 		"mime-types": "^2.1.30",
+		"os-browserify": "^0.3.0",
 		"path-browserify": "^1.0.1",
+		"querystring-es3": "^0.2.1",
 		"semver": "^7.3.4",
+		"stream-browserify": "^3.0.0",
 		"swagger-to-har2": "^1.0.4",
 		"temp": "^0.9.4",
 		"tingodb": "^0.6.1",
 		"unzipper": "^0.10.11",
+		"url": "^0.11.0",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
+		"vscode-uri": "^3.0.3",
 		"whatwg-url": "^8.5.0"
 	}
 }
