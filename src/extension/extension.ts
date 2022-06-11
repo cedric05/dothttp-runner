@@ -68,7 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	dothttpEditorView.historyService = historyService;
 	symbolProvider.setClientHandler(clientHandler);
 	symbolProvider.setDiagnostics(diagnostics);
-	notebookKernel.configure(clientHandler2, fileStateService, propertyTree);
+	const configInstance = Configuration.instance();
+	notebookKernel.configure(clientHandler2, fileStateService, propertyTree, configInstance);
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
 		.setGlobalstorageService(globalStorageService)
@@ -83,7 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setDiagnostics(diagnostics)
 		.setDothttpSymbolProvier(symbolProvider)
 		.setVersionInfo(new VersionInfo(globalStorageService))
-		.setConfig(Configuration.instance())
+		.setConfig(configInstance)
 		.setContext(context)
 		.setNotebookkernel(notebookKernel)
 		.setHistoryTreeProvider(historyTreeProvider)

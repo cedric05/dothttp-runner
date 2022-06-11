@@ -1,4 +1,3 @@
-import { string } from 'prop-types';
 import * as vscode from 'vscode';
 import { Constants } from './constants';
 
