@@ -8,6 +8,7 @@ import { getPostmanClient, Workspace } from '../../export/postmanUtils';
 import { isDirectory, writeFile } from '../../../web/utils/fsUtils';
 import { Constants } from '../../../web/utils/constants';
 import { Utils } from 'vscode-uri';
+import { dirname } from 'path';
 
 
 enum PostmanUploadType {
@@ -18,7 +19,9 @@ enum PostmanUploadType {
 
 async function notebookFromFile(aNotebook: vscode.Uri) {
     const content = await getNotebookUriToHttpContent(aNotebook);
-    const finalName = await getUnSavedUri(aNotebook);
+    const basename = Utils.basename(aNotebook);
+    const dirname = Utils.dirname(aNotebook);
+    const finalName = await getUnSavedUri(Utils.joinPath(dirname, basename+'.http'));
     await writeFile(finalName, content);
     return finalName;
 }
@@ -36,7 +39,7 @@ export async function exportToPostman(uri: vscode.Uri) {
             //ignoring for now
         }
     } else if (uri.fsPath.endsWith('.httpbook') || uri.fsPath.endsWith('.hnbk')) {
-        await notebookFromFile(uri);
+        uri = await notebookFromFile(uri);
     }
     const result = await ApplicationServices.get().getClientHandler()?.exportToPostman(uri.fsPath);
     if (result.error) {

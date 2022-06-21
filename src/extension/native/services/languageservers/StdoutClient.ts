@@ -19,7 +19,7 @@ export abstract class BaseSpanClient implements ICommandClient {
 
     constructor(options: { pythonpath: string, stdargs: string[], type: RunType; }) {
         this.options = options;
-        this.channel = vscode.window.createOutputChannel('dothttp-code');
+        this.channel = vscode.window.createOutputChannel('Dothttp');
     }
     isRunning(): boolean {
         return this.running

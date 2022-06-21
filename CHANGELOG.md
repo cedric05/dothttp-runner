@@ -4,6 +4,11 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## [0.0.50] 
+- [ **Improvement**] output channel is now renamed from `dothttp-code` to `Dothttp`
+- [ **Bug**] Fix export to postman from notebook
+
+
 ## [0.0.49] 
 - [ **Fetaure**] suggestions of test scripts
 - [ **Improvement**] removes annoying setting of dothttp path in `.settings.json`

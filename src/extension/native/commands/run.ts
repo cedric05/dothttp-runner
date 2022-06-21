@@ -169,7 +169,7 @@ async function getBaseFileNameToSave(config: Configuration, filename: vscode.Uri
             sfilename = Utils.joinPath(parentDirectory, config.responseSaveDirectory, Utils.basename(filename));
         }
         const parDirectory = Utils.dirname(sfilename);
-        if (await fsExists(parDirectory) && isDirectory(parDirectory)) {
+        if (await fsExists(parDirectory) && await isDirectory(parDirectory)) {
             return sfilename
         } else {
             vscode.window.showErrorMessage(`${Constants.responseDirectory} is set to incorrect value(non existant directory or is a file)`)
