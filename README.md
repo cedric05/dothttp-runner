@@ -21,7 +21,7 @@ For docs visit [here](#docs-and-more)
   - [From postman collection](https://docs.dothttp.dev/docs/import-export#postman-collections)
   - [From swagger spec (2/3)](https://docs.dothttp.dev/docs/import-export#openapiswagger)
   - [Import curl](https://docs.dothttp.dev/docs/import-export#curl)
-  - [Import Har](https://docs.dothttp.dev/docs/import-export#curl) // TODO
+  - [Import Har](https://docs.dothttp.dev/docs/import-export#curl)
 - [Export To most popular programming languages](https://docs.dothttp.dev/docs/import-export)
 
 <img src="./demo.gif" >
@@ -34,7 +34,7 @@ For docs visit [here](#docs-and-more)
 
 ## Example
 example http file
-```
+```http
 # users.http
 
 #!/usr/bin/env /home/prasanth/cedric05/dothttp/dist/dothttp-cli

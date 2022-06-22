@@ -1,4 +1,3 @@
-import { string } from 'prop-types';
 import * as vscode from 'vscode';
 import { Constants } from './constants';
 
@@ -50,6 +49,7 @@ export class Configuration {
     dothttpPath!: string;
     responseSaveDirectory!: string;
     agent!: string;
+    hideOpenNotebookSuggestion = true;
 
 
     private constructor() {
@@ -67,6 +67,7 @@ export class Configuration {
         this.responseSaveDirectory = vsCodeconfig.get(Constants.responseDirectory) as string;
         this.history = vsCodeconfig.get(Constants.history) as boolean;
         this.agent = vsCodeconfig.get(Constants.CONFIG_HTTP_AGENT) as string;
+        this.hideOpenNotebookSuggestion = vsCodeconfig.get(Constants.CONF_OPEN_NOTEBOOK_SUGGESTION) as boolean;
     }
 
     public update() {

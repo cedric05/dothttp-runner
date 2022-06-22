@@ -68,7 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	dothttpEditorView.historyService = historyService;
 	symbolProvider.setClientHandler(clientHandler);
 	symbolProvider.setDiagnostics(diagnostics);
-	notebookKernel.configure(clientHandler2, fileStateService, propertyTree);
+	const configInstance = Configuration.instance();
+	notebookKernel.configure(clientHandler2, fileStateService, propertyTree, configInstance);
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
 		.setGlobalstorageService(globalStorageService)
@@ -83,7 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setDiagnostics(diagnostics)
 		.setDothttpSymbolProvier(symbolProvider)
 		.setVersionInfo(new VersionInfo(globalStorageService))
-		.setConfig(Configuration.instance())
+		.setConfig(configInstance)
 		.setContext(context)
 		.setNotebookkernel(notebookKernel)
 		.setHistoryTreeProvider(historyTreeProvider)
@@ -96,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidOpenTextDocument(async doc => {
 			const { fsPath } = doc.uri;
-			if (doc.uri.scheme === "file" && (fsPath.endsWith(".dhttp") || fsPath.endsWith(".http"))) {
+			if (doc.uri.scheme === "file" && (fsPath.endsWith(".dhttp") || fsPath.endsWith(".http")) && !configInstance.hideOpenNotebookSuggestion) {
 				const out = await vscode.window.showInformationMessage("checkout httpbook, you can have all features of http file and more", "Open Http File as Notebook", 'ignore');
 				if (out && out != "ignore") {
 					vscode.commands.executeCommand(Constants.HTTP_AS_HTTPBOOK, doc.uri);
@@ -114,6 +115,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.toggleHeadersCommand, toggleExperimentalFlag(Constants.toggleHeadersCommand)),
 		vscode.commands.registerCommand(Constants.toggleReuseTabCommand, toggleExperimentalFlag(Constants.toggleReuseTabCommand)),
 		vscode.commands.registerCommand(Constants.toggleRunRecentCommand, toggleExperimentalFlag(Constants.toggleRunRecentCommand)),
+		vscode.commands.registerCommand(Constants.TOGGLE_OPEN_NOTEBOOK_SUGGESTION, toggleExperimentalFlag(Constants.TOGGLE_OPEN_NOTEBOOK_SUGGESTION)),
 		vscode.commands.registerCommand(Constants.COMMAND_TOGGLE_UNSTABLE, toggleExperimentalFlag(Constants.COMMAND_TOGGLE_UNSTABLE)),
 		vscode.commands.registerCommand(Constants.IMPORT_RESOURCE_COMMAND, importRequests),
 		vscode.commands.registerCommand(Constants.EXPORT_RESOURCE_COMMAND, exportToPostman),

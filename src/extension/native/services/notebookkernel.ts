@@ -2,7 +2,7 @@ import { NotebookKernel } from "../../web/services/notebookkernel";
 import * as vscode from 'vscode'
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from "../../../common/response";
 import { generateLang, generateLangFromOptions } from "../commands/export/generate";
-import { contructFileName, showInUntitledView } from "../commands/run";
+import { addHistory, contructFileName, showInUntitledView } from "../commands/run";
 import { ClientHandler } from "./client";
 
 
@@ -70,5 +70,11 @@ export class ProNotebookKernel extends NotebookKernel {
             ]);
         }
         execution.end(true, Date.now());
+    }
+
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
+        const out = await super.getResponse(httpDef, cell, filename, properties, target, curl, contexts);
+        addHistory(out, filename + "-notebook-cell.http", { target });
+        return out
     }
 }

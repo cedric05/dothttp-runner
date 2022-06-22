@@ -13,7 +13,7 @@ import { ApplicationServices } from './web/services/global';
 import path = require('path');
 import child_process = require('child_process')
 import { ClientLaunchParams, RunType } from "./web/types/types";
-import { Constants } from './web/utils/constants';
+import { Constants, EXTENSION_VERSION } from './web/utils/constants';
 
 interface version {
     downloadUrls: {
@@ -79,7 +79,7 @@ export async function getJSON<T>(api: string): Promise<T> {
 
 export async function getVersion(): Promise<version> {
     var resp = await getJSON<versionResponse>(Constants.versionApi);
-    const compatibleMat = resp.matrix[Constants.EXTENSION_VERSION];
+    const compatibleMat = resp.matrix[EXTENSION_VERSION];
     const useUnStable = Configuration.isToUseUnStable;
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
@@ -104,7 +104,7 @@ export async function getVersion(): Promise<version> {
         const accepted = acceptableVersions[0];
         return accepted;
     }
-    throw new Error('version not available')
+    throw new Error('Version Not Registered')
 }
 
 function fetchDownloadUrl(accepted: version) {

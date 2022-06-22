@@ -15,7 +15,7 @@ export class HttpClient implements ICommandClient {
     constructor(url: string) {
         this.id = 0;
         this.url = url;
-        this.channel = vscode.window.createOutputChannel('dothttp-code');
+        this.channel = vscode.window.createOutputChannel('Dothttp');
     }
     start(): void {
         throw new Error('Method not implemented.');

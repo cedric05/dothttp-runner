@@ -6,8 +6,20 @@ import dateFormat = require("dateformat");
 import { LocalStorageService } from './storage';
 import { PropertyTree } from '../../views/tree';
 import { Constants } from '../utils/constants';
+import { Configuration } from '../utils/config';
 var mime = require('mime-types');
 
+const hasInbuiltPreview = ["html",
+    // support for below are taken care by text/x-json ...
+    /*
+    "json", 
+     "xml",
+     "md",
+    */
+    "svg",
+    "png",
+    "jpeg",
+    "txt"]
 export class NotebookKernel {
     static id = 'dothttp-kernel';
     readonly id = NotebookKernel.id;
@@ -20,6 +32,7 @@ export class NotebookKernel {
     fileStateService?: IFileState;
     storageService?: LocalStorageService;
     treeprovider?: PropertyTree;
+    config?: Configuration;
 
     constructor() {
         this._controller = vscode.notebooks.createNotebookController(NotebookKernel.id,
@@ -30,12 +43,13 @@ export class NotebookKernel {
         this._controller.description = 'A notebook for making http calls.';
         this._controller.executeHandler = this._executeAll.bind(this);
     }
-    configure(client: ClientHandler2 | undefined, fileStateService: IFileState, treeprovider: PropertyTree) {
+    configure(client: ClientHandler2, fileStateService: IFileState, treeprovider: PropertyTree, config: Configuration) {
         this.client = client;
         this.fileStateService = fileStateService;
         // @ts-ignore
         this.storageService = fileStateService.storage;
         this.treeprovider = treeprovider;
+        this.config = config;
     }
 
 
@@ -104,10 +118,6 @@ export class NotebookKernel {
                 // app.getPropTreeProvider().addProperties(cell.document.fileName, out.script_result.properties);
                 // out.script_result.properties = newprops;
             }
-            if (false) {
-                // TODO
-                // addHistory(out, filename + "-notebook-cell.http", { target });
-            }
 
             try {
                 if (out.error) {
@@ -155,6 +165,7 @@ export class NotebookKernel {
             env: this.fileStateService?.getEnv(filename) ?? [],
             properties,
             target,
+            noCookie: this.config?.noCookies,
             curl,
             contexts: contexts
         });
@@ -184,8 +195,16 @@ export class NotebookKernel {
                 .filter(key => key)
                 .map(extension => {
                     response.contentType = mime.lookup(extension);
-                    return vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`);
+                    if (hasInbuiltPreview.indexOf(extension) > -1) {
+                        return [
+                            vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`),
+                            vscode.NotebookCellOutputItem.text(response.body, mime.lookup(extension))
+                        ]
+                    } else {
+                        return [vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`)];
+                    }
                 })
+                .flat()
         }
         return [];
     }

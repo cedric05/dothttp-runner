@@ -53,7 +53,10 @@ export function toggleExperimentalFlag(confKey: string) {
                 break;
             case Constants.COMMAND_TOGGLE_UNSTABLE:
                 key = Constants.CONFIG_DOTHTTP_USE_STABLE;
+            case Constants.TOGGLE_OPEN_NOTEBOOK_SUGGESTION:
+                key = Constants.CONF_OPEN_NOTEBOOK_SUGGESTION;
         }
-        vscode.workspace.getConfiguration().update(key!, !vscode.workspace.getConfiguration().get(key!), vscode.ConfigurationTarget.Workspace);
+        const currentValue = vscode.workspace.getConfiguration().get(key);
+        vscode.workspace.getConfiguration().update(key, !currentValue, vscode.ConfigurationTarget.Workspace);
     };
 }

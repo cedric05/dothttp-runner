@@ -22,13 +22,15 @@ export async function activate(context: vscode.ExtensionContext) {
     let envTree = new EnvTree();
     envTree.setFileStateService(filestateservice);
     let notebookkernel = new NotebookKernel();
-    notebookkernel.configure(client, filestateservice, propertyTree)
-    const app = new ApplicationBuilder()
+    const configInstance = Configuration.instance();
+    notebookkernel.configure(client, filestateservice, propertyTree, configInstance)
+    new ApplicationBuilder()
         .setClientHandler2(client)
         .setStorageService(localStorage)
         .setNotebookkernel(notebookkernel)
         .setFileStateService(filestateservice)
         .setEnvTree(envTree)
+        .setConfig(configInstance)
         .build()
     context.subscriptions.push(...[
         vscode.window.registerTreeDataProvider(Constants.envTreeView, envTree),

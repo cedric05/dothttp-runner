@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.49",
+	"version": "0.0.50",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -39,6 +39,7 @@
 		"onCommand:dothttp.command.toggle.history",
 		"onCommand:dothttp.command.toggle.nocookie",
 		"onCommand:dothttp.command.toggle.unstable",
+		"onCommand:dothttp.command.toggle.hideopennotebookfromfile",
 		"onCommand:dothttp.command.import.external",
 		"onCommand:dothttpEnvView.refresh",
 		"onCommand:dothttpEnvView.enableenv",
@@ -208,6 +209,13 @@
 			{
 				"command": "dothttp.command.toggle.reuse",
 				"title": "Toggles Reuse Tab Setting",
+				"category": "Dothttp",
+				"icon": "$(gear)",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.toggle.hideopennotebookfromfile",
+				"title": "Toggles Showing Open As Notebook File",
 				"category": "Dothttp",
 				"icon": "$(gear)",
 				"enablement": "dothttpRunMode == full"
@@ -491,6 +499,11 @@
 				{
 					"group": "toggle",
 					"command": "dothttp.command.toggle.reuse",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"group": "toggle",
+					"command": "dothttp.command.toggle.hideopennotebookfromfile",
 					"when": "dothttpRunMode == full"
 				},
 				{
@@ -781,7 +794,13 @@
 						"type": "string",
 						"default": "http://localhost:5000/",
 						"description": "Agent For Running Requests (Web Extension)"
+					},
+					"dothttp.conf.hideopennotebookfromfile":{
+						"type": "boolean",
+						"default": false,
+						"description": "Set true if you no longer wants suggestion"
 					}
+
 				},
 				"label": "dothttp",
 				"languages": [

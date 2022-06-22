@@ -12,6 +12,8 @@ export enum Constants {
 	runConf = "dothttp.conf.runrecent",
 	reUseOldTab = "dothttp.conf.run.reuseold",
 	responseDirectory = "dothttp.conf.response.savedirectory",
+
+	CONF_OPEN_NOTEBOOK_SUGGESTION = "dothttp.conf.hideopennotebookfromfile",
 	CONFIG_DOTHTTP_USE_STABLE = "dothttp.conf.useunstable",
 	CONFIG_HTTP_AGENT = "dothttp.conf.agent",
 	// view props
@@ -24,6 +26,7 @@ export enum Constants {
 	toggleHeadersCommand = "dothttp.command.toggle.showheaders",
 	toggleReuseTabCommand = "dothttp.command.toggle.runrecent",
 	toggleRunRecentCommand = "dothttp.command.toggle.reuse",
+	TOGGLE_OPEN_NOTEBOOK_SUGGESTION = "dothttp.command.toggle.hideopennotebookfromfile",
 	COMMAND_TOGGLE_UNSTABLE = "dothttp.command.toggle.unstable",
 	IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
 	EXPORT_RESOURCE_COMMAND = "dothttp.command.export.postman",
@@ -86,13 +89,14 @@ export enum Constants {
 
 	// download stuff
 	// @ts-ignore
-	EXTENSION_VERSION = "0.0.49",
-
+	
 	dothttpNotebook = "dothttp-book",
-
+	
 	dothttpVersion = "dothttp.version",
 
 	versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json",
 	SECRET_POSTMAN_API_KEY = "POSTMAN_API_KEY",
 	
 }
+
+export const EXTENSION_VERSION = require('../../../../package.json');
