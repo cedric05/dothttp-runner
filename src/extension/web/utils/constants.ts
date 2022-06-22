@@ -89,13 +89,14 @@ export enum Constants {
 
 	// download stuff
 	// @ts-ignore
-	EXTENSION_VERSION = "0.0.49",
-
+	
 	dothttpNotebook = "dothttp-book",
-
+	
 	dothttpVersion = "dothttp.version",
 
 	versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json",
 	SECRET_POSTMAN_API_KEY = "POSTMAN_API_KEY",
 	
 }
+
+export const EXTENSION_VERSION = require('../../../../package.json');

@@ -5,9 +5,10 @@
 
 
 ## [0.0.50] 
+- [ **Improvement**] Support for html in notebook cell output
 - [ **Improvement**] output channel is now renamed from `dothttp-code` to `Dothttp`
 - [ **Bug**] Fix export to postman from notebook
-
+- [ **Bug**] history is not working after 0.0.49
 
 ## [0.0.49] 
 - [ **Fetaure**] suggestions of test scripts
