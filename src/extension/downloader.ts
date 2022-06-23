@@ -246,7 +246,7 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 // using exec is better in this scenario,
                 // but need to check
                 await runSync(Configuration.getPath(), ["-m", "pip", "install", `dothttp-req==${versionData.version}`, '--upgrade']);
-            } else if (isDothttpConfigured()) {
+            } else {
                 const downloadLocation = path.join(globalStorageDir, `cli-${versionData.version}`);
                 const url = fetchDownloadUrl(versionData)
                 await downloadDothttp(downloadLocation, url!);

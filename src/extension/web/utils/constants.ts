@@ -99,4 +99,4 @@ export enum Constants {
 	
 }
 
-export const EXTENSION_VERSION = require('../../../../package.json');
+export const EXTENSION_VERSION = require('../../../../package.json').version;
