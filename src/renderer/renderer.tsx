@@ -80,8 +80,8 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     }
     const [responseBody, setResponseBody] = useState(body);
 
-    let scriptLog = script_result?.stdout;
-    if (!scriptLog) {
+    let scriptLog = `${script_result?.stdout}\n${script_result?.error}`;
+    if (!(script_result?.stdout || script_result?.error)) {
         scriptLog = "no log";
     }
 
