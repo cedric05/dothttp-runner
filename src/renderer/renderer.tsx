@@ -106,7 +106,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
     const headerTab = arrayAndCount(Object.keys(headers ?? {}));
     const testResultTab = arrayAndCount(script_result?.tests);
-    testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout);
+    testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout) || Boolean(script_result?.error);
     const responseTab: CountAndExistence = { exists: true, count: output_file ? 1 : 0 }
 
     /*
