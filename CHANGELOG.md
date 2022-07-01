@@ -4,6 +4,12 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## [0.0.51]
+**prerelease** 
+- [ **Improvement**] Fix script execution logging is not logging error output if compilation issue
+- [ **Improvement**] change from ace editor to highlighter.js for faster rendereing. if you want to keep using ace editor, install dotbook extension
+- [ **Bug**] Generate/OpeninEditor is not working in notebook output (bug introduced in webextension support (0.0.49)) 
+
 ## [0.0.50] 
 - [ **Improvement**] Support for html in notebook cell output
 - [ **Improvement**] output channel is now renamed from `dothttp-code` to `Dothttp`

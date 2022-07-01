@@ -38,7 +38,7 @@ export async function generateLangForHttpFile(uri: vscode.Uri) {
 
 export async function generateLangFromOptions(
     options: { uri: vscode.Uri, target: string, content?: string, contexts?: Array<string> })
-    : Promise<{ code: string, language: string, error: false, } | void> {
+    : Promise<{ code: string, language: string, error: false, extension: string} | void> {
     const { uri, target, content, contexts } = options;
     const clientHanler = ApplicationServices.get().getClientHandler2();
     const fileStateService = ApplicationServices.get().getFileStateService();
@@ -76,7 +76,7 @@ export async function generateLangFromOptions(
             indent: '\t'
         });
         if (langSpec) {
-            return { "code": langSpec as string, "language": pickLanguage.label, error: false }
+            return { "code": langSpec as string, "language": pickLanguage.label, "extension": pickLanguage.filext!, error: false }
         } return;
 
     } catch (error) {
@@ -92,7 +92,7 @@ export async function generateLang(options: { uri: vscode.Uri, target: string, c
     try {
         const langSpec = await generateLangFromOptions(options)
         if (langSpec && !langSpec.error) {
-            const outputBodyURI = vscode.Uri.parse("untitled:" + options.uri.fsPath + ".gen" + langSpec.language);
+            const outputBodyURI = vscode.Uri.parse("untitled:" + options.uri.fsPath + ".gen" + langSpec.extension);
             vscode.workspace.openTextDocument(outputBodyURI).then((textDoc) => {
                 showEditor(textDoc, langSpec.code as string);
             });
