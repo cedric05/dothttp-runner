@@ -22,15 +22,16 @@ export class ProNotebookKernel extends NotebookKernel {
         const {
             target,
             date,
-            uri,
+            uri: jsonEncodedString,
             // cellNo
         } = metadata as NotebookExecutionMetadata;
+        const uri2 = vscode.Uri.file(jsonEncodedString.fsPath as unknown as string)
         switch (e.message.request) {
             case MessageType.generate: {
-                return generateLang({ uri: uri, target, content: response.http })
+                return generateLang({ uri: uri2, target, content: response.http })
             }
             case MessageType.save: {
-                const fileNameWithInfo = contructFileName(uri, { curl: false, target: target }, response, date);
+                const fileNameWithInfo = contructFileName(uri2, { curl: false, target: target }, response, date);
                 return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
             }
             default:

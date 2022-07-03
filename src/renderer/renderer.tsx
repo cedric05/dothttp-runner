@@ -1,27 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import AceEditor from '@cedric05/preact-ace';
 import * as ClearAll from '@vscode/codicons/src/icons/clear-all.svg';
 import * as LinkExternal from '@vscode/codicons/src/icons/code.svg';
 import * as OpenInEditor from '@vscode/codicons/src/icons/open-preview.svg';
-import "ace-builds/src-noconflict/ext-language_tools";
-import modelList from 'ace-builds/src-noconflict/ext-modelist';
-import 'ace-builds/src-noconflict/mode-asciidoc';
-import 'ace-builds/src-noconflict/mode-css';
-import 'ace-builds/src-noconflict/mode-graphqlschema';
-import 'ace-builds/src-noconflict/mode-haml';
-import 'ace-builds/src-noconflict/mode-html';
-import "ace-builds/src-noconflict/mode-java";
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/mode-json5';
-import 'ace-builds/src-noconflict/mode-jsoniq';
-import 'ace-builds/src-noconflict/mode-jsx';
-import 'ace-builds/src-noconflict/mode-markdown';
-import 'ace-builds/src-noconflict/mode-plain_text';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/mode-xml';
-import 'ace-builds/src-noconflict/mode-yaml';
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/theme-monokai";
+
 import { getReasonPhrase } from 'http-status-codes';
 // import 'ace-builds/src-noconflict/theme-pastel_on_dark';
 import { FunctionComponent, h } from 'preact';
@@ -30,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from '../common/response';
-
+const { HighLight } = require('preact-highlight');
 
 
 
@@ -80,8 +61,8 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     }
     const [responseBody, setResponseBody] = useState(body);
 
-    let scriptLog = script_result?.stdout;
-    if (!scriptLog) {
+    let scriptLog = `${script_result?.stdout}\n${script_result?.error}`;
+    if (!(script_result?.stdout || script_result?.error)) {
         scriptLog = "no log";
     }
 
@@ -93,8 +74,8 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
     // response tab ace editor properties
     let darkMode = document.body.getAttribute('data-vscode-theme-kind')?.includes('dark') ?? false;
-    let theme = darkMode ? "monokai" : "chrome"
-    let mode = modelList.getModeForPath(`response.${filenameExtension}`).name;
+    let theme = darkMode ? "monokai-sublime" : "googlecode"
+    let mode = filenameExtension ?? "json";
 
     // let testPass = 0;
     // let testFail = 0;
@@ -106,7 +87,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
     const headerTab = arrayAndCount(Object.keys(headers ?? {}));
     const testResultTab = arrayAndCount(script_result?.tests);
-    testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout);
+    testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout) || Boolean(script_result?.error);
     const responseTab: CountAndExistence = { exists: true, count: output_file ? 1 : 0 }
 
     /*
@@ -164,7 +145,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
             <br />
         </div>
         <TableTab data={objectToDataGridRows(script_result?.properties)} columns={["Property", "Value"]} active={outputPropTab.exists && activeIndex === TabType.GeneratedProperties} />
-        <AceWrap data={dothttpCode} mode={'text'} active={(dothttpCode ? true : false) && activeIndex === TabType.RequestSent} theme={theme}></AceWrap>
+        <AceWrap data={dothttpCode} mode={'http'} active={(dothttpCode ? true : false) && activeIndex === TabType.RequestSent} theme={theme}></AceWrap>
     </div>;
 };
 
@@ -244,32 +225,11 @@ const Status: FunctionComponent<{ code: number, url: string, executionTime: stri
 };
 
 
-const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, theme, mode, placeholder }) => {
-
-    let maxLines = data.split(/\r\n|\r|\n/).length + 2;
+const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, theme,mode}) => {
     return <div class='tab-content' id='data-container' hidden={!active}>
-        <AceEditor
-            placeholder={placeholder}
-            mode={mode}
-            readOnly={true}
-            theme={theme}
-            name="blah2"
-            width="100%"
-            value={data}
-            fontSize={14}
-            showPrintMargin={true}
-            showGutter={true}
-            highlightActiveLine={true}
-            setOptions={{
-                useWorker: false,
-                maxLines: maxLines,
-                enableBasicAutocompletion: false,
-                enableLiveAutocompletion: false,
-                enableSnippets: false,
-                showLineNumbers: true,
-                tabSize: 2
-            }}
-        />
+        <HighLight code={data} 
+        theme={theme}
+         language={mode}></HighLight>
     </div>;
 };
 

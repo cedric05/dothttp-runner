@@ -96,7 +96,7 @@ export class NotebookKernel {
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
                 cellNo: cell.index,
-                date: dateFormat(start, 'hh:MM:ss'),
+                date: dateFormat(start, 'yyyy-MM-dd--HH-mm-ss'),
                 target: target,
                 executionTime: ((end - start) / 1000).toFixed(1),
             };
