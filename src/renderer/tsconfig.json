@@ -11,7 +11,8 @@
 		"types": [
 			"vscode-notebook-renderer",
 			"node"
-		]
+		],
+		"esModuleInterop": true,
 	},
 	"references": [
 		{
