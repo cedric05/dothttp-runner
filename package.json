@@ -15,9 +15,19 @@
 	"sponsor": {
 		"url": "https://github.com/sponsors/cedric05"
 	},
+	"keywords": [
+		"HTTP",
+		"REST",
+		"GraphQL",
+		"Intellij Http Client",
+		"Postman",
+		"Soap",
+		"rest-client"
+	],
 	"categories": [
 		"Programming Languages",
 		"Notebooks",
+    	"Snippets",
 		"Other"
 	],
 	"activationEvents": [
