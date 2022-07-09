@@ -56,11 +56,11 @@ export async function exportToPostman(uri: vscode.Uri) {
         } catch (error) {
             await vscode.window.showWarningMessage("Publish To Postman Ran Into Error, Will Export To A File. Which Can Be Imported By Postman");
             // in case of error resort to local collection
-            await showInLocalFolder(uri, collection);
+            await showInLocalFolder(uri, JSON.stringify(collection));
         }
     } else {
         // if user don't want to upload to postman
-        await showInLocalFolder(uri, collection);
+        await showInLocalFolder(uri, JSON.stringify(collection));
     }
     return;
 }
@@ -76,7 +76,7 @@ export async function showInLocalFolder(origin: vscode.Uri, collection: any, ext
     const assumedFileName = Utils.joinPath(directory, Utils.basename(origin) + extension);
     const postmanCollectionFileName = await getUnSavedUri(assumedFileName);
     const collectionDoc = await vscode.workspace.openTextDocument(postmanCollectionFileName.with({ scheme: "untitled" }));
-    showEditor(collectionDoc, JSON.stringify(collection));
+    showEditor(collectionDoc, collection);
 }
 
 async function publishToPostman(collection: Object, uri: vscode.Uri) {
