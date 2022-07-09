@@ -8,7 +8,7 @@ import { Extract as extract } from 'unzipper';
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
 import { Configuration } from './web/utils/config';
-import { isDotHttpCorrect as isDothttpConfigured, isPythonConfigured } from "./native/utils/installUtils";
+import { isPythonConfigured } from "./native/utils/installUtils";
 import { ApplicationServices } from './web/services/global';
 import path = require('path');
 import child_process = require('child_process')
