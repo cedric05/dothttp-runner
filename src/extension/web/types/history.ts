@@ -17,4 +17,5 @@ export interface IHistoryService {
     fetchMore(skip: number): Promise<HistoryItem[]>;
     fetchMore(skip: number, limit: number): Promise<HistoryItem[]>;
     fetchByFileName(filename: String): Promise<[{ url: string; }]>;
+    fetchAll(): Promise<HistoryItem[]>;
 }

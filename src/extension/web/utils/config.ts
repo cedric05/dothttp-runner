@@ -24,7 +24,7 @@ export class Configuration {
     }
 
     static setDothttpPath(value: string) {
-        if (!vscode.env.remoteName){
+        if (!vscode.env.remoteName) {
             return Configuration.setGlobalValue(Constants.dothttpPath, value);
         }
     }
@@ -33,7 +33,7 @@ export class Configuration {
         return vscode.workspace.getConfiguration().get(Constants.CONFIG_DOTHTTP_USE_STABLE) as boolean;
     }
 
-    static get agent(){
+    static get agent() {
         return vscode.workspace.getConfiguration().get(Constants.CONFIG_HTTP_AGENT) as string;
     }
 
@@ -44,12 +44,13 @@ export class Configuration {
     noCookies = false;
     isExperimental = false;
     history = true;
-    configchange = vscode.workspace.onDidChangeConfiguration(() => this.update());
     pythonPath!: string;
     dothttpPath!: string;
     responseSaveDirectory!: string;
     agent!: string;
     hideOpenNotebookSuggestion = true;
+
+    configchange = vscode.workspace.onDidChangeConfiguration((event) => this.update(event));
 
 
     private constructor() {
@@ -70,8 +71,20 @@ export class Configuration {
         this.hideOpenNotebookSuggestion = vsCodeconfig.get(Constants.CONF_OPEN_NOTEBOOK_SUGGESTION) as boolean;
     }
 
-    public update() {
+    public async update(event: vscode.ConfigurationChangeEvent) {
         this.preset();
+        if (event.affectsConfiguration(Constants.CONFIG_HTTP_AGENT) || event.affectsConfiguration(Constants.dothttpPath)) {
+            vscode.window.showInformationMessage(
+                'Dothttp path updated. Reload is needed for updated configuration', 'reload', 'ignore')
+                .then((shouldReload) => {
+                    if (shouldReload === 'reload') {
+                        vscode.commands.executeCommand(
+                            'workbench.action.reloadWindow',
+                        );
+                    }
+                })
+
+        }
     }
 
 

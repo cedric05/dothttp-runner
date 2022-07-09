@@ -179,6 +179,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new TestScriptSuggetions(clientHandler)),
 		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, symbolProvider),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, historyTreeProvider),
+		vscode.commands.registerCommand(Constants.EXPORT_HISTORY, ()=>{
+			historyTreeProvider.exportHistory()
+		}),
 
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(clientHandler, urlStoreService), ...UrlCompletionProvider.triggerCharacters),
