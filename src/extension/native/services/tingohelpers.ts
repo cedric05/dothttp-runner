@@ -77,4 +77,14 @@ export class TingoHistoryService implements IHistoryService {
             })
         })
     }
+
+    async fetchAll(): Promise<HistoryItem[]> {
+        return new Promise((resolve, _reject) => {
+            const cursor = this._collection.find({}, { url: 1, time: 1, status_code: 1, filename: 1, target: 1, _id: 1, http: 1 })
+                .sort({ time: -1 })
+            cursor.toArray((_error: Error, results: HistoryItem[]) => {
+                resolve(results)
+            })
+        })
+    }
 }

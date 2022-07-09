@@ -8,7 +8,6 @@ import { getPostmanClient, Workspace } from '../../export/postmanUtils';
 import { isDirectory, writeFile } from '../../../web/utils/fsUtils';
 import { Constants } from '../../../web/utils/constants';
 import { Utils } from 'vscode-uri';
-import { dirname } from 'path';
 
 
 enum PostmanUploadType {
@@ -69,12 +68,12 @@ export async function exportToPostman(uri: vscode.Uri) {
 
 
 
-async function showInLocalFolder(origin: vscode.Uri, collection: any) {
+export async function showInLocalFolder(origin: vscode.Uri, collection: any, extension=".postman_collection.json") {
     const directory = await pickDirectoryToImport();
     if (!directory) {
         return;
     }
-    const assumedFileName = Utils.joinPath(directory, Utils.basename(origin) + ".postman_collection.json");
+    const assumedFileName = Utils.joinPath(directory, Utils.basename(origin) + extension);
     const postmanCollectionFileName = await getUnSavedUri(assumedFileName);
     const collectionDoc = await vscode.workspace.openTextDocument(postmanCollectionFileName.with({ scheme: "untitled" }));
     showEditor(collectionDoc, JSON.stringify(collection));

@@ -35,6 +35,7 @@ export enum Constants {
 	RUN_NOTEBOOK_TARGET_IN_CELL = "dothttp.command.codelens.notebook.run",
 	RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
 	REVEAL_HISTORY_VIEW = "dothttp.command.openVariableView",
+	EXPORT_HISTORY = "dothttp.command.exporthistory",
 
 	HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
 

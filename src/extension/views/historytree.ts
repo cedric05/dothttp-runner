@@ -6,6 +6,9 @@ import transform from '../web/utils/text-colors';
 import DotHttpEditorView from "./editor";
 import dateFormat = require("dateformat");
 import querystring = require('querystring');
+import * as vscode from 'vscode';
+import { Constants } from '../web/utils/constants';
+import { showInLocalFolder } from '../native/commands/export/postman';
 
 enum TreeType {
     recent,
@@ -144,6 +147,19 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 }
                 return ({ item, type: TreeType.item });
             });
+    }
+
+    public async exportHistory() {
+        const items: HistoryItem[] = await this.historyService.fetchAll();
+        const cells = items.map(item => {
+            return {
+                "kind": vscode.NotebookCellKind.Code,
+                "language": Constants.LANG_CODE,
+                "value": item.http,
+                "outputs": []
+            };
+        });
+        await showInLocalFolder(vscode.Uri.file("history-export"), cells, ".hnbk")
     }
 };
 

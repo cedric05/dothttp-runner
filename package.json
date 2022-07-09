@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.53",
+	"version": "0.0.54",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -178,6 +178,14 @@
 				"title": "Notebook",
 				"shortTitle": "Dothttp Notebook",
 				"icon": "$(notebook)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.exporthistory",
+				"title": "Export history to notebook",
+				"shortTitle": "Export history",
+				"icon": "$(export)",
 				"category": "Dothttp",
 				"enablement": "dothttpRunMode == full"
 			},
@@ -680,6 +688,11 @@
 				{
 					"command": "dothttpPropView.disableAllProperties",
 					"when": "view == dothttpPropView",
+					"group": "navigation"
+				},
+				{
+					"command": "dothttp.command.exporthistory",
+					"when": "view == dothttpHistory",
 					"group": "navigation"
 				}
 			],
