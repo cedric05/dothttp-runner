@@ -464,6 +464,18 @@
             "latest": true,
             "stable": true,
             "version": "0.0.41-alpha5"
+        },
+        {
+            "downloadUrls": {
+                "linux_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a6/dotextensions-0.0.41a6-linux-arm64.zip",
+                "linux_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a6/dotextensions-0.0.41a6-linux-amd64.zip",
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a6/dotextensions-0.0.41a6-linux-amd64.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a6/dotextensions-0.0.41a6-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a6/dotextensions-0.0.41a6-darwin.zip"
+            },
+            "latest": true,
+            "stable": true,
+            "version": "0.0.41-alpha6"
         }
     ],
     "matrix": {
