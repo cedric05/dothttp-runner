@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.55]
+- [ **New**] Added Support for linux arm
+- [ **Improvement**] History export with date wise categorization
+
 
 ## [0.0.54]
 - [ **Improvement**] Suggests reloading when dothttp path or agent path is updated

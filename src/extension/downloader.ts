@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import { IncomingMessage } from 'http';
 import * as https from 'https';
-import { platform } from 'os';
+import { platform, arch } from 'os';
 import * as semver from 'semver';
 import { Extract as extract } from 'unzipper';
 import * as vscode from 'vscode';
@@ -18,6 +18,8 @@ import { Constants, EXTENSION_VERSION } from './web/utils/constants';
 interface version {
     downloadUrls: {
         linux?: string,
+        linux_arm64: string,
+        linux_amd64: string,
         windows?: string,
         darwin?: string
     }
@@ -108,12 +110,20 @@ export async function getVersion(): Promise<version> {
 }
 
 function fetchDownloadUrl(accepted: version) {
-    const plat = platform();
-    switch (plat) {
+    switch (platform()) {
         case "win32":
             return accepted.downloadUrls.windows;
         case "linux":
-            return accepted.downloadUrls.linux;
+            {
+                switch (arch()){
+                    case "arm64":
+                        return accepted.downloadUrls.linux_arm64;
+                    case "x64":
+                        return accepted.downloadUrls.linux_amd64 ?? accepted.downloadUrls.linux;
+                    default:
+                        throw new Error('un supported platform')
+                }
+            }
         case "darwin":
             return accepted.downloadUrls.darwin;
         default:

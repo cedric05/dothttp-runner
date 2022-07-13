@@ -33,7 +33,6 @@ import { activate as webExtensionActivate, loadNoteBookControllerSafely } from '
 import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
 import * as fs from 'fs'
-// import { HistoryItem } from './web/types/history';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -45,7 +44,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	await fs.promises.mkdir(context.globalStorageUri.fsPath, { recursive: true });
-	// const historyEmitter = new vscode.EventEmitter<HistoryItem>();
 	const storageService = new LocalStorageService(context.workspaceState);
 	const globalStorageService = new LocalStorageService(context.globalState);
 	const envTree = new EnvTree();
