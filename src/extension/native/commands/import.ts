@@ -6,7 +6,6 @@ import * as querystring from 'querystring';
 import { swagger2har } from 'swagger-to-har2';
 import * as temp from 'temp';
 import * as vscode from 'vscode';
-import { ImportHarResult } from "../../web/types/types";
 import { ApplicationServices } from '../../web/services/global';
 import { Collection, PostmanClient, getPostmanClient } from '../export/postmanUtils';
 
@@ -337,7 +336,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenam
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: vscode.Uri, picktype: ImportOptions, isNotebooK: string): Promise<{ error?: boolean, error_message?: string  } | undefined> {
+async function importSwagger(data: any, filename: string, directory: vscode.Uri, picktype: ImportOptions, isNotebooK: string): Promise<{ error?: boolean, error_message?: string, filename: string } | undefined> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -380,6 +379,7 @@ async function importSwagger(data: any, filename: string, directory: vscode.Uri,
         await postmanFromCollectionFile(directory, null, isNotebooK, picktype, result.output[0]['data']);
         return {
             error: false,
+            filename: directory.fsPath
         }
     } else {
         harFormat = hardata.log.entries.map((entry: { request: any; }) => entry.request);
