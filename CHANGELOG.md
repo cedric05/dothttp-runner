@@ -6,6 +6,7 @@
 ## [0.0.55]
 - [ **New**] Added Support for linux arm
 - [ **Improvement**] History export with date wise categorization
+- [ **Improvement**] Openapi3 import to dothttp is fully supported now.
 
 
 ## [0.0.54]
