@@ -381,7 +381,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a4/dotextensions-0.0.40a4-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a4/dotextensions-0.0.40a4-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.40-alpha4"
         },
@@ -391,7 +391,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a5/dotextensions-0.0.40a5-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a5/dotextensions-0.0.40a5-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.40-alpha5"
         },
@@ -401,7 +401,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a6/dotextensions-0.0.40a6-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a6/dotextensions-0.0.40a6-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.40-alpha6"
         },
@@ -411,7 +411,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a7/dotextensions-0.0.40a7-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40a7/dotextensions-0.0.40a7-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.40-alpha7"
         },
@@ -421,7 +421,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40/dotextensions-0.0.40-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.40/dotextensions-0.0.40-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.40"
         },
@@ -431,7 +431,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a1/dotextensions-0.0.41a1-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a1/dotextensions-0.0.41a1-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.41-alpha1"
         },
@@ -441,7 +441,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a2/dotextensions-0.0.41a2-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a2/dotextensions-0.0.41a2-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.41-alpha2"
         },
@@ -451,7 +451,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a4/dotextensions-0.0.41a4-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a4/dotextensions-0.0.41a4-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.41-alpha4"
         },
@@ -461,7 +461,7 @@
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a5/dotextensions-0.0.41a5-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.41a5/dotextensions-0.0.41a5-darwin.zip"
             },
-            "latest": true,
+            "latest": false,
             "stable": true,
             "version": "0.0.41-alpha5"
         },
