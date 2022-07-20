@@ -9,6 +9,8 @@ import querystring = require('querystring');
 import * as vscode from 'vscode';
 import { Constants } from '../web/utils/constants';
 import { showInLocalFolder } from '../native/commands/export/postman';
+import { groupBy, flatMap } from 'lodash';
+import { dump } from 'js-yaml';
 
 enum TreeType {
     recent,
@@ -151,15 +153,23 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
     public async exportHistory() {
         const items: HistoryItem[] = await this.historyService.fetchAll();
-        const cells = items.map(item => {
-            return {
+        const cells = flatMap(Object.entries(groupBy(items, (item) => {
+            return dateFormat(item.time, "yyyy-dd-mm");
+        })), ([key, items]) => {
+            return [{
+                "kind": vscode.NotebookCellKind.Markup,
+                "language": "markdown",
+                "value": `### ${key}
+${items.length} requests`,
+                "outputs": []
+            }, ...items.map(item => ({
                 "kind": vscode.NotebookCellKind.Code,
                 "language": Constants.LANG_CODE,
                 "value": item.http,
                 "outputs": []
-            };
+            }))]
         });
-        await showInLocalFolder(vscode.Uri.file("history-export"), cells, ".hnbk")
+        await showInLocalFolder(vscode.Uri.file("history-export"), dump(cells), ".hnbk")
     }
 };
 

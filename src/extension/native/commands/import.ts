@@ -6,24 +6,26 @@ import * as querystring from 'querystring';
 import { swagger2har } from 'swagger-to-har2';
 import * as temp from 'temp';
 import * as vscode from 'vscode';
-import { ImportHarResult } from "../../web/types/types";
 import { ApplicationServices } from '../../web/services/global';
 import { Collection, PostmanClient, getPostmanClient } from '../export/postmanUtils';
 
+import { promisify } from 'util';
 import path = require('path');
 import { Constants } from '../../web/utils/constants';
 import { getUnSavedUri } from "../../web/utils/fsUtils";
 import { Utils } from 'vscode-uri';
+import { convert } from 'openapi-to-postmanv2';
 
+const convertOpenApitoPostman = promisify(convert);
 var curlToHar = require('curl-to-har');
 const curl2Postman = require('curl-to-postmanv2/src/lib');
 
 enum ImportOptions {
     postman = 'postman',
     postman_workspace = "postman_workspace",
-    // swagger2 = 'swagger2.0',
-    // swagger3 = 'swagger3.0',
-    swagger = "swagger",
+    swagger2 = 'swagger2',
+    swagger3 = 'swagger3',
+    // swagger = "swagger",
     curl = 'curl',
     curlv2 = "curlv2",
     har = "har"
@@ -39,14 +41,16 @@ const IMPORTOPTION_MESSAGES: {
 } = {
     "file": {
         'postman': "Postman Collection (Have <Filename>.Postman_collection.Json File?)",
-        "swagger": "Swagger Schema (Have <Swagger Schema 2/3>.<Yaml/Json> File?)",
+        "swagger2": "Swagger Schema (Have <Swagger Schema 2>.<Yaml/Json> File?)",
+        "swagger3": "Swagger3/OpenAPI Schema (Have <Swagger3/OpenAPI Schema>.<Yaml/Json> File?)",
         'curl': "Reads Curl Statement From File (Preferred)",
         "curlv2": "Reads Curl Statement From File (Preferred)",
         "har": "Har requests in a file"
     },
     "link": {
         'postman': "Postman Collection Link",
-        "swagger": "Swagger Schema (Json/Yaml) Link",
+        "swagger2": "Swagger2 Schema (Json/Yaml) Link",
+        "swagger3": "Swagger3/OpenApi Schema (Json/Yaml) Link",
         'curl': "Paste Curl Statement In Input Box",
         "curlv2": "Paste Curl Statement In Input Box",
         "har": "Http Link To Har Collection",
@@ -187,7 +191,8 @@ export async function importRequests() {
     const pickType = (await vscode.window.showQuickPick([
         { "picktype": ImportOptions.postman, description: "Import using Public collection url/file shared by some one else", "label": "Postman Individual Collection" },
         { "picktype": ImportOptions.postman_workspace, description: "Import by connecting to postman account via postman apis", label: "Postman Self Account" },
-        { "picktype": ImportOptions.swagger, label: "Swagger(v2 or v3)", description: "is a specification and framework for describing REST APIs" },
+        { "picktype": ImportOptions.swagger2, label: "Swagger(v2)", description: "is a specification and framework for describing REST APIs" },
+        { "picktype": ImportOptions.swagger3, label: "Swagger(v3)/OpenAPI", description: "is a specification and framework for describing REST APIs" },
         { "picktype": ImportOptions.har, label: "Har", description: "Har is http archive, easy way to Capture Web session traffic info: https://support.google.com/admanager/answer/10358597?hl=en" },
         { "picktype": ImportOptions.curlv2, label: "CurlV2" },
         { "picktype": ImportOptions.curl, label: "Curl" },
@@ -195,8 +200,9 @@ export async function importRequests() {
 
     if (!pickType) { return; }
     const isNotebookImport = (await vscode.window.showQuickPick([
-        { label: "Import as http", filetype: "http" },
-        { label: "Import as httpnotebook", "filetype": 'notebook' }], {
+        { label: "Import as Http Notebook", "filetype": 'notebook' },
+        { label: "Import as Http File", filetype: "http" },
+    ], {
         ignoreFocusOut: true,
         canPickMany: false,
     }))?.filetype ?? 'http';
@@ -251,7 +257,7 @@ export async function importRequests() {
                 });
             } else if (linkOrFileType === 'file') {
                 const filters: { [ram: string]: any; } = {};
-                if (pickType === ImportOptions.swagger) {
+                if (pickType === ImportOptions.swagger2 || pickType === ImportOptions.swagger3) {
                     filters.Swagger = ["json", "yaml", "yml"];
                 } else if (pickType === ImportOptions.har) {
                     filters.har = ["har", "har.json", "json"];
@@ -277,20 +283,8 @@ export async function importRequests() {
         const directory = await pickDirectoryToImport();
         if (directory) {
             if (pickType === ImportOptions.postman) {
-                const result = await ApplicationServices.get().getClientHandler()?.importPostman({ directory: directory.fsPath, link: filenameToimport!, save: true, filetype: isNotebookImport });
-                if (result.error == true) {
-                    if ((result.error_message as string).indexOf("File exists")) {
-                        await vscode.window.showErrorMessage(`file already exists in \`${directory}\`!, pick different directory`);
-                    } else {
-                        await vscode.window.showErrorMessage(`import ${pickType} failed with error ${result.error_message}. 
-    this usually happens for postman schema 1.0.0,
-    follow https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#converting-postman-collections-from-v1-to-v2
-    or raise bug`);
-                    }
-                } else {
-                    await vscode.window.showInformationMessage(`checkout ${directory} !! import from postman completed successfully`);
-                }
-            } else if (pickType === ImportOptions.swagger || pickType === ImportOptions.har) {
+                await postmanFromCollectionFile(directory, filenameToimport, isNotebookImport, pickType);
+            } else if (pickType === ImportOptions.swagger2 || pickType === ImportOptions.swagger3 || pickType === ImportOptions.har) {
                 try {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
                     const result = await importSwagger(swaggerInStr, filenameToimport, directory,
@@ -317,6 +311,22 @@ export async function importRequests() {
 }
 
 
+async function postmanFromCollectionFile(directory: vscode.Uri, filenameToimport: string | null, isNotebookImport: string, pickType: ImportOptions, collection?: any) {
+    const result = await ApplicationServices.get().getClientHandler()?.importPostman({ directory: directory.fsPath, link: filenameToimport, save: true, "postman-collection": collection, filetype: isNotebookImport });
+    if (result.error == true) {
+        if ((result.error_message as string).indexOf("File exists")) {
+            await vscode.window.showErrorMessage(`file already exists in \`${directory}\`!, pick different directory`);
+        } else {
+            await vscode.window.showErrorMessage(`import ${pickType} failed with error ${result.error_message}. 
+    this usually happens for postman schema 1.0.0,
+    follow https://learning.postman.com/docs/getting-started/imp    orting-and-exporting-data/#converting-postman-collections-from-v1-to-v2
+    or raise bug`);
+        }
+    } else {
+        await vscode.window.showInformationMessage(`checkout ${directory} !! import from postman completed successfully`);
+    }
+}
+
 async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenameToimport: string): Promise<string> {
     if (linkOrFile['label'] === 'link') {
         const out = await axios.get(filenameToimport);
@@ -326,7 +336,7 @@ async function getFileOrLink(linkOrFile: { label: string | undefined; }, filenam
     }
 }
 
-async function importSwagger(data: any, filename: string, directory: vscode.Uri, picktype: ImportOptions, isNotebooK: string): Promise<ImportHarResult | undefined> {
+async function importSwagger(data: any, filename: string, directory: vscode.Uri, picktype: ImportOptions, isNotebooK: string): Promise<{ error?: boolean, error_message?: string, filename: string } | undefined> {
     var hardata;
     if (typeof data === 'string') {
         if (filename.indexOf("json") >= -1) {
@@ -355,7 +365,7 @@ async function importSwagger(data: any, filename: string, directory: vscode.Uri,
     // check if swagger, load har
     // if har, just use it
     let harFormat = [];
-    if (picktype === ImportOptions.swagger) {
+    if (picktype === ImportOptions.swagger2) {
         let _libFormat = swagger2har(hardata);
         const libFormat: Array<{ har: any; }> = _libFormat;
         if (!(libFormat && libFormat.length > 0)) {
@@ -363,6 +373,13 @@ async function importSwagger(data: any, filename: string, directory: vscode.Uri,
         }
         for (var har of libFormat) {
             harFormat.push(har.har);
+        }
+    } else if (picktype === ImportOptions.swagger3) {
+        const result: any = await convertOpenApitoPostman({ 'type': 'json', data: hardata }, undefined);
+        await postmanFromCollectionFile(directory, null, isNotebooK, picktype, result.output[0]['data']);
+        return {
+            error: false,
+            filename: directory.fsPath
         }
     } else {
         harFormat = hardata.log.entries.map((entry: { request: any; }) => entry.request);

@@ -88,7 +88,7 @@ export class ClientHandler {
         return out;
     }
 
-    async importPostman(options: { link: string; directory: string; save: boolean; filetype?: string; }) {
+    async importPostman(options: { link: string|null; directory: string; save: boolean; filetype?: string; "postman-collection"?: any}) {
         return await this.cli?.request(ClientHandler.IMPORT_POSTMAN_COMMAND, options);
     }
 

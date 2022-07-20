@@ -13,6 +13,7 @@ export class ProNotebookKernel extends NotebookKernel {
     constructor() {
         super()
         const _renderer = vscode.notebooks.createRendererMessaging("dothttp-book");
+        _renderer.postMessage({ messageType: "capabilities", params: { hostType: vscode.env.appHost } });
         _renderer.onDidReceiveMessage(this.onMessage.bind(this))
     }
 
