@@ -88,10 +88,8 @@ export class NotebookKernel {
             execution.end(false, Date.now())
 
         });
-        let properties = {}
         try {
-            // properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {}; } catch (error) { }
-            const out = await this.getResponse(httpDef, cell, filename, properties, target, curl, contexts) as DothttpExecuteResponse;
+            const out = await this.getResponse(httpDef, cell, { filename, target, curl, contexts }) as DothttpExecuteResponse;
             const end = Date.now();
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
@@ -123,7 +121,7 @@ export class NotebookKernel {
                 if (out.error) {
                     execution.replaceOutput([
                         new vscode.NotebookCellOutput([
-                            vscode.NotebookCellOutputItem.error(new Error(out.error_message!))
+                            vscode.NotebookCellOutputItem.stderr(out.error_message!)
                         ])
                     ]);
                     execution.end(false, end);
@@ -158,16 +156,17 @@ export class NotebookKernel {
 
         } catch (error) { }
     }
-    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: string, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
         return await this.client?.executeWithExtension({
             content: httpDef,
             uri: cell.document.uri,
-            env: this.fileStateService?.getEnv(filename) ?? [],
-            properties,
-            target,
+            env: this.fileStateService?.getEnv(options.filename) ?? [],
             noCookie: this.config?.noCookies,
-            curl,
-            contexts: contexts
+            ...options
+            // properties: options.properties,
+            // target: options.target,
+            // curl: options.curl,
+            // contexts: options.contexts
         });
     }
 

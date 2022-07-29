@@ -4,6 +4,7 @@ import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from "
 import { generateLang, generateLangFromOptions } from "../commands/export/generate";
 import { addHistory, contructFileName, showInUntitledView } from "../commands/run";
 import { ClientHandler } from "./client";
+import DotHttpEditorView from "../../views/editor";
 
 
 export class ProNotebookKernel extends NotebookKernel {
@@ -74,9 +75,15 @@ export class ProNotebookKernel extends NotebookKernel {
         execution.end(true, Date.now());
     }
 
-    async getResponse(httpDef: string, cell: vscode.NotebookCell, filename: string, properties: {}, target: string, curl: boolean, contexts: string[]): Promise<DothttpExecuteResponse | undefined> {
-        const out = await super.getResponse(httpDef, cell, filename, properties, target, curl, contexts);
-        addHistory(out, filename + "-notebook-cell.http", { target });
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: string, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
+        var properties = {}
+        try {
+            properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {};
+        } catch (error) {
+            console.log(`error is ${error}`);
+        }
+        const out = await super.getResponse(httpDef, cell, { ...options, properties: properties });
+        addHistory(out, options.filename + "-notebook-cell.http", { target: options.target });
         return out
     }
 }
