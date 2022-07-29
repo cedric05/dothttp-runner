@@ -226,11 +226,17 @@ const Status: FunctionComponent<{ code: number, url: string, executionTime: stri
 
 
 const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, theme,mode}) => {
+    if (mode == "txt"){
+        return <div class='tab-content' id='data-container' hidden={!active}>
+        <pre >{data}</pre>
+    </div>;
+    } else {
     return <div class='tab-content' id='data-container' hidden={!active}>
         <HighLight code={data} 
         theme={theme}
          language={mode}></HighLight>
     </div>;
+    }
 };
 
 const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> | undefined, columns: Array<string> }> = ({ active, data, columns }) => {
