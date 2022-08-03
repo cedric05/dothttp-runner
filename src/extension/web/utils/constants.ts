@@ -46,6 +46,8 @@ export enum Constants {
 	NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
 	NEW_HTTP_FILE_COMMAND = "dothttp.command.newHttpFile",
 
+	TOGGLE_PROPERTY = "dothttp.command.properites.toggle",
+
 
 	//    env tree
 	envTreeView = 'dothttpEnvView',

@@ -1,4 +1,4 @@
-interface Iproperties {
+export interface Iproperties {
     key: string;
     value: string;
     enabled: boolean;
@@ -9,12 +9,12 @@ export interface FileInfo {
 }
 
 export interface IFileState {
-    getEnv(filename: string): FileInfo["envs"];
+    getEnv(filename: string): string[];
     addEnv(filename: string, env: string): void;
     removeEnv(filename: string, env: string): void;
     hasEnv(fileName: string, env: string): boolean;
 
-    getProperties(filename: string): FileInfo["properties"];
+    getProperties(filename: string): Iproperties[];
     addProperty(filename: string, key: string, value: string): void;
     disableProperty(filename: string, key: string, value: string): void;
     enableProperty(filename: string, key: string, value: string): void;

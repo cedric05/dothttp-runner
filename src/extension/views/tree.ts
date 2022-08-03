@@ -1,7 +1,7 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
-import { FileInfo, IFileState } from "../web/types/properties";
+import { IFileState, Iproperties } from "../web/types/properties";
 import DotHttpEditorView from './editor';
 import path = require('path');
 import { Constants } from '../web/utils/constants';
@@ -28,11 +28,7 @@ enum viewState {
 
 }
 
-interface PropertyTreeItem {
-    key: string,
-    value: string,
-    enabled: boolean,
-}
+type PropertyTreeItem = Iproperties & { hidden: boolean }
 
 
 export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
@@ -46,7 +42,8 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<PropertyTreeItem | null> = new vscode.EventEmitter<PropertyTreeItem | null>();
     readonly onDidChangeTreeData: vscode.Event<PropertyTreeItem | null> = this._onDidChangeTreeData.event;
     filename: string | undefined;
-    properties: FileInfo['properties'] | undefined;
+    properties: PropertyTreeItem[] | undefined;
+    hiddenProperties: { [_: string]: boolean } = {};
 
 
     constructor() {
@@ -58,7 +55,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         if (editor) {
             const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const enabled = DotHttpEditorView.isHttpBookUri(editor.document.uri) || DotHttpEditorView.isHttpBookUri(editor.document.uri);
+                const enabled = DotHttpEditorView.isHttpBookUri(editor.document.uri) || DotHttpEditorView.isHttpUri(editor.document.uri);
                 vscode.commands.executeCommand('setContext', Constants.propViewEnabled, enabled);
                 if (enabled) {
                     this.filename = editor.document.fileName;
@@ -71,14 +68,19 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
     async refresh() {
         if (this.filename!) {
-            this.properties = this.fileStateService!.getProperties(this.filename!.toString());
+            this.properties = this.fileStateService!
+                .getProperties(this.filename!.toString())
+                .map((property) => {
+                    const hidden = this.hiddenProperties[property.key] ?? true;
+                    return { ...property, hidden: hidden };
+                });
             this._onDidChangeTreeData.fire(null);
         }
     }
     getTreeItem(element: PropertyTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         const enabled = element.enabled ? 'enabled' : 'disabled';
         return {
-            label: `${element.key}: ${element.value}`,
+            label: `${element.key}: ${element.hidden ? "xxxx" : element.value}`,
             tooltip: `property ${enabled}`,
             contextValue: enabled,
             collapsibleState: vscode.TreeItemCollapsibleState.None
@@ -104,6 +106,12 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
                 })
             })
     }
+
+    public toggleProperty(pos: PropertyTreeItem) {
+        this.hiddenProperties[pos.key] = !(this.hiddenProperties[pos.key] ?? true);
+        this.refresh();
+    }
+
 
     public addProperties(filename: string, properties: { [prop: string]: string }) {
         const keys = Object.keys(properties);
@@ -165,7 +173,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     removeProperty(prop: PropertyTreeItem) {
-        const props = this.fileStateService?.removeProperty(this.filename!?.toString(), prop.key, prop.value);
+        this.fileStateService?.removeProperty(this.filename!?.toString(), prop.key, prop.value);
         this.refresh();
     }
 
