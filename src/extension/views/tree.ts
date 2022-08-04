@@ -7,6 +7,7 @@ import path = require('path');
 import { Constants } from '../web/utils/constants';
 
 
+const FIFTEEN_MINS = 15 * 60 * 1000;
 export interface Position {
     env: string;
     envProperty?: string
@@ -108,7 +109,13 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     public toggleProperty(pos: PropertyTreeItem) {
-        this.hiddenProperties[pos.key] = !(this.hiddenProperties[pos.key] ?? true);
+        const isHidden = !(this.hiddenProperties[pos.key] ?? true);
+        if (!isHidden) {
+            setTimeout(() => {
+                this.toggleProperty(pos)
+            }, FIFTEEN_MINS);
+        }
+        this.hiddenProperties[pos.key] = isHidden;
         this.refresh();
     }
 
