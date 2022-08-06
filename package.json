@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "0.0.57",
+	"version": "0.0.58",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -420,6 +420,11 @@
 				"icon": "$(mirror)",
 				"category": "Dothttp",
 				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.properites.toggle",
+				"title": "Show/Hide Property",
+				"icon": "$(eye-closed)"
 			}
 		],
 		"menus": {
@@ -754,6 +759,11 @@
 				},
 				{
 					"command": "dothttpPropView.removeproperty",
+					"when": "view == dothttpPropView",
+					"group": "inline"
+				},
+				{
+					"command": "dothttp.command.properites.toggle",
 					"when": "view == dothttpPropView",
 					"group": "inline"
 				}

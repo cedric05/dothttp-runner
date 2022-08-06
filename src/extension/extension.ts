@@ -162,6 +162,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.copyEnvPropCommand, (node) => { propertyTree.copyProperty(node) }),
 		vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propertyTree.updateProperty(node) }),
 		vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propertyTree.removeProperty(node) }),
+		vscode.commands.registerCommand(Constants.TOGGLE_PROPERTY, (node) => { propertyTree.toggleProperty(node) }),
 	]);
 
 
