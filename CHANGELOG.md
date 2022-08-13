@@ -3,7 +3,12 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
-## [0.0.57] (Unreleased)
+## [0.0.59]
+- [ **Bump**] 
+  - Bump async and openapi-to-postmanv2 
+  - Bump terser from 5.14.1 to 5.14.2
+
+## [0.0.58]
 - [ **BUG**] fix Property view is not showing for `.http/.dhttp` files
 - [ **Feature**] Support hiding property value by default
   - toggle/untoggle for to view/hide
