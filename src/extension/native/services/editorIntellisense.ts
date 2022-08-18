@@ -87,7 +87,13 @@ export class UrlExpander implements vscode.CodeActionProvider {
                         .map(value => `? "${key}" = ${value}`)
                         .join("\n");
                 } else {
-                    return `? "${key}" = "${queryObj[key]}"`;
+                    // if value contains double quotes, use single quote
+                    // this mostly happens when query value is json
+                    if (queryObj[key]?.indexOf('"') ?? -1 > -1) {
+                        return `? "${key}" = '${queryObj[key]}'`;
+                    } else {
+                        return `? "${key}" = "${queryObj[key]}"`;
+                    }
                 }
             }).join("\n");
             const genereatedDef = baseUrl + "\n" + generatedQuery;
