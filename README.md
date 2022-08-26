@@ -123,9 +123,9 @@ Checkout [playground](http://ghpage.dothttp.dev/)
 
 view product post [here](https://www.producthunt.com/posts/dothttp)
 
-## Note ⚠️⚠️⚠️⚠️:
-
-🗣️ Installing this extenison downloads & runs binaries from this [repository](https://github.com/cedric05/dotextensions-build).  
+## Note:
+⚠️⚠️⚠️⚠️
+🗣️ Installing this extenison, downloads & runs binaries from this [repository](https://github.com/cedric05/dotextensions-build).  
 
 
 ### Vscode alternatives

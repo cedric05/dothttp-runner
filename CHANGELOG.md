@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## [0.0.60]
+- [ **Improvement**] expand url now correctly handles in case double quote is urlencoded.
+
 ## [0.0.59]
 - [ **Bump**] 
   - Bump async and openapi-to-postmanv2 
