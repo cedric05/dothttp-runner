@@ -137,6 +137,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
 		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
 		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp)),
+		vscode.commands.registerCommand(Constants.CLEAR_NOTEBOOK_CELLS, async (editor: vscode.SourceControlResourceState) => {
+			// await vscode.commands.executeCommand("vscode.open", editor.resourceUri);
+			vscode.commands.executeCommand("notebook.clearAllCellsOutputs");
+		}),
 	])
 
 
@@ -178,7 +182,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new TestScriptSuggetions(clientHandler)),
 		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, symbolProvider),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, historyTreeProvider),
-		vscode.commands.registerCommand(Constants.EXPORT_HISTORY, ()=>{
+		vscode.commands.registerCommand(Constants.EXPORT_HISTORY, () => {
 			historyTreeProvider.exportHistory()
 		}),
 

@@ -425,6 +425,12 @@
 				"command": "dothttp.command.properites.toggle",
 				"title": "Show/Hide Property",
 				"icon": "$(eye-closed)"
+			},
+			{
+				"command": "dothttp.command.discardcells",
+				"title": "Clear Notebook Cells",
+				"icon": "$(book)",
+				"category": "Dothttp"
 			}
 		],
 		"menus": {
@@ -667,6 +673,10 @@
 				{
 					"command": "dothttp.command.text.run",
 					"when": "never"
+				},
+				{
+					"command": "dothttp.command.discardcells",
+					"when": "never"
 				}
 			],
 			"view/title": [
@@ -766,6 +776,13 @@
 					"command": "dothttp.command.properites.toggle",
 					"when": "view == dothttpPropView",
 					"group": "inline"
+				}
+			],
+			"scm/resourceState/context": [
+				{
+					"command": "dothttp.command.discardcells",
+					"when": "scmProvider == git",
+					"group": "dothttp"
 				}
 			]
 		},

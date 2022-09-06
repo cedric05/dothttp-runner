@@ -31,6 +31,7 @@ export enum Constants {
 	IMPORT_RESOURCE_COMMAND = "dothttp.command.import.external",
 	EXPORT_RESOURCE_COMMAND = "dothttp.command.export.postman",
 	GENERATE_PROG_LANG_COMMAND = "dothttp.command.generatelang",
+	CLEAR_NOTEBOOK_CELLS = "dothttp.command.discardcells",
 	RESTART_CLI_COMMAND = "dothttp.command.restartcli",
 	RUN_NOTEBOOK_TARGET_IN_CELL = "dothttp.command.codelens.notebook.run",
 	RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
@@ -39,10 +40,10 @@ export enum Constants {
 
 	HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
 
-    NOTEBOOK_CELL_GEN_CURL = "dothttp.command.notebook.gencurl",
-    NOTEBOOK_CELL_GEN_PROGRAM = "dothttp.command.notebook.prog",
-	
-    HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
+	NOTEBOOK_CELL_GEN_CURL = "dothttp.command.notebook.gencurl",
+	NOTEBOOK_CELL_GEN_PROGRAM = "dothttp.command.notebook.prog",
+
+	HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
 	NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
 	NEW_HTTP_FILE_COMMAND = "dothttp.command.newHttpFile",
 
@@ -92,14 +93,14 @@ export enum Constants {
 
 	// download stuff
 	// @ts-ignore
-	
+
 	dothttpNotebook = "dothttp-book",
-	
+
 	dothttpVersion = "dothttp.version",
 
 	versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json",
 	SECRET_POSTMAN_API_KEY = "POSTMAN_API_KEY",
-	
+
 }
 
 export const EXTENSION_VERSION = require('../../../../package.json').version;
