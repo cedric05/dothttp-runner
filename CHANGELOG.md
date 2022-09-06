@@ -4,6 +4,10 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## [0.0.61]
+- [ **New**] Now notebook cells can be cleared from scm window
+
+
 ## [0.0.60]
 - [ **Improvement**] expand url now correctly handles in case double quote is urlencoded.
 
