@@ -51,6 +51,12 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(Constants.updatePropCommand, (node) => { propertyTree.updateProperty(node) }),
         vscode.commands.registerCommand(Constants.removePropCommand, (node) => { propertyTree.removeProperty(node) }),
     ]);
+    context.subscriptions.push(...[
+        vscode.commands.registerCommand(Constants.CLEAR_NOTEBOOK_CELLS, async (editor: vscode.SourceControlResourceState) => {
+            await vscode.commands.executeCommand("vscode.open", editor.resourceUri);
+            vscode.commands.executeCommand("notebook.clearAllCellsOutputs");
+        }),
+    ])
 
 }
 
