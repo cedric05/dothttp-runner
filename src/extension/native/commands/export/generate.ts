@@ -17,7 +17,7 @@ export const LANG_GEN_TARGETS: Array<QuickPickItem & { options?: Array<string>, 
     { label: "kotlin", filext: ".kt" },
     { label: "go", filext: ".go" },
     { label: "c", filext: ".c" },
-    { label: "clojure", options: [], filext: ".js" },
+    { label: "clojure", filext: ".js" },
     { label: "http", filext: ".txt" },
     { label: "objc", filext: ".mm" },
     { label: "ocaml", filext: ".ml" },
@@ -38,7 +38,7 @@ export async function generateLangForHttpFile(uri: vscode.Uri) {
 
 export async function generateLangFromOptions(
     options: { uri: vscode.Uri, target: string, content?: string, contexts?: Array<string> })
-    : Promise<{ code: string, language: string, error: false, extension: string} | void> {
+    : Promise<{ code: string, language: string, error: false, extension: string } | void> {
     const { uri, target, content, contexts } = options;
     const clientHanler = ApplicationServices.get().getClientHandler2();
     const fileStateService = ApplicationServices.get().getFileStateService();

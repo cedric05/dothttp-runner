@@ -56,11 +56,29 @@ export class ProNotebookKernel extends NotebookKernel {
             const target: string = await this._getTarget(cellUri, cellNo, content);
             const langspec = await generateLangFromOptions({ content, uri: cell.document.uri, target, contexts });
             if (langspec && langspec.code) {
-                if (langspec.language == 'node') {
-                    langspec.language = 'javascript'
-                }
+                let lang;
+                switch (langspec.language) {
+                    case "node":
+                        lang = "text/x-javascript";
+                        break;
+                    case "http":
+                        lang = "text/plain";
+                        break;
+                    case "c":
+                        lang = "text/x-cpp";
+                        break;
+                    case "objc":
+                        lang = "text/x-objective-c/objective";
+                        break;
+                    case "ocaml":
+                        lang = "text/plain";
+                        break;
+                    default:
+                        lang = `text/x-${langspec.language}`
+                        break;
+                };
                 execution.replaceOutput([
-                    new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, `text/x-${langspec.language}`)])
+                    new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(langspec.code as string, lang)])
                 ]);
             } else {
                 execution.replaceOutput([
