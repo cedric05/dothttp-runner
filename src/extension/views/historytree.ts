@@ -74,7 +74,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 'date': item.time.getTime()
             })
             const uri = Uri.parse(`${DotHttpEditorView.scheme}:///${path.basename(item.filename)}?${query}`)
-            var command: Command | null = {
+            var command: Command = {
                 title: "",
                 command: 'vscode.open',
                 arguments: [uri]
@@ -89,12 +89,10 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             } else if (item.status_code >= 500) {
                 iconType = historyItemicons.STATUS_5XX
             } else {
-                iconType = historyItemicons.STATUS_ISSUE
-                command = null
+                iconType = historyItemicons.STATUS_ISSUE;
+                command.command = '';
             }
-
             const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
-
             const tree = {
                 label: transform(`${item.url ? new URL(item.url).hostname : ""} ${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
                 command: command,
@@ -153,7 +151,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
     public async exportHistory() {
         const items: HistoryItem[] = await this.historyService.fetchAll();
-        const cells = flatMap(Object.entries(groupBy(items, (item) => {
+        const cells = flatMap(Object.entries(groupBy(items.filter(item => item.status_code), (item) => {
             return dateFormat(item.time, "yyyy-dd-mm");
         })), ([key, items]) => {
             return [{

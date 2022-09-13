@@ -6,6 +6,8 @@
 
 ## [0.0.61]
 - [ **New**] Now notebook cells can be cleared from scm window
+- [ **BUG**] History tree item is not showing all, if there is an error in one item
+- [ **Improvement**] History export now excludes cells with no status code
 
 
 ## [0.0.60]
