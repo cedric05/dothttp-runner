@@ -499,7 +499,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.41-alpha7"
+            "version": "0.0.41"
         }
     ],
     "matrix": {
