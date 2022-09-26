@@ -151,21 +151,36 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
     public async exportHistory() {
         const items: HistoryItem[] = await this.historyService.fetchAll();
-        const cells = flatMap(Object.entries(groupBy(items.filter(item => item.status_code), (item) => {
-            return dateFormat(item.time, "yyyy-dd-mm");
-        })), ([key, items]) => {
-            return [{
-                "kind": vscode.NotebookCellKind.Markup,
-                "language": "markdown",
-                "value": `### ${key}
+        const cells = flatMap(Object.entries(
+            groupBy(
+                items.filter(item => item.status_code),
+                (item) => item.workspace
+            ),
+        ), ([workspace, items]) => {
+            let headers = []
+            if (workspace !== "undefined") {
+                headers.push({
+                    "kind": vscode.NotebookCellKind.Markup,
+                    "language": "markdown",
+                    "value": `### ${workspace} 
 ${items.length} requests`,
-                "outputs": []
-            }, ...items.map(item => ({
-                "kind": vscode.NotebookCellKind.Code,
-                "language": Constants.LANG_CODE,
-                "value": item.http,
-                "outputs": []
-            }))]
+                    "outputs": []
+                });
+            }
+            const dateWise = flatMap(Object.entries(groupBy(items, item => dateFormat(item.time, "yyyy-mm-dd"))).map(([date, items]) => {
+                return [{
+                    "kind": vscode.NotebookCellKind.Markup,
+                    "language": "markdown",
+                    "value": `#### ${date}`,
+                    "outputs": []
+                }, ...items.map(item => ({
+                    "kind": vscode.NotebookCellKind.Code,
+                    "language": Constants.LANG_CODE,
+                    "value": item.http,
+                    "outputs": []
+                }))];
+            }));
+            return [...headers, ...dateWise];
         });
         await showInLocalFolder(vscode.Uri.file("history-export"), dump(cells), ".hnbk")
     }
