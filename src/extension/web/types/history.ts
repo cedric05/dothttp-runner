@@ -7,6 +7,7 @@ export interface HistoryItem {
     filename: string;
     target: string;
     _id?: number;
+    workspace?: string;
 }
 
 

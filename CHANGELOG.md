@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [0.0.63]
+- [ **Improvement**] History export with filename seperation
+
+
 ## [0.0.62]
 - [ **BUG**] History tree item is not showing all, if there is an error in one item
 - [ **Improvement**] History export now excludes cells with no status code

@@ -14,9 +14,9 @@ export class TingoHistoryService implements IHistoryService {
     private get urlStore(): UrlStore {
         return this._urlStore;
     }
-    constructor(location: string, urlStore: UrlStore, 
+    constructor(location: string, urlStore: UrlStore,
         //emitter: EventEmitter<HistoryItem>
-        ) {
+    ) {
         if (!fs.existsSync(location)) {
             fs.mkdirSync(location);
         }
@@ -80,7 +80,7 @@ export class TingoHistoryService implements IHistoryService {
 
     async fetchAll(): Promise<HistoryItem[]> {
         return new Promise((resolve, _reject) => {
-            const cursor = this._collection.find({}, { url: 1, time: 1, status_code: 1, filename: 1, target: 1, _id: 1, http: 1 })
+            const cursor = this._collection.find({}, { url: 1, time: 1, status_code: 1, filename: 1, target: 1, _id: 1, http: 1, workspace: 1 })
                 .sort({ time: -1 })
             cursor.toArray((_error: Error, results: HistoryItem[]) => {
                 resolve(results)
