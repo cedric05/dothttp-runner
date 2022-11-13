@@ -528,239 +528,239 @@
     ],
     "matrix": {
         "0.0.5": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.6": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.7": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.8": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.9": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.10": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.11": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.12": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.13": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.14": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.15": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.16": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.17": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.18": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.19": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.20": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.21": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.22": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.23": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.24": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.25": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.26": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.27": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.28": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.29": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.30": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.31": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.32": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.33": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.34": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.35": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.36": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.37": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.38": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.39": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.40": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.41": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.42": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.43": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.44": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.45": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.46": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.47": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.48": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.49": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.50": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.51": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.52": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.53": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.54": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.55": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.56": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.57": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.58": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.59": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.60": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.61": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.62": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         },
         "0.0.63": {
-            "maxVersion": "0.0.41",
+            "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
         }
     }
