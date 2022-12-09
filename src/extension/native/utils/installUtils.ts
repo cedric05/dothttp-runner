@@ -3,6 +3,8 @@ import fs = require('fs');
 import child_process = require('child_process');
 import { Configuration } from '../../web/utils/config';
 import { Constants } from '../../web/utils/constants';
+import * as semver from 'semver';
+
 
 function getPythonVersion(path: string): boolean {
     var sysout = child_process.execSync(`${path} --version`);
@@ -13,7 +15,7 @@ function getPythonVersion(path: string): boolean {
     if (versionArr.length !== 2) {
         return false;
     }
-    if (parseFloat(versionArr[1]) < 3.8) {
+    if (semver.lt(versionArr[1], "3.8.0")) {
         return false;
     }
     sysout = child_process.execSync(`${path} -m dotextensions.version`);
