@@ -1,3 +1,4 @@
+import { Method } from "axios";
 import { Uri } from "vscode";
 export interface Headers {
     [key: string]: string
@@ -10,6 +11,7 @@ export interface Response {
     status: number;
     url: string;
     output_file?: string;
+    method: Method
 }
 
 
@@ -22,7 +24,7 @@ export interface NotebookExecutionMetadata {
 }
 
 export interface DothttpExecuteResponse {
-
+    method: Method;
     filenameExtension?: string,
     headers: Headers;
     body: string;
@@ -33,6 +35,14 @@ export interface DothttpExecuteResponse {
     error?: boolean;
     error_message?: string;
     script_result?: ScriptResult
+    history?: Array<DothttpRedirectHistory>
+}
+
+export interface DothttpRedirectHistory {
+    status: number,
+    method: Method,
+    url: string,
+    headers: Headers
 }
 
 export interface ScriptResult {
