@@ -216,7 +216,7 @@ async function bootStrap(app: ApplicationServices) {
 		...launchParams,
 	};
 	console.log(`launch args are ${JSON.stringify(clientLaunchArguments)}`)
-	let cli = launchParams.type == RunType.python ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
+	let cli = launchParams.type == RunType.http ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
 	cli.start();
 	app.getClientHandler2()?.setCli(cli);
 	app.getClientHandler()?.setCli(cli);
