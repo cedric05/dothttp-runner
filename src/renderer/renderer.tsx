@@ -10,7 +10,7 @@ import { useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
-import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from '../common/response';
+import { DothttpExecuteResponse, DothttpRedirectHistory, MessageType, NotebookExecutionMetadata } from '../common/response';
 const { HighLight } = require('preact-highlight');
 
 
@@ -60,10 +60,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     if (body.length < MAX_DEFAULT_FORMAT_LEN) {
         body = formatBody(filenameExtension, body);
     }
-    let redirectHistory = ""
-    if (history) {
-        redirectHistory = formatBody('json', JSON.stringify(history));
-    }
+    let redirectHistory = history ?? []
     const [responseBody, setResponseBody] = useState(body);
 
     let scriptLog = `${script_result?.stdout}\n${script_result?.error}`;
@@ -113,8 +110,6 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     */
 
     const outputPropTab = arrayAndCount(Object.keys(script_result?.properties ?? {}));
-    console.log(output_file);
-
     return <div>
         <br />
         <Status code={status} url={url} executionTime={executionTime} />
@@ -141,11 +136,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
             <AceWrap data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme} placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}></AceWrap>
         </div>
         <div hidden={!(redirectHistoryTab.exists && activeIndex === TabType.RedirectHistory)}>
-            <HighLight
-                code={redirectHistory}
-                theme={theme}
-                language={mode}>
-            </HighLight>
+            <RequestHistory redirectHistory={redirectHistory}></RequestHistory>
         </div>
         {/* <AceWrap data={responseBody} mode="text" active={activeIndex === TabType.RawResponse} theme={theme}></AceWrap> */}
         <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
@@ -218,7 +209,7 @@ const TabHeader: FunctionComponent<{
 };
 
 // reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-const Status: FunctionComponent<{ code: number, url: string, executionTime: string }> = ({ code, url, executionTime }) => {
+const Status: FunctionComponent<{ code: number, method?: String, url: string, executionTime?: string, phrase?: boolean }> = ({ code, url, method, executionTime, phrase }) => {
     let statusType: string;
     if (code < 200) {
         statusType = 'info';
@@ -234,8 +225,9 @@ const Status: FunctionComponent<{ code: number, url: string, executionTime: stri
 
 
     return <div class="status-and-url">
-        <span className={`status-label status-label-${statusType!}`} >{code} {getReasonPhrase(code).toLowerCase()}</span>
-        <span class='execution-summary' >{executionTime}s</span>
+        <span className={`status-label status-label-${statusType!}`} >{code} {phrase ? "" : getReasonPhrase(code).toLowerCase()}</span>
+        {method ? <span >{method}</span> : <span></span>}
+        {executionTime ? <span class='execution-summary' >{executionTime}s</span> : <span></span>}
         <span class='request-url'>   {url}</span>
     </div>;
 };
@@ -272,6 +264,51 @@ const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> 
     else {
         return <div></div>
     }
+};
+
+
+const HistoryItem: FunctionComponent<{ history: DothttpRedirectHistory }> = ({ history }) => {
+    const [expand, setExpand] = useState(true);
+    return (<div>
+        <div class='history-item'>
+            <button className='history-toggle' onClick={() => { setExpand(!expand) }}>
+                {expand ? <div>^</div> : <div>˅</div>}
+            </button>
+            <span> <Status code={history.status} method={history.method} url={history.url} phrase={true}></Status></span>
+        </div>
+        {expand ? <div></div> : <div>
+            <table>
+                <tr>
+                    <th class="key column"><b>Header</b></th>
+                    <th class="key column"><b>Value</b></th>
+                </tr>
+                {
+                    Object.entries(history.headers)
+                        .map(
+                            ([key, value]) => (<tr>
+                                <td class='key column'>{key}</td>
+                                <td class='key column'>{value}</td>
+                            </tr>)
+                        )
+                }
+            </table>
+        </div>}
+    </div>);
+}
+
+const RequestHistory: FunctionComponent<{ redirectHistory: DothttpRedirectHistory[] }> = ({ redirectHistory, }) => {
+    // createStates
+
+    return (<div>
+        <div>
+            {
+                redirectHistory
+                    .map(
+                        history => <HistoryItem history={history}></HistoryItem>
+                    )
+            }
+        </div>
+    </div>);
 };
 
 

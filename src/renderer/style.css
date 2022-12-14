@@ -3,7 +3,7 @@
     justify-content: space-between;
 }
 
-.status-and-url{
+.status-and-url {
     /* color: var(--theme-foreground);
     background-color: var(--theme-background); */
     width: fit-content;
@@ -14,10 +14,11 @@
 }
 
 .align-left {
-	float: left;
+    float: left;
 }
+
 .align-right {
-	float: right;
+    float: right;
 }
 
 tr {
@@ -136,21 +137,25 @@ button.tab[active] {
     background-color: #CCCCCC;
     color: #333333;
 }
+
 .status-label-success {
     background-color: #CCFF99;
     color: #006600;
 }
+
 .status-label-redirect {
     background-color: #99CCCC;
     color: #003366;
 }
+
 .status-label-client-err {
     background-color: #FFCC66;
     color: #663300;
 }
-.status-label-server-err{
+
+.status-label-server-err {
     background-color: #FF9999;
-    color:#990000;
+    color: #990000;
 }
 
 .search-term {
@@ -168,4 +173,17 @@ button.tab[active] {
 #editor {
     width: 100%;
     height: 100%;
+}
+
+
+
+.history-item {
+    display: flex;
+    border: 1px solid var(--notebook-inactive-focused-cell-border-color);
+    padding: 10px;
+    margin: 2px;
+}
+
+.history-toggle {
+    margin: 2px;
 }
