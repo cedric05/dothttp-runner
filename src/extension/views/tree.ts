@@ -42,7 +42,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
     private _onDidChangeTreeData: vscode.EventEmitter<PropertyTreeItem | null> = new vscode.EventEmitter<PropertyTreeItem | null>();
     readonly onDidChangeTreeData: vscode.Event<PropertyTreeItem | null> = this._onDidChangeTreeData.event;
-    filename: string | undefined;
+    filename: vscode.Uri | undefined;
     properties: PropertyTreeItem[] | undefined;
     hiddenProperties: { [_: string]: boolean } = {};
 
@@ -59,7 +59,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
                 const enabled = DotHttpEditorView.isHttpBookUri(editor.document.uri) || DotHttpEditorView.isHttpUri(editor.document.uri);
                 vscode.commands.executeCommand('setContext', Constants.propViewEnabled, enabled);
                 if (enabled) {
-                    this.filename = editor.document.fileName;
+                    this.filename = editor.document.uri;
                     this.refresh();
                 }
             }
@@ -70,7 +70,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     async refresh() {
         if (this.filename!) {
             this.properties = this.fileStateService!
-                .getProperties(this.filename!.toString())
+                .getProperties(this.filename!)
                 .map((property) => {
                     const hidden = this.hiddenProperties[property.key] ?? true;
                     return { ...property, hidden: hidden };
@@ -101,7 +101,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             .then(key => {
                 vscode.window.showInputBox({ placeHolder: `add property value for ${this.filename}` }).then(value => {
                     if (this.filename && key && (value || value === '')) {
-                        this.fileStateService!.addProperty(this.filename?.toString(), key, value);
+                        this.fileStateService!.addProperty(this.filename, key, value);
                         this.refresh();
                     }
                 })
@@ -120,7 +120,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
 
-    public addProperties(filename: string, properties: { [prop: string]: string }) {
+    public addProperties(filename: vscode.Uri, properties: { [prop: string]: string }) {
         const keys = Object.keys(properties);
         if (keys.length !== 0) {
 
@@ -146,7 +146,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     enableProperty(pos: PropertyTreeItem) {
-        this.fileStateService?.enableProperty(this.filename!?.toString(), pos.key, pos.value);
+        this.fileStateService?.enableProperty(this.filename!, pos.key, pos.value);
         this.refresh();
     }
     copyProperty(node: PropertyTreeItem) {
@@ -154,7 +154,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         this.refresh();
     }
     disableProperty(node: PropertyTreeItem) {
-        this.fileStateService?.disableProperty(this.filename!?.toString(), node.key, node.value);
+        this.fileStateService?.disableProperty(this.filename!, node.key, node.value);
         this.refresh();
     }
 
@@ -164,23 +164,22 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             value: node?.value
         })
         if (this.filename && (updatedValue || updatedValue === '') && node.value !== updatedValue) {
-            this.fileStateService?.updateProperty(this.filename!?.toString(), node.key, node.value, updatedValue);
+            this.fileStateService?.updateProperty(this.filename!, node.key, node.value, updatedValue);
             this.refresh();
         }
     }
 
     disableAllProperies() {
-        const filename = this.filename!?.toString();
-        const props = this.fileStateService?.getProperties(filename);
+        const props = this.fileStateService?.getProperties(this.filename!);
         props?.forEach(prop => {
-            this.fileStateService!.disableProperty(filename, prop.key, prop.value);
+            this.fileStateService!.disableProperty(this.filename!, prop.key, prop.value);
         }
         )
         this.refresh();
     }
 
     removeProperty(prop: PropertyTreeItem) {
-        this.fileStateService?.removeProperty(this.filename!?.toString(), prop.key, prop.value);
+        this.fileStateService?.removeProperty(this.filename!, prop.key, prop.value);
         this.refresh();
     }
 
@@ -220,7 +219,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     disableAllEnv() {
-        const filename = vscode.window.activeTextEditor?.document.fileName!;
+        const filename = vscode.window.activeTextEditor?.document.uri!;
         const allEnv = this.filestate?.getEnv(filename);
         allEnv?.forEach(env => {
             this.filestate?.removeEnv(filename, env);
@@ -333,11 +332,11 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     private hasEnv(env: string) {
-        return this.filestate!.hasEnv(vscode.window.activeTextEditor?.document.fileName!, env);
+        return this.filestate!.hasEnv(vscode.window.activeTextEditor?.document.uri!, env);
     }
 
     private getEnvForCurrentFile(): string[] {
-        return this.filestate!.getEnv(vscode.window.activeTextEditor?.document.fileName!);
+        return this.filestate!.getEnv(vscode.window.activeTextEditor?.document.uri!);
     }
 
     onActiveEditorChanged(): void {

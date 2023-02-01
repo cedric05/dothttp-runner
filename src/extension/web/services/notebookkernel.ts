@@ -74,7 +74,7 @@ export class NotebookKernel {
         const start = Date.now();
         execution.start(start);
 
-        const { uri, fileName: filename } = cell.document;
+        const { uri } = cell.document;
         const cellNo = parseInt(uri.fragment.substring(2));
         const httpDef = cell.document.getText();
 
@@ -89,7 +89,7 @@ export class NotebookKernel {
 
         });
         try {
-            const out = await this.getResponse(httpDef, cell, { filename, target, curl, contexts }) as DothttpExecuteResponse;
+            const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;
             const end = Date.now();
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
@@ -99,7 +99,7 @@ export class NotebookKernel {
                 executionTime: ((end - start) / 1000).toFixed(1),
             };
             if (out.script_result && out.script_result.properties) {
-                this.treeprovider?.addProperties(cell.document.fileName, out.script_result.properties);
+                this.treeprovider?.addProperties(cell.document.uri, out.script_result.properties);
                 // const totalProps = out.script_result!.properties;
                 // const app = ApplicationServices.get();
                 // const newprops: { [a: string]: string } = {};
@@ -156,7 +156,7 @@ export class NotebookKernel {
 
         } catch (error) { }
     }
-    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: string, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: vscode.Uri, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
         return await this.client?.executeWithExtension({
             content: httpDef,
             uri: cell.document.uri,

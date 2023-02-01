@@ -47,8 +47,8 @@ export async function generateLangFromOptions(
         content: content,
         curl: false,
         target: target,
-        properties: DotHttpEditorView.getEnabledProperties(uri.fsPath),
-        env: fileStateService?.getEnv(uri.fsPath)! ?? [],
+        properties: DotHttpEditorView.getEnabledProperties(uri),
+        env: fileStateService?.getEnv(uri)! ?? [],
         contexts
     });
     try {

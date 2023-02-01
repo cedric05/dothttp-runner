@@ -44,7 +44,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         return await app.getClientHandler()?.executeContentWithExtension({ content: options.content, env: [], curl: options.curl, file: '' });
     }
 
-    public static async runFile(kwargs: { filename: string, curl: boolean, target?: string }) {
+    public static async runFile(kwargs: { filename: vscode.Uri, curl: boolean, target?: string }) {
         //DotHttpEditorView.isHttpFile(kwargs.filename)
         if (ApplicationServices.get().getClientHandler()?.isRunning()) {
             const app = ApplicationServices.get();
@@ -55,7 +55,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
             const options: DothttpRunOptions = {
                 noCookie: config?.noCookies,
                 experimental: config?.isExperimental,
-                file: kwargs.filename,
+                file: kwargs.filename.fsPath,
                 curl: kwargs.curl,
                 target: kwargs.target ?? '1',
                 properties: DotHttpEditorView.getEnabledProperties(kwargs.filename),
@@ -71,7 +71,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
         }
     }
 
-    static getEnabledProperties(filename: string) {
+    static getEnabledProperties(filename: vscode.Uri) {
         const fileservice = ApplicationServices.get().getFileStateService();
         const properties: any = {};
         (fileservice?.getProperties(filename) ?? []).filter(prop => prop.enabled).forEach(prop => {
