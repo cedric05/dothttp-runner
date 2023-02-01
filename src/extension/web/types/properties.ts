@@ -22,4 +22,6 @@ export interface IFileState {
     removeProperty(file: vscode.Uri, key: string, value: string): void;
     updateProperty(file: vscode.Uri, key: string, prev_value: string, value: string): void;
 
+    setEnvFile(file: vscode.Uri): void;
+    getEnvFile(): vscode.Uri | undefined;
 }

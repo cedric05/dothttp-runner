@@ -22,6 +22,7 @@ export class VersionInfo {
 
 export class FileState implements IFileState {
     private static section = "files";
+    private static env = "env";
 
     state: Map<string, FileInfo> = new Map();
     storage: LocalStorageService;
@@ -29,6 +30,15 @@ export class FileState implements IFileState {
     constructor(storage: LocalStorageService) {
         this.storage = storage;
     }
+    setEnvFile(file: Uri): void {
+        this.storage.setValue(FileState.env, file.toString())
+    }
+
+    getEnvFile(): Uri | undefined {
+        let envFile: string = this.storage.getValue(FileState.env);
+        return Uri.parse(envFile)
+    }
+
     hasEnv(fileName: Uri, env: string): boolean {
         const envs = this.getFileInfo(fileName).envs;
         if (envs.indexOf(env) > -1) {

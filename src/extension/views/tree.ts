@@ -56,15 +56,9 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
         if (editor) {
             const scheme = editor.document.uri.scheme;
             if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const enabled = DotHttpEditorView.isHttpBookUri(editor.document.uri) || DotHttpEditorView.isHttpUri(editor.document.uri);
-                vscode.commands.executeCommand('setContext', Constants.propViewEnabled, enabled);
-                if (enabled) {
-                    this.filename = editor.document.uri;
-                    this.refresh();
-                }
+                this.filename = editor.document.uri;
+                this.refresh();
             }
-        } else {
-            vscode.commands.executeCommand('setContext', Constants.propViewEnabled, false);
         }
     }
     async refresh() {
@@ -81,7 +75,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     getTreeItem(element: PropertyTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         const enabled = element.enabled ? 'enabled' : 'disabled';
         return {
-            label: `${element.key}: ${element.hidden ? "xxxx" : element.value}`,
+            label: `${element.key}: ${element.hidden ? element.value.substring(0, 2) + 'xxxxx(masked)' : element.value}`,
             tooltip: `property ${enabled}`,
             contextValue: enabled,
             collapsibleState: vscode.TreeItemCollapsibleState.None
@@ -190,7 +184,6 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     readonly onDidChangeTreeData: vscode.Event<Position | null> = this._onDidChangeTreeData.event;
 
     private tree!: DothttpJson;
-    private editor!: vscode.TextEditor;
     private autoRefresh = true;
     private _filename!: vscode.Uri;
 
@@ -202,20 +195,16 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
 
     public set filename(name: vscode.Uri) {
         this._filename = name;
+        this.filestate?.setEnvFile(name);
+        this.refresh()
     }
 
 
     private filestate: IFileState | undefined;
 
-
-
-    public refresh(offset?: Position): void {
+    public refresh(): void {
         this.parseTree();
-        if (offset) {
-            this._onDidChangeTreeData.fire(offset);
-        } else {
-            this._onDidChangeTreeData.fire(null);
-        }
+        this._onDidChangeTreeData.fire(null);
     }
 
     disableAllEnv() {
@@ -308,64 +297,63 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
 
     setFileStateService(filetateService: IFileState) {
         this.filestate = filetateService;
+        const filename = filetateService.getEnvFile();
+        if (filename) {
+            this.filename = filename;
+        }
+
     }
 
     private parseTree(): void {
-        this.editor = vscode.window.activeTextEditor!;
-        if (this.editor && this.editor.document && basename(this.editor.document.fileName) === ".dothttp.json") {
-            this.filename = this.editor.document.uri;
-            this.tree = json.parse(this.editor.document.getText()) as DothttpJson;
-        } else {
-            const dirname = path.dirname(this.editor.document.fileName);
-            const filename = vscode.Uri.parse(path.join(dirname, '.dothttp.json'));
-            // TODO check if file exists
-            vscode.workspace.fs.readFile(filename).then(bindata => {
-                this.filename = this.editor.document.uri;
+        const editor = vscode.window.activeTextEditor;
+        if (this.filename) {
+            vscode.workspace.fs.readFile(this.filename).then(bindata => {
                 this.tree = json.parse(bindata.toString());
-                this.filename = filename
                 this._onDidChangeTreeData.fire(null);
             }, _error => {
-                vscode.commands.executeCommand('setContext', Constants.enableEnvViewVar, false);
-
             })
+        } else if (editor && editor.document && basename(editor.document.fileName) === ".dothttp.json") {
+            this.filename = editor.document.uri;
+            this.tree = json.parse(editor.document.getText()) as DothttpJson;
         }
     }
 
     private hasEnv(env: string) {
-        return this.filestate!.hasEnv(vscode.window.activeTextEditor?.document.uri!, env);
+        if (vscode.window.activeTextEditor?.document.uri) {
+            return this.filestate!.hasEnv(vscode.window.activeTextEditor?.document.uri!, env);
+        } else if (vscode.workspace.workspaceFolders?.length ?? 0 > 0) {
+            return this.filestate!.hasEnv(vscode.workspace.workspaceFolders![0].uri, env);
+        }
+        return false;
     }
 
-    private getEnvForCurrentFile(): string[] {
-        return this.filestate!.getEnv(vscode.window.activeTextEditor?.document.uri!);
+    configureEnvFile() {
+        vscode.window.showOpenDialog({
+            canSelectFolders: false,
+            canSelectFiles: true,
+            title: "Select property file",
+            filters: { property: ["json"] },
+            canSelectMany: false,
+        }).then((files) => {
+            if (files && files.length > 0) {
+                this.filename = files[0];
+            }
+        });
     }
 
     onActiveEditorChanged(): void {
         const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            const scheme = editor.document.uri.scheme;
-            if (scheme === 'file' || scheme === Constants.notebookscheme) {
-                const fileName = editor.document.fileName;
-                const uri = editor.document.uri
-                const enabled = DotHttpEditorView.isHttpBookUri(uri)
-                    || DotHttpEditorView.isHttpUri(uri)
-                    || basename(fileName) === ".dothttp.json";
-                vscode.commands.executeCommand('setContext', Constants.enableEnvViewVar, enabled);
-                if (enabled) {
-                    this.refresh();
-                }
-            }
-        } else {
-            vscode.commands.executeCommand('setContext', Constants.enableEnvViewVar, false);
+        if (!this.filename && editor && basename(editor.document.fileName) === ".dothttp.json") {
+            this.filename = editor.document.uri;
+            this.refresh();
         }
     }
 
     private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {
-        if (this.autoRefresh && this.editor && this.editor.document && changeEvent.document.uri.toString() === this.editor.document.uri.toString()) {
+        if (this.autoRefresh && changeEvent.document.uri === vscode.window.activeTextEditor?.document.uri) {
             this.refresh()
         }
     }
-
-
     openEnvFile() {
         vscode.workspace.openTextDocument(this.filename).then(editor => {
             vscode.window.showTextDocument(editor, 2, false);
