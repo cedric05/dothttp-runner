@@ -47,6 +47,7 @@ export async function generateLangFromOptions(
         content: content,
         curl: false,
         target: target,
+        propertyFile: fileStateService?.getEnvFile(),
         properties: DotHttpEditorView.getEnabledProperties(uri),
         env: fileStateService?.getEnv(uri)! ?? [],
         contexts

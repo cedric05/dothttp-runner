@@ -58,6 +58,7 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
                 file: kwargs.filename.fsPath,
                 curl: kwargs.curl,
                 target: kwargs.target ?? '1',
+                propertyFile: filestateService?.getEnvFile(),
                 properties: DotHttpEditorView.getEnabledProperties(kwargs.filename),
                 env: env,
             }

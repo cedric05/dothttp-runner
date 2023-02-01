@@ -161,6 +161,7 @@ export class NotebookKernel {
             content: httpDef,
             uri: cell.document.uri,
             env: this.fileStateService?.getEnv(options.filename) ?? [],
+            propertyFile: this.fileStateService?.getEnvFile(),
             noCookie: this.config?.noCookies,
             ...options
             // properties: options.properties,
