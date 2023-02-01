@@ -1,5 +1,13 @@
 # Http Client for vscode (dothttp-runner)
 
+## Install
+
+visit [vscode-marketplace](https://marketplace.visualstudio.com/items?itemName=ShivaPrasanth.dothttp-code&ssr=false#review-details) or [open-vsx](https://open-vsx.org/extension/shivaprasanth/dothttp-code) and search for `dothttp-code`
+
+## Note:
+⚠️⚠️⚠️⚠️
+🗣️ Installing this extenison, downloads & runs binaries from this [repository](https://github.com/cedric05/dotextensions-build).  
+
 ## Principle / WHY
 
 Invoking http requests is typical job of frontend/backed dev. This extension aims in making http requests in vscode (most loved editor) without loosing privacy (like insomnia/postman, stores collection in remote, needs account and many more).
@@ -104,7 +112,11 @@ data({
 
 ```
 
-support us via upvoting in [producthunt](https://www.producthunt.com/posts/dothttp) & starring in [github](https://github.com/cedric05/dothttp-runner)
+## Support 
+
+- producthunt support us via upvoting in [producthunt](https://www.producthunt.com/posts/dothttp)
+- starring in [github](https://github.com/cedric05/dothttp-runner)
+- donating in via [github sponsors](https://github.com/sponsors/cedric05)
 
 -----------
 
@@ -122,11 +134,6 @@ Checkout [dothttp(dsl for http)](https://github.com/cedric05/dothttp).
 Checkout [playground](http://ghpage.dothttp.dev/)
 
 view product post [here](https://www.producthunt.com/posts/dothttp)
-
-## Note:
-⚠️⚠️⚠️⚠️
-🗣️ Installing this extenison, downloads & runs binaries from this [repository](https://github.com/cedric05/dotextensions-build).  
-
 
 ### Vscode alternatives
 
