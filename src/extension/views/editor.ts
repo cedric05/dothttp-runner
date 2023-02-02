@@ -19,13 +19,13 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
 
     provideTextDocumentContent(uri: vscode.Uri, _token: vscode.CancellationToken): vscode.ProviderResult<string> {
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve, _reject) => {
             const id = JSON.parse(querystring.decode(uri.query)['_id'] as string);
             const output = await this.historyService.getById(id);
             if (output.http) {
                 resolve(output.http);
             } else {
-                reject();
+                resolve("request ran into error");
             }
         });
     }
