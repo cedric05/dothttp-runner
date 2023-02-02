@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -63,6 +63,7 @@
 		"onCommand:dothttpEnvView.disableAllEnv",
 		"onCommand:dothttpPropView.removeproperty",
 		"onCommand:dothttpEnvView.opendothttpjson",
+		"onCommand:dothttpEnvView.configureEnvFile",
 		"onCommand:dothttpEnvView.copyPropertyValue",
 		"onCommand:dothttp.command.newHttpBook",
 		"onCommand:dothttp.command.newHttpFile",
@@ -360,6 +361,12 @@
 				"enablement": "dothttpRunMode == full"
 			},
 			{
+				"command": "dothttpEnvView.configureEnvFile",
+				"title": "Configure Env File",
+				"icon": "$(tools)",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
 				"command": "dothttpEnvView.copyPropertyValue",
 				"title": "Copy Environment Value",
 				"icon": "$(chrome-restore)",
@@ -444,6 +451,11 @@
 					"command": "dothttp.command.openVariableView",
 					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'",
 					"group": "navigation/execute@2"
+				},
+				{
+					"command": "dothttpEnvView.configureEnvFile",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'",
+					"group": "navigation/execute@1"
 				}
 			],
 			"notebook/cell/execute": [
@@ -691,6 +703,11 @@
 					"group": "navigation"
 				},
 				{
+					"command": "dothttpEnvView.configureEnvFile",
+					"when": "view == dothttpEnvView",
+					"group": "navigation"
+				},
+				{
 					"command": "dothttpEnvView.disableAllEnv",
 					"when": "view == dothttpEnvView",
 					"group": "navigation"
@@ -862,13 +879,11 @@
 			"dothttp-view-container": [
 				{
 					"id": "dothttpEnvView",
-					"name": "Dothttp Environment",
-					"when": "dothttpEnvViewEnabled"
+					"name": "Dothttp Environment"
 				},
 				{
 					"id": "dothttpPropView",
-					"name": "Dothttp Properties",
-					"when": "dothttpPropViewEnabled"
+					"name": "Dothttp Properties"
 				},
 				{
 					"id": "dothttpHistory",

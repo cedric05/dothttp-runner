@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 export interface Iproperties {
     key: string;
     value: string;
@@ -9,16 +10,18 @@ export interface FileInfo {
 }
 
 export interface IFileState {
-    getEnv(filename: string): string[];
-    addEnv(filename: string, env: string): void;
-    removeEnv(filename: string, env: string): void;
-    hasEnv(fileName: string, env: string): boolean;
+    getEnv(file: vscode.Uri): string[];
+    addEnv(file: vscode.Uri, env: string): void;
+    removeEnv(file: vscode.Uri, env: string): void;
+    hasEnv(file: vscode.Uri, env: string): boolean;
 
-    getProperties(filename: string): Iproperties[];
-    addProperty(filename: string, key: string, value: string): void;
-    disableProperty(filename: string, key: string, value: string): void;
-    enableProperty(filename: string, key: string, value: string): void;
-    removeProperty(filename: string, key: string, value: string): void;
-    updateProperty(filename: string, key: string, prev_value: string, value: string): void;
+    getProperties(file: vscode.Uri): Iproperties[];
+    addProperty(file: vscode.Uri, key: string, value: string): void;
+    disableProperty(file: vscode.Uri, key: string, value: string): void;
+    enableProperty(file: vscode.Uri, key: string, value: string): void;
+    removeProperty(file: vscode.Uri, key: string, value: string): void;
+    updateProperty(file: vscode.Uri, key: string, prev_value: string, value: string): void;
 
+    setEnvFile(file: vscode.Uri): void;
+    getEnvFile(): vscode.Uri | undefined;
 }

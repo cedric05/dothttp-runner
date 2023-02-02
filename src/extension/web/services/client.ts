@@ -10,7 +10,7 @@ export class ClientHandler2 {
     cli?: ICommandClient;
     decoder = new TextDecoder();
 
-    setCli(cli: ICommandClient){
+    setCli(cli: ICommandClient) {
         this.cli = cli;
         return this;
     }
@@ -41,11 +41,13 @@ export class ClientHandler2 {
             };
             return await this.cli?.request(ClientHandler.CONTENT_EXECUTE_COMMAND, {
                 file: options.uri.fsPath,
+                'property-file': options.propertyFile?.fsPath ?? null,
                 ...options
             })
         } else {
             return await this.cli?.request(ClientHandler.FILE_EXECUTE_COMMAND, {
                 file: options.uri.fsPath,
+                'property-file': options.propertyFile?.fsPath ?? null,
                 ...options,
             })
         }
@@ -111,10 +113,12 @@ export class ClientHandler2 {
     async generateLangHttp(options: ExecuteFileOptions & { content?: string }): Promise<HttpFileTargetsDef> {
         if (options.content || !this.cli?.isSupportsNative()) {
             return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                'property-file': options.propertyFile?.fsPath ?? null,
                 ...options
             })
         } else {
             return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                'property-file': options.propertyFile?.fsPath ?? null,
                 file: options.uri.fsPath,
                 ...options
             })

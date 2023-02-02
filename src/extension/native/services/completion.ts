@@ -126,7 +126,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
         const dothttpJsonUri = Utils.joinPath(document.uri, ".dothttp.json");
         var envProperties: CompletionItem[][] = [];
         if (await fsExists(dothttpJsonUri)) {
-            const envList = this.fileStateService?.getEnv(document.uri.fsPath) ?? [];
+            const envList = this.fileStateService?.getEnv(document.uri) ?? [];
             const data = await read(dothttpJsonUri);
             const envFile: { [envName: string]: { propName: string } } = parser.parse(data);
 
@@ -144,7 +144,7 @@ export class VariableCompletionProvider implements CompletionItemProvider {
         }
 
         const properties = _.uniq(
-            this.fileStateService?.getProperties(document.uri.fsPath)
+            this.fileStateService?.getProperties(document.uri)
                 .filter(prop => prop.enabled)
                 .map(prop => prop.key))
             .map(this.variableCompletionItem("From Properties"))

@@ -52,6 +52,7 @@ export class ClientHandler {
             nocookie: options.noCookie,
             target: options.target,
             curl: options.curl,
+            'property-file': options.propertyFile?.fsPath ?? null,
         });
     }
 
@@ -74,7 +75,8 @@ export class ClientHandler {
             nocookie: options.noCookie,
             target: options.target,
             curl: options.curl,
-            contexts: options.contexts
+            contexts: options.contexts,
+            'property-file': options.propertyFile?.fsPath ?? null,
         });
     }
 
@@ -88,7 +90,7 @@ export class ClientHandler {
         return out;
     }
 
-    async importPostman(options: { link: string|null; directory: string; save: boolean; filetype?: string; "postman-collection"?: any}) {
+    async importPostman(options: { link: string | null; directory: string; save: boolean; filetype?: string; "postman-collection"?: any }) {
         return await this.cli?.request(ClientHandler.IMPORT_POSTMAN_COMMAND, options);
     }
 
@@ -163,7 +165,7 @@ export type ExecuteFileOptions = {
     noCookie?: boolean;
     experimental?: boolean;
     env?: string[];
-    propertyFile?: String;
+    propertyFile?: vscode.Uri;
     curl: boolean;
     uri: vscode.Uri;
     target?: string;

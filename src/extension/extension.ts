@@ -107,6 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerTextEditorCommand(Constants.GEN_CURL_FILE_COMMAND, genCurlCommand),
 		vscode.commands.registerTextEditorCommand(Constants.RUN_TARGET_CODE_LENS, runHttpCodeLensCommand),
 		vscode.commands.registerCommand(Constants.openEnvFileCommmand, () => envTree.openEnvFile()),
+		vscode.commands.registerCommand(Constants.CONFIGURE_ENV_FILE_COMMAND, () => envTree.configureEnvFile()),
 		vscode.commands.registerCommand(Constants.toggleExperimentalCommand, toggleExperimentalFlag(Constants.toggleExperimentalCommand)),
 		vscode.commands.registerCommand(Constants.toggleHistoryCommand, toggleExperimentalFlag(Constants.toggleHistoryCommand)),
 		vscode.commands.registerCommand(Constants.toggleNocookieCommand, toggleExperimentalFlag(Constants.toggleNocookieCommand)),

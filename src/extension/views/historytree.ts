@@ -73,7 +73,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 '_id': item._id!.toString(),
                 'date': item.time.getTime()
             })
-            const uri = Uri.parse(`${DotHttpEditorView.scheme}:///${path.basename(item.filename)}?${query}`)
+            const uri = Uri.from({ scheme: DotHttpEditorView.scheme, path: path.basename(item.filename), query: query })
             var command: Command = {
                 title: "",
                 command: 'vscode.open',
@@ -90,7 +90,6 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 iconType = historyItemicons.STATUS_5XX
             } else {
                 iconType = historyItemicons.STATUS_ISSUE;
-                command.command = '';
             }
             const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
             const tree = {

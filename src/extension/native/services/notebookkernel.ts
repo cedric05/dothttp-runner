@@ -93,10 +93,10 @@ export class ProNotebookKernel extends NotebookKernel {
         execution.end(true, Date.now());
     }
 
-    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: string, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
+    async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: vscode.Uri, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
         var properties = {}
         try {
-            properties = DotHttpEditorView.getEnabledProperties(cell.document.fileName) ?? {};
+            properties = DotHttpEditorView.getEnabledProperties(cell.document.uri) ?? {};
         } catch (error) {
             console.log(`error is ${error}`);
         }

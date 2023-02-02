@@ -1,10 +1,10 @@
-import { MarkdownString } from "vscode";
+import { MarkdownString, Uri } from "vscode";
 
 export interface DothttpRunOptions {
     noCookie?: boolean,
     experimental?: boolean,
     env?: string[],
-    propertyFile?: String,
+    propertyFile?: Uri,
     curl: boolean
     file: string,
     target?: string,
