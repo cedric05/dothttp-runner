@@ -113,10 +113,12 @@ export class ClientHandler2 {
     async generateLangHttp(options: ExecuteFileOptions & { content?: string }): Promise<HttpFileTargetsDef> {
         if (options.content || !this.cli?.isSupportsNative()) {
             return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                'property-file': options.propertyFile?.fsPath ?? null,
                 ...options
             })
         } else {
             return await this.cli?.request(ClientHandler.GET_HAR_FORMAT_COMMAND, {
+                'property-file': options.propertyFile?.fsPath ?? null,
                 file: options.uri.fsPath,
                 ...options
             })
