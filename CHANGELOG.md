@@ -3,6 +3,11 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## [1.0.2]
+- [ **Improvement**] Fix null property file while executing request without property file
+
+
 ## [1.0.1]
 - [ **Improvement**] Properties are now at workspace level
 - [ **Improvement**] Env are now at workspace level

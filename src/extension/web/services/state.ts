@@ -31,12 +31,15 @@ export class FileState implements IFileState {
         this.storage = storage;
     }
     setEnvFile(file: Uri): void {
-        this.storage.setValue(FileState.env, file.toString())
+        if (file)
+            this.storage.setValue(FileState.env, file.toString())
     }
 
     getEnvFile(): Uri | undefined {
-        let envFile: string = this.storage.getValue(FileState.env);
-        return Uri.parse(envFile)
+        let envFile: string | null = this.storage.getValue(FileState.env);
+        if (envFile) {
+            return Uri.parse(envFile)
+        }
     }
 
     hasEnv(fileName: Uri, env: string): boolean {
