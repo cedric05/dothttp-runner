@@ -293,7 +293,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.39-b0"
+            "version": "0.0.39-beta.0"
         },
         {
             "downloadUrls": {
@@ -303,7 +303,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.39-b2"
+            "version": "0.0.39-beta.2"
         },
         {
             "downloadUrls": {
@@ -313,7 +313,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.39-b3"
+            "version": "0.0.39-beta.3"
         },
         {
             "downloadUrls": {
@@ -323,7 +323,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.39-b4"
+            "version": "0.0.39-beta.4"
         },
         {
             "downloadUrls": {
@@ -333,7 +333,7 @@
             },
             "latest": false,
             "stable": false,
-            "version": "0.0.39-b5"
+            "version": "0.0.39-beta.5"
         },
         {
             "downloadUrls": {
@@ -353,7 +353,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha1"
+            "version": "0.0.40-alpha.1"
         },
         {
             "downloadUrls": {
@@ -363,7 +363,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha2"
+            "version": "0.0.40-alpha.2"
         },
         {
             "downloadUrls": {
@@ -373,7 +373,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha3"
+            "version": "0.0.40-alpha.3"
         },
         {
             "downloadUrls": {
@@ -383,7 +383,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha4"
+            "version": "0.0.40-alpha.4"
         },
         {
             "downloadUrls": {
@@ -393,7 +393,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha5"
+            "version": "0.0.40-alpha.5"
         },
         {
             "downloadUrls": {
@@ -403,7 +403,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha6"
+            "version": "0.0.40-alpha.6"
         },
         {
             "downloadUrls": {
@@ -413,7 +413,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.40-alpha7"
+            "version": "0.0.40-alpha.7"
         },
         {
             "downloadUrls": {
@@ -433,7 +433,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha1"
+            "version": "0.0.41-alpha.1"
         },
         {
             "downloadUrls": {
@@ -443,7 +443,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha2"
+            "version": "0.0.41-alpha.2"
         },
         {
             "downloadUrls": {
@@ -453,7 +453,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha4"
+            "version": "0.0.41-alpha.4"
         },
         {
             "downloadUrls": {
@@ -463,7 +463,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha5"
+            "version": "0.0.41-alpha.5"
         },
         {
             "downloadUrls": {
@@ -475,7 +475,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha6"
+            "version": "0.0.41-alpha.6"
         },
         {
             "downloadUrls": {
@@ -487,7 +487,7 @@
             },
             "latest": false,
             "stable": true,
-            "version": "0.0.41-alpha7"
+            "version": "0.0.41-alpha.7"
         },
         {
             "downloadUrls": {
@@ -511,7 +511,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha1"
+            "version": "0.0.42-alpha.1"
         },
         {
             "downloadUrls": {
@@ -523,7 +523,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha3"
+            "version": "0.0.42-alpha.3"
         },
         {
             "downloadUrls": {
@@ -535,7 +535,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha4"
+            "version": "0.0.42-alpha.4"
         },
         {
             "downloadUrls": {
@@ -547,7 +547,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha5"
+            "version": "0.0.42-alpha.5"
         },
         {
             "downloadUrls": {
@@ -559,7 +559,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha6"
+            "version": "0.0.42-alpha.6"
         },
         {
             "downloadUrls": {
@@ -571,7 +571,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha8"
+            "version": "0.0.42-alpha.8"
         },
         {
             "downloadUrls": {
@@ -583,7 +583,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha9"
+            "version": "0.0.42-alpha.9"
         },
         {
             "downloadUrls": {
@@ -595,7 +595,7 @@
             },
             "latest": true,
             "stable": true,
-            "version": "0.0.42-alpha10"
+            "version": "0.0.42-alpha.10"
         }
     ],
     "matrix": {
