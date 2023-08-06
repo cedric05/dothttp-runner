@@ -115,7 +115,7 @@ function fetchDownloadUrl(accepted: version) {
             return accepted.downloadUrls.windows;
         case "linux":
             {
-                switch (arch()){
+                switch (arch()) {
                     case "arm64":
                         return accepted.downloadUrls.linux_arm64;
                     case "x64":
@@ -198,7 +198,12 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
         const pythonPath = Configuration.getPath();
         return { path: pythonPath, type: RunType.python }
     }
-    for (const [lookupLocation, assumedPath] of Object.entries({ configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
+    const cliWithExtension = vscode.Uri.joinPath(
+        context.extensionUri,
+        "cli",
+        "cli",
+    ).fsPath;
+    for (const [lookupLocation, assumedPath] of Object.entries({ extensionWithPath: cliWithExtension, configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
         console.log(`checking ${lookupLocation}: ${assumedPath}`);
         if (assumedPath && fs.existsSync(assumedPath)) {
             console.log(`working ${lookupLocation}: ${assumedPath}`);
