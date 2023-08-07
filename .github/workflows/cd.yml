@@ -35,9 +35,11 @@ jobs:
           for target  in win32-x64 win32-arm64 linux-x64 linux-arm64 darwin-x64 darwin-arm64 web
           do
             if [[ $target == win32* ]]; then
-                os=windows
-            elif [[ $target == linux* ]]; then
-                os=linux
+                os=x86-windows
+            elif [[ $target == linux-x64 ]]; then
+                os=linux-amd64
+            elif [[ $target == linux-arm64 ]]; then
+                os=linux-arm64
             elif [[ $target == darwin* ]]; then
                 os=darwin
             fi
@@ -45,6 +47,7 @@ jobs:
             unzip dotextensions-0.0.42a10-$os.zip
             npx vsce package --target target
           done
+          ls
       - name: Upload to visualstudio
         continue-on-error: true
         run: |
