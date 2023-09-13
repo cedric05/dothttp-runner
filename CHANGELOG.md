@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [1.0.3]
+- [ **Fix**] Notebook renderer is not updating with latest response when output cell is run multiple times, fixed
+
+
 
 ## [1.0.2]
 - [ **Improvement**] Fix null property file while executing request without property file
@@ -30,8 +34,8 @@
 - [ **Improvement**] expand url now correctly handles in case double quote is urlencoded.
 
 ## [0.0.59]
-- [ **Bump**] 
-  - Bump async and openapi-to-postmanv2 
+- [ **Bump**]
+  - Bump async and openapi-to-postmanv2
   - Bump terser from 5.14.1 to 5.14.2
 
 ## [0.0.58]
@@ -59,21 +63,21 @@
 
 ## [0.0.52/0.0.53]
 0.0.52 is a prerelease of 0.0.53
-- [ **Bug**] Generate/OpeninEditor is not working in notebook output (bug introduced in webextension support (0.0.49)) 
-**prerelease** 
+- [ **Bug**] Generate/OpeninEditor is not working in notebook output (bug introduced in webextension support (0.0.49))
+**prerelease**
 - [ **Improvement**] Fix script execution logging is not logging error output if compilation issue
 - [ **Improvement**] change from ace editor to highlighter.js for faster rendereing. if you want to keep using ace editor, install dotbook extension
 
 ## [0.0.51]
 - [ **Bug** ] Fix installation issues (dothttp command line)
 
-## [0.0.50] 
+## [0.0.50]
 - [ **Improvement**] Support for html in notebook cell output
 - [ **Improvement**] output channel is now renamed from `dothttp-code` to `Dothttp`
 - [ **Bug**] Fix export to postman from notebook
 - [ **Bug**] history is not working after 0.0.49
 
-## [0.0.49] 
+## [0.0.49]
 - [ **Fetaure**] suggestions of test scripts
 - [ **Improvement**] removes annoying setting of dothttp path in `.settings.json`
 - [ **Bug**] Fix for http as httpbook is not assigning correct file extension
@@ -129,7 +133,7 @@ Checkout dothttp notebook [collections](https://github.com/cedric05/api-collecti
   - tested with https://github.com/APIs-guru/openapi-directory
 
 ## [0.0.38]
-- [**Improvement**] better code outline and easy filtering 
+- [**Improvement**] better code outline and easy filtering
   - use '^' to filter urls
   - use '#' to filter by name
 - [**Improvement**] test script completion provided using request forwarding to javascript.
@@ -215,11 +219,11 @@ Checkout dothttp notebook [collections](https://github.com/cedric05/api-collecti
 
 ## [0.0.29]
 
-- [**Improvement**] Better support for swagger import 
+- [**Improvement**] Better support for swagger import
 
 ## [0.0.28]
 
-- [**Improvement**] export postman now generates filename with suffix ".postmancollection.json" 
+- [**Improvement**] export postman now generates filename with suffix ".postmancollection.json"
 - [**New Feature**] supports importing har file
 - [**Improvement**] curl with new library and import by file, should fix most curl import issues
   - Use other formats as curl import os not standardised
@@ -361,7 +365,7 @@ This is a minor update
 ## [0.0.7]
 - [New] now users can use `{{$randomStr}}, {{$randomStr:10}}, {{$randomInt}}, {{$randomInt:10}}, {{$randomBool}}, {{$randomFloat}}` to generate random strings in payload (from dothttp-req)
   - you can reuse random string via define here `{{username=$randomStr:10}}` and reuse like this `{{username}}`
-- [Improvement] run and curl generation initally runs first target in http file. 
+- [Improvement] run and curl generation initally runs first target in http file.
     >when user runs/trys two generate two options
     >if dothttp.conf.runrecent  to true (defaults to true)
      - runs most recently run target (optional)
@@ -371,7 +375,7 @@ This is a minor update
 - [Improvement] added option to disable all environments at a time.
 - [Bug] History pane is loading too much data while page load fixed.
 - [Bug] curl generation in editor title is not working fixed
-- [Bug] linux installation has few glitches 
+- [Bug] linux installation has few glitches
 
 
 ## [0.0.6]
@@ -390,7 +394,7 @@ This is a minor update
 - http file outline
     > users can switch to different requests via `ctrl o`
 - bug fixes
-  - normalize name 
+  - normalize name
   - [#20](issue with windows saving response)
 
 ## [0.0.4]
