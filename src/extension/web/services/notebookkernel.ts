@@ -12,7 +12,7 @@ var mime = require('mime-types');
 const hasInbuiltPreview = ["html",
     // support for below are taken care by text/x-json ...
     /*
-    "json", 
+    "json",
      "xml",
      "md",
     */
@@ -137,6 +137,7 @@ export class NotebookKernel {
                         const nativeContentTypes = this.parseAndAdd(out.response);
                         outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
                         outs.push(...nativeContentTypes);
+                        await execution.clearOutput();
                         execution.replaceOutput([
                             new vscode.NotebookCellOutput(outs)
                         ]);
