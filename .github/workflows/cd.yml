@@ -45,7 +45,7 @@ jobs:
                 os=darwin
             fi
             wget https://github.com/cedric05/dotextensions-build/releases/download/v-${{ env.version }}/dotextensions-${{ env.version }}-$os.zip
-            unzip dotextensions-0.0.42a10-$os.zip -q
+            unzip -q dotextensions-0.0.42a10-$os.zip
             npx vsce package --target $target
           done
           ls
