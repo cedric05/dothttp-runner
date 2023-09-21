@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Publish Stable
+    name: Ubuntu Publish Stable
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
           set -x
           # npm install @vscode/vsce --global
           # win32-ia32 linux-armhf alpine-x64 alpine-arm64
-          for target  in win32-x64 win32-arm64 linux-x64 linux-arm64 darwin-x64 darwin-arm64 web
+          for target in linux-x64 linux-arm64 darwin-x64 darwin-arm64 web win32-x64 win32-arm64 
           do
             if [[ $target == win32* ]]; then
                 os=x86-windows
@@ -49,14 +49,20 @@ jobs:
             npx vsce package --target $target
           done
           ls
-      - name: Upload to visualstudio
-        continue-on-error: true
-        run: |
-          npx vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
-      - name: Upload to openvsx
-        continue-on-error: true
-        run: |
-          npx ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./*.vsix
+          name: dothttp-runner-preview-notebook.vsix
+          retention-days: 3
+      # - name: Upload to visualstudio
+      #   continue-on-error: true
+      #   run: |
+      #     npx vsce publish --packagePath ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.MARKETPLACE_PAT }}
+      # - name: Upload to openvsx
+      #   continue-on-error: true
+      #   run: |
+      #     npx ovsx publish ./${{ env.PACKAGE_NAME }}.vsix -p ${{ secrets.OVSX_ACCESS_TOKEN }}
       # - name: Create GitHub release
       #   id: create_release
       #   uses: actions/create-release@v1
