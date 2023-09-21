@@ -33,7 +33,7 @@ jobs:
           set -x
           # npm install @vscode/vsce --global
           # win32-ia32 linux-armhf alpine-x64 alpine-arm64
-          for target in linux-x64 linux-arm64 darwin-x64 darwin-arm64 web win32-x64 win32-arm64 
+          for target in linux-x64 linux-arm64 darwin-x64 darwin-arm64 web 
           do
             if [[ $target == win32* ]]; then
                 os=x86-windows
