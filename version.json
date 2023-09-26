@@ -850,6 +850,10 @@
         "1.0.2": {
             "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
+        },
+        "1.0.3": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
         }
     }
 }
