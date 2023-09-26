@@ -80,6 +80,20 @@ const nodeconfig = {
 };
 
 
+
+const prefetchconfig = {
+	...baseConfig,
+	entry: './src/utils/prefetch.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+	target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	output: {
+		// the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'prefetch.js',
+		libraryTarget: 'commonjs2'
+	},
+};
+
+
 const rendererConfig = {
 	target: 'web',
 	mode: "development",
@@ -127,4 +141,4 @@ const rendererConfig = {
 
 
 
-module.exports = [rendererConfig, webConfig, nodeconfig];
+module.exports = [rendererConfig, webConfig, nodeconfig, prefetchconfig];
