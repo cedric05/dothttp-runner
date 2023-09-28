@@ -119,7 +119,7 @@ export function fetchDownloadUrl(accepted: version) {
     }
 }
 export interface Progress {
-    report(val: { message: string, increment: number });
+    report(val: { message: string, increment: number }): void;
 }
 
 export async function downloadDothttp(downloadLocation: string, url: string, progress: Progress) {

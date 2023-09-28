@@ -4,7 +4,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const NODE_ENV = process.env.NODE_ENV ?? "PRODUCTION";
+const NODE_ENV = process.env.NODE_ENV ?? "production";
 /**@type {import('webpack').Configuration}*/
 const baseConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
