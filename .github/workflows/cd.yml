@@ -83,7 +83,7 @@ jobs:
       - run: npm install --legacy-peer-deps
       - shell: pwsh
         run: npm run package
-      - run: npx vsce package --target ${{ env.target }}
+      - run: npx vsce package
       - uses: actions/upload-artifact@v2
         with:
           name: without-cli
