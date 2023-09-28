@@ -38,7 +38,7 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
     const cliWithExtension = vscode.Uri.joinPath(
         context.extensionUri,
         "cli",
-        "cli",
+        getCliWithExtension(),
     ).fsPath;
     for (const [lookupLocation, assumedPath] of Object.entries({ extensionWithPath: cliWithExtension, configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
         console.log(`checking ${lookupLocation}: ${assumedPath}`);
@@ -72,18 +72,21 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
 }
 
 function getExePath(downloadLocation: string) {
+    return path.join(downloadLocation, getCliWithExtension())
+}
+
+function getCliWithExtension() {
     switch (platform()) {
         case "win32": {
-            return path.join(downloadLocation, 'cli.exe');
+            return 'cli.exe'
         }
         case "linux":
         case 'darwin': {
-            return path.join(downloadLocation, 'cli');
+            return 'cli'
         }
         default:
-            return path.join(downloadLocation, 'cli');
+            return 'cli'
     }
-
 }
 
 export async function updateDothttpIfAvailable(globalStorageDir: string) {
