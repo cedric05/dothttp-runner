@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## [1.0.4]
+- [ **Improvement**] Platform specific in case dothttp-runner as few systems are behind firewall and won't be able to download dotextensions-build
+
 ## [1.0.3]
 - [ **Fix**] Notebook renderer is not updating with latest response when output cell is run multiple times, fixed
 
