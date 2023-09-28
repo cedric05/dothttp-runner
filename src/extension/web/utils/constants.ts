@@ -99,7 +99,8 @@ export enum Constants {
 
 	dothttpVersion = "dothttp.version",
 
-	versionApi = "https://raw.githubusercontent.com/cedric05/dothttp-runner/VERSION/version.json",
+	// github raw doesnt work in all places, needed to revert to azure storage
+	versionApi = "https://cedric05artifacts.blob.core.windows.net/github-artifacts/dothttp-runner-version/version.json",
 	SECRET_POSTMAN_API_KEY = "POSTMAN_API_KEY",
 
 }
