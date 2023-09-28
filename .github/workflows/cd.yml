@@ -104,7 +104,3 @@ jobs:
       - run: npx ovsx publish --packagePath $(find . -iname *.vsix)
         env:
           OVSX_PAT: ${{ secrets.OVSX_ACCESS_TOKEN }}
-      - name: Upload GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: *.vsix
