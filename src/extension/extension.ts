@@ -225,7 +225,9 @@ async function bootStrap(app: ApplicationServices) {
 	if (launchParams.version) {
 		app.getVersionInfo()?.setVersionDothttpInfo(launchParams.version);
 	} else {
-		updateDothttpIfAvailable(context.globalStorageUri.fsPath);
+		if (launchParams.type != RunType.binary_from_extension) {
+			updateDothttpIfAvailable(context.globalStorageUri.fsPath);
+		}
 	}
 }
 

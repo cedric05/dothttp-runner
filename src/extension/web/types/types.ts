@@ -54,7 +54,8 @@ export interface TypeResult {
 export enum RunType {
     binary,
     python,
-    http
+    http,
+    binary_from_extension,
 }
 
 export type ImportHarResult = {

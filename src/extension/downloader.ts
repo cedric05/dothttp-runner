@@ -44,7 +44,11 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
         console.log(`checking ${lookupLocation}: ${assumedPath}`);
         if (assumedPath && fs.existsSync(assumedPath)) {
             console.log(`working ${lookupLocation}: ${assumedPath}`);
-            return { path: assumedPath, type: RunType.binary }
+            if (lookupLocation === "extensionWithPath"){
+                return { path: assumedPath, type: RunType.binary_from_extension }
+            } else {
+                return { path: assumedPath, type: RunType.binary }
+            }
         }
     }
     console.log('no installation found, will download and install');
