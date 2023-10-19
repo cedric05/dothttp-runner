@@ -866,6 +866,30 @@
         "1.0.3": {
             "maxVersion": "0.0.42",
             "minVersion": "0.0.8"
+        },
+        "1.0.4": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
+        },
+        "1.0.5": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
+        },
+        "1.0.6": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
+        },
+        "1.0.7": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
+        },
+        "1.0.8": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
+        },
+        "1.0.9": {
+            "maxVersion": "0.0.42",
+            "minVersion": "0.0.8"
         }
     }
 }
