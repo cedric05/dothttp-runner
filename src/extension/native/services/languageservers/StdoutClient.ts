@@ -91,8 +91,12 @@ export class StdoutClient extends BaseSpanClient {
         });
         // start readline to listen
         this.rl.on("line", (line) => {
-            const result: IResult = JSON.parse(line);
-            this.eventS.emit(result.id + '', result);
+            try{
+                const result: IResult = JSON.parse(line);
+                this.eventS.emit(result.id + '', result);
+            } catch(error){
+                console.log(`some rogue statemnt ${error}`)
+            }
         });
     }
 

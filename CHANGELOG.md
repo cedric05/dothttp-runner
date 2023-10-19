@@ -3,8 +3,17 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## [1.0.6]
+- Update dotextensions-buil/cli to 0.0.42a11
+- Ignore errors in case of rouge stdout from terminal
+- Fix Renderer issues 
+  - #148 Unable to open editor from sister extension dotbook
+  - #147 unable to generate from sister extension dotbook
+
+
 ## [1.0.5]
-- Don't update/upgrade dotextensions-build incase of builtin extension.
+- won't try to update/upgrade cli incase of cli builtin into the extension.
 
 ## [1.0.4]
 - [ **Improvement**] Platform specific in case dothttp-runner as few systems are behind firewall and won't be able to download dotextensions-build

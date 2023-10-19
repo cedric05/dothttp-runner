@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -158,7 +158,7 @@
 		],
 		"notebookRenderer": [
 			{
-				"id": "dothttp-book",
+				"id": "dotbook",
 				"displayName": "dothttp Renderer",
 				"entrypoint": "./dist/renderer.js",
 				"requiresMessaging": "always",
