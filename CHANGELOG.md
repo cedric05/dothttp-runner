@@ -3,6 +3,11 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## [1.0.8]
+- Update dothextensions-build/cli to 0.0.42a13
+  - Add support to http proxies
+  - Fix import loads from different cells
+
 ## [1.0.7]
 - Update dothextensions-build/cli to 0.0.42a12
 - Fix peer dependencies issue (uses dot-preact-highlight inplace of preact-highlight)
