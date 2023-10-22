@@ -62,7 +62,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      - run: npm install --legacy-peer-deps
+      # - run: npm install --legacy-peer-deps
+      - run: npm install 
       - shell: pwsh
         run: |
           echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_ENV
@@ -80,7 +81,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      - run: npm install --legacy-peer-deps
+      - run: npm install 
+      # - run: npm install --legacy-peer-deps
       - shell: pwsh
         run: npm run package
       - run: npx vsce package

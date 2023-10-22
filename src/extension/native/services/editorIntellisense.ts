@@ -7,6 +7,7 @@ import { parseURL } from 'whatwg-url';
 import { parse as parseQueryString } from 'querystring';
 import { DotHovers, DothttpTypes } from '../../web/types/misc';
 import { Constants } from '../../web/utils/constants';
+import { Utils } from 'vscode-uri';
 
 class RunHttpCommand implements Command {
     title: string = "Run http";
@@ -175,6 +176,19 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
         const result = await this.getTypeResult(document, position);
         if (result.type === DothttpTypes.NAME) {
             return new vscode.Location(document.uri, document.positionAt(result.base_start!));
+        } if (result.type === DothttpTypes.IMPORT) {
+            let filename = result.filename!;
+            if (!filename.endsWith('.http')) {
+                filename = filename + '.http';
+            }
+            let uri;
+            if (filename.startsWith('./')) {
+                const dirUri = Utils.dirname(document.uri);
+                uri = Utils.joinPath(dirUri, filename).with({ scheme: 'file' });
+            } else {
+                uri = document.uri.with({ path: filename, scheme: 'file' });
+            }
+            return new vscode.Location(uri, new vscode.Position(0, 0));
         }
         return [];
     }

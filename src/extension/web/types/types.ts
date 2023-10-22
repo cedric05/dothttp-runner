@@ -49,6 +49,7 @@ export interface TypeResult {
     "target": string | null;
     "target_base": string | null;
     "base_start": number | null;
+    "filename": string | null;
 }
 
 export enum RunType {

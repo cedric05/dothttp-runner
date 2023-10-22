@@ -88,15 +88,15 @@ export class NotebookKernel {
             execution.end(false, Date.now())
 
         });
+        let isOk = false;
         try {
             const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;
-            const end = Date.now();
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
                 cellNo: cell.index,
                 date: dateFormat(start, 'yyyy-MM-dd--HH-mm-ss'),
                 target: target,
-                executionTime: ((end - start) / 1000).toFixed(1),
+                executionTime: ((Date.now() - start) / 1000).toFixed(1),
             };
             if (out.script_result && out.script_result.properties) {
                 this.treeprovider?.addProperties(cell.document.uri, out.script_result.properties);
@@ -123,8 +123,7 @@ export class NotebookKernel {
                         new vscode.NotebookCellOutput([
                             vscode.NotebookCellOutputItem.stderr(out.error_message!)
                         ])
-                    ]);
-                    execution.end(false, end);
+                    ])
                 } else {
                     if (curl) {
                         execution.replaceOutput([
@@ -142,8 +141,7 @@ export class NotebookKernel {
                             new vscode.NotebookCellOutput(outs)
                         ]);
                     }
-
-                    execution.end(true, end)
+                    isOk = true;
                 }
             } catch (error) {
                 execution.replaceOutput([
@@ -152,10 +150,10 @@ export class NotebookKernel {
                         vscode.NotebookCellOutputItem.stderr(error), vscode.NotebookCellOutputItem.stdout(error), vscode.NotebookCellOutputItem.text(error)
                     ])
                 ]);
-                execution.end(false, Date.now())
             }
 
         } catch (error) { }
+        execution.end(isOk, Date.now());
     }
     async getResponse(httpDef: string, cell: vscode.NotebookCell, options: { filename: vscode.Uri, target: string, properties?: {}, curl: boolean, contexts: string[] }): Promise<DothttpExecuteResponse | undefined> {
         return await this.client?.executeWithExtension({
