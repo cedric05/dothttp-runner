@@ -31,7 +31,8 @@ export enum DothttpTypes {
     PAYLOAD_MULTIPART = "payload_multipart",
     OUTPUT = "output",
     SCRIPT = "script",
-    COMMENT = "comment"
+    COMMENT = "comment",
+    IMPORT = "import"
 }
 
 type Immutable<T> = {
@@ -180,4 +181,9 @@ visit [docs](https://docs.dothttp.dev/docs/request-basics#multipart)`),
 
 visit [docs](https://docs.dothttp.dev/docs/scripts)`),
     "comment": new MarkdownString("Comment"),
+    "import": new MarkdownString(`Import
+
+    \`> {% import "./<filename.http>" %}\`
+    
+    visit [docs](https://docs.dothttp.dev/docs/import)`)
 };

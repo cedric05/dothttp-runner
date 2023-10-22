@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse, DothttpRedirectHistory, MessageType, NotebookExecutionMetadata } from '../common/response';
-const { HighLight } = require('preact-highlight');
+const { HighLight } = require('dot-preact-highlight');
 
 
 
