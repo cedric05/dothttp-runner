@@ -601,13 +601,37 @@
             "downloadUrls": {
                 "linux_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a11/dotextensions-0.0.42a11-linux-arm64.zip",
                 "linux_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a11/dotextensions-0.0.42a11-linux-amd64.zip",
-                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a10/dotextensions-0.0.42a10-linux-amd64.zip",
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a11/dotextensions-0.0.42a11-linux-amd64.zip",
                 "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a11/dotextensions-0.0.42a11-x86-windows.zip",
                 "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a11/dotextensions-0.0.42a11-darwin.zip"
             },
             "latest": true,
             "stable": true,
             "version": "0.0.42-alpha.11"
+        },
+        {
+            "downloadUrls": {
+                "linux_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a12/dotextensions-0.0.42a12-linux-arm64.zip",
+                "linux_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a12/dotextensions-0.0.42a12-linux-amd64.zip",
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a12/dotextensions-0.0.42a12-linux-amd64.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a12/dotextensions-0.0.42a12-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a12/dotextensions-0.0.42a12-darwin.zip"
+            },
+            "latest": true,
+            "stable": true,
+            "version": "0.0.42-alpha.12"
+        },
+        {
+            "downloadUrls": {
+                "linux_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a13/dotextensions-0.0.42a13-linux-arm64.zip",
+                "linux_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a13/dotextensions-0.0.42a13-linux-amd64.zip",
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a13/dotextensions-0.0.42a13-linux-amd64.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a13/dotextensions-0.0.42a13-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-0.0.42a13/dotextensions-0.0.42a13-darwin.zip"
+            },
+            "latest": true,
+            "stable": true,
+            "version": "0.0.42-alpha.13"
         }
     ],
     "matrix": {
