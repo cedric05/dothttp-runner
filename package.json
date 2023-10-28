@@ -925,7 +925,7 @@
 		"@types/dateformat": "^3.0.1",
 		"@types/glob": "^7.1.4",
 		"@types/httpsnippet": "^1.23.0",
-		"@types/js-yaml": "^4.0.1",
+		"@types/js-yaml": "^4.0.8",
 		"@types/json-stringify-safe": "^5.0.0",
 		"@types/lodash": "^4.14.168",
 		"@types/mime-types": "^2.1.0",
