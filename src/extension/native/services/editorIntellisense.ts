@@ -8,6 +8,7 @@ import { parse as parseQueryString } from 'querystring';
 import { DotHovers, DothttpTypes } from '../../web/types/misc';
 import { Constants } from '../../web/utils/constants';
 import { Utils } from 'vscode-uri';
+import path = require('path');
 
 class RunHttpCommand implements Command {
     title: string = "Run http";
@@ -79,8 +80,8 @@ export class UrlExpander implements vscode.CodeActionProvider {
             return []
         }
         if (urlParsed.query) {
-            const path = urlParsed.path.join("/");
-            var baseUrl = `${urlParsed.scheme}://${urlParsed.host}${urlParsed.port ? ':' + urlParsed.port : ''}/${path}`;
+            const parsed_path = urlParsed.path.join("/");
+            var baseUrl = `${urlParsed.scheme}://${urlParsed.host}${urlParsed.port ? ':' + urlParsed.port : ''}/${parsed_path}`;
             const queryObj = parseQueryString(urlParsed.query);
             const generatedQuery = Object.keys(queryObj).map(key => {
                 if (Array.isArray(queryObj[key])) {
@@ -182,7 +183,7 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
                 filename = filename + '.http';
             }
             let uri;
-            if (filename.startsWith('./')) {
+            if (!path.isAbsolute(filename)) {
                 const dirUri = Utils.dirname(document.uri);
                 uri = Utils.joinPath(dirUri, filename).with({ scheme: 'file' });
             } else {

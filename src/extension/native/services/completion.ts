@@ -13,6 +13,7 @@ import { IFileState } from '../../web/types/properties';
 import { Utils } from 'vscode-uri';
 import { fsExists, read } from '../../web/utils/fsUtils';
 import { ClientHandler } from './client';
+import { ApplicationServices } from '../../web/services/global';
 
 export class UrlCompletionProvider implements CompletionItemProvider {
     static readonly triggerCharacters = [
@@ -70,6 +71,28 @@ export class UrlCompletionProvider implements CompletionItemProvider {
 
 }
 
+export class ExtendHttpCompletionProvider implements CompletionItemProvider {
+    async provideCompletionItems(document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[]> {
+        const result = [];
+        const client = ApplicationServices.get().getClientHandler();
+        const symbols = await client?.getVirtualDocumentSymbols(document.getText(), "notebook", document.fileName);
+        result.push(...(symbols?.names?.map(i => ({
+            label: `extend ${i.name}`,
+            insertText: `"${i.name}"`,
+            kind: CompletionItemKind.Reference,
+            detail: `extend ${i.name}`,
+            keepWhitespace: true,
+        })) ?? []));
+        result.push(...(symbols?.imports?.names?.map(i => ({
+            label: `extend http '${i.name}'`,
+            insertText: `: "${i.name}"`,
+            kind: CompletionItemKind.Reference,
+            detail: `extend http '${i.name}'`,
+            keepWhitespace: true,
+        })) ?? []));
+        return result;
+    }
+}
 
 
 export class VariableCompletionProvider implements CompletionItemProvider {

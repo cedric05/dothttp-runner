@@ -40,6 +40,10 @@ export type UrlSymbolInfo = {
 export interface DotTttpSymbol {
     names?: Array<TargetSymbolInfo>;
     urls?: Array<UrlSymbolInfo>;
+    imports?: {
+        names: Array<TargetSymbolInfo>,
+        urls: Array<UrlSymbolInfo>;
+    }
     error?: boolean;
     error_message?: string;
 }

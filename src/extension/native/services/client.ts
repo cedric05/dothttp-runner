@@ -98,8 +98,8 @@ export class ClientHandler {
         return await this.cli?.request(ClientHandler.GET_FILE_TARGETS_COMMAND, { file: filename, source: source || 'default' });
     }
 
-    async getVirtualDocumentSymbols(content: string, source?: string): Promise<DotTttpSymbol> {
-        return await this.cli?.request(ClientHandler.CONTENT_TARGETS_COMMAND, { file: "", content, source: source || 'default' });
+    async getVirtualDocumentSymbols(content: string, source?: string, file?: string, context?: [string]): Promise<DotTttpSymbol> {
+        return await this.cli?.request(ClientHandler.CONTENT_TARGETS_COMMAND, { file: file ?? "", content, source: source || 'default', context });
     }
 
 

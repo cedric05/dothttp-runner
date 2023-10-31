@@ -3,7 +3,15 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
-## [1.0.8]
+## 1.0.10
+- Update dothextensions-build/cli to 0.0.43a1
+    - Improvement: now `json` keyword is optional when payload content-type is `application/json` 
+    - Improvement:  Empty file is valid http file, no need to create empty http request just to avoid compilation issue
+    - Improvement: Provide support to suggest extendable http requests.
+- Improvement: add suggestions for extendable http requests.
+- Fix: issues with click provider 
+
+## [1.0.9]
 - Update dothextensions-build/cli to 0.0.42
   - fix: property from multiple cells or imports is getting overridden resulting into undefined property
 

@@ -20,7 +20,7 @@ import { StdoutClient } from './native/services/languageservers/StdoutClient';
 import { RunType } from './web/types/types';
 import { Configuration } from './web/utils/config';
 import { ApplicationBuilder } from './web/services/builder';
-import { HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './native/services/completion';
+import { ExtendHttpCompletionProvider, HeaderCompletionItemProvider, KeywordCompletionItemProvider, UrlCompletionProvider, VariableCompletionProvider } from './native/services/completion';
 import { ApplicationServices } from './web/services/global';
 import { FileState, VersionInfo } from './web/services/state';
 import { LocalStorageService } from './web/services/storage';
@@ -188,6 +188,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}),
 
 
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new ExtendHttpCompletionProvider()),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(clientHandler, urlStoreService), ...UrlCompletionProvider.triggerCharacters),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(fileStateService), ...VariableCompletionProvider.triggerCharacters),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
