@@ -966,7 +966,7 @@
 		"webpack-cli": "^4.5.0"
 	},
 	"dependencies": {
-		"@types/vscode": "^1.60.0",
+		"@types/vscode": "^1.85.0",
 		"axios": "^0.21.2",
 		"buffer": "^6.0.3",
 		"curl-to-har": "^1.0.1",
