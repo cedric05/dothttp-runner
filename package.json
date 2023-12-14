@@ -967,7 +967,7 @@
 	},
 	"dependencies": {
 		"@types/vscode": "^1.60.0",
-		"axios": "^0.21.2",
+		"axios": "^1.6.0",
 		"buffer": "^6.0.3",
 		"curl-to-har": "^1.0.1",
 		"curl-to-postmanv2": "^0.5.1",
