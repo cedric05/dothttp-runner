@@ -67,7 +67,7 @@ visit [docs](https://docs.dothttp.dev/docs/flags)`),
 1. name (Opitonal) \`@name\`
 1. flags(@insecure/@clear) (Optional) \`@insecure\`, \`@clear\`
 1. Url (required)
-1. basicauth/digestauth (Optional) \`basicauth\`, \`digestauth\`, \`ntlmauth\`, \`awsauth\`
+1. basicauth/digestauth/awsauth/azureauth/hawkauth/hawkauth (Optional) \`basicauth\`, \`digestauth\`, \`ntlmauth\`, \`hawkauth\`, \`awsauth\`, \`azurecli/azurespcert/azurespsecret\`,
 1. certificate (Optional) \`certificate(cert="", key="")\` or \`certificate(cert="")\` or  \`p12(file="", password="")\`
 1. headers (Optional) \`Authorization: "secretkey"\`
 1. urlparams (Optional) \`? page = 20\`

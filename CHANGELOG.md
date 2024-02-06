@@ -3,6 +3,26 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.12
+- Update dothextensions-build/cli to 0.0.43a4
+  - chore update python packages (jinja2, faker, crytpography, jsonschema, textx, flask)
+  - Fix Azure cli auth for windows
+
+
+## 1.0.11
+- Update dothextensions-build/cli to 0.0.43a2
+  - New : Adds support to azureauth
+  - Updates dependent packages
+    * Bump faker from 19.13.0 to 20.0.0 by @dependabot in https://github.com/cedric05/dothttp/pull/202
+    * Azure Auth Support by @cedric05 in https://github.com/cedric05/dothttp/pull/209
+    * chore bump `jsonschema` to 4.20.0
+    * chore bump `textx` to 4.0.1
+    * chore bump `restrictedpython` to 7.0
+    * chore bump `faker` to 20.1.0
+    * add new python package `msal` to 1.26.0
+    * Add azure auth support 
+    * update badssl certificates 
+
 ## 1.0.10
 - Update dothextensions-build/cli to 0.0.43a1
     - Improvement: now `json` keyword is optional when payload content-type is `application/json` 
