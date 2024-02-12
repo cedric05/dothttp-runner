@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.13
+- Update dothextensions-build/cli to 0.0.43a5
+  - `urllib`, `cryptography`, `open` all now allowed in prerequest script
+
 ## 1.0.12
 - Update dothextensions-build/cli to 0.0.43a4
   - chore update python packages (jinja2, faker, crytpography, jsonschema, textx, flask)
