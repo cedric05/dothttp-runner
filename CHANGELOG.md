@@ -3,6 +3,11 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.16
+- Update dothextensions-build/cli to 0.0.43a7
+  - Fixes error message for azure auth requeests in case of failure to acquire token.
+
+
 ## 1.0.15
 - Update dothextensions-build/cli to 0.0.43a6
   - chore bump versions for `faker`, `waitress`, `requests-pkcs12`
