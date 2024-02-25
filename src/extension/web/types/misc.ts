@@ -67,7 +67,7 @@ visit [docs](https://docs.dothttp.dev/docs/flags)`),
 1. name (Opitonal) \`@name\`
 1. flags(@insecure/@clear) (Optional) \`@insecure\`, \`@clear\`
 1. Url (required)
-1. basicauth/digestauth/awsauth/azureauth/hawkauth/hawkauth (Optional) \`basicauth\`, \`digestauth\`, \`ntlmauth\`, \`hawkauth\`, \`awsauth\`, \`azurecli/azurespcert/azurespsecret\`,
+1. basicauth/digestauth (Optional) \`basicauth\`, \`digestauth\`, \`ntlmauth\`, \`awsauth\`, \`azurecli/azurespsecret/azurespcert\`
 1. certificate (Optional) \`certificate(cert="", key="")\` or \`certificate(cert="")\` or  \`p12(file="", password="")\`
 1. headers (Optional) \`Authorization: "secretkey"\`
 1. urlparams (Optional) \`? page = 20\`
@@ -83,6 +83,25 @@ example:
 visit [docs](https://docs.dothttp.dev/docs/auth/#ntlm-authentication)
 
 `),
+    "hawk_auth": new MarkdownString(`Configured with HttpDef Hawk authentication mechanism
+
+example:
+\`hawkauth("<id>", "<key>", "<algorithm> (optional)")\`
+
+The 'id' is the identifier of the client, 'key' is the shared secret used for generating the authentication code, and 'algorithm' is the hash algorithm used (e.g., 'sha256').
+
+visit [docs](https://docs.dothttp.dev/docs/auth#hawk-authentication)`),
+    "azure_auth": new MarkdownString(`Configured with HttpDef Azure authentication mechanism
+
+example:
+\`azurecli("scope(optional?)")\`
+
+\`azurespsecret("tenant_id", "client_id", "client_secret", "scope (optional?)")\`
+
+\`azurespcert("tenant_id", "client_id", "certificate_path", "scope (optional?)")\`
+
+visit [docs](https://docs.dothttp.dev/docs/auth#azure-auth)
+    `),
     "basic_auth": new MarkdownString(`Configured with HttpDef Basic authentication mechanism
 
 example:

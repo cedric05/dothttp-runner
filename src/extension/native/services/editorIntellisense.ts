@@ -242,17 +242,17 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
         // if scheme is vscode-notebook-cell 
         // then use content to provide code lens
 
-        var names = null;
+        var namesObj = null;
         if (isNotebook) {
-            names = await this.clientHandler.getVirtualDocumentSymbols(document.getText());
+            namesObj = await this.clientHandler.getVirtualDocumentSymbols(document.getText());
         } else {
-            names = await this.clientHandler.getDocumentSymbols(document.fileName);
+            namesObj = await this.clientHandler.getDocumentSymbols(document.fileName);
         }
-        if (names.names) {
+        if (namesObj.names) {
             this.diagnostics.clear();
-            return this.getCodeLens(names, document, isNotebook);
+            return this.getCodeLens(namesObj, document, isNotebook);
         } else {
-            this.updateDiagnostics(names, document);
+            this.updateDiagnostics(namesObj, document);
         }
         return [];
     }
