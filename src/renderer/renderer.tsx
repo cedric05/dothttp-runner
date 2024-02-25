@@ -132,8 +132,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
         </div>
         <br />
         <div hidden={!(responseTab.exists && activeIndex === TabType.Response)}>
-            <ShowOutputDiv output_file={output_file} />
-            <AceWrap data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme} placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}></AceWrap>
+            <AceWrapConditional data={responseBody} mode={mode} active={activeIndex === TabType.Response} theme={theme} output_file={output_file}></AceWrapConditional>
         </div>
         <div hidden={!(redirectHistoryTab.exists && activeIndex === TabType.RedirectHistory)}>
             <RequestHistory redirectHistory={redirectHistory}></RequestHistory>
@@ -160,19 +159,6 @@ const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {
     />;
 };
 
-
-const ShowOutputDiv: FunctionComponent<{ output_file?: string }> = ({ output_file }) => {
-    if (output_file)
-        return <div class='request-url'>
-            {output_file ? `Output stored in ` : ""} <strong>{output_file}</strong>
-            <br />
-            <br />
-        </div>
-    else {
-        return <div></div>
-    }
-
-}
 
 const TabHeader: FunctionComponent<{
     activeTab: number, setActive: (i: number) => void,
@@ -338,3 +324,31 @@ function generateLanguage(context: RendererContext<any>, response: Readonly<Doth
     context.postMessage!({ "response": response, "metadata": metadata, "request": MessageType.generate, })
 }
 
+interface AceWrapConditionalProps {
+    output_file?: string;
+    data: any;
+    mode: any;
+    active: boolean;
+    theme: any;
+}
+
+const AceWrapConditional: FunctionComponent<AceWrapConditionalProps> = ({ output_file, data, mode, active, theme }) => {
+    if (!output_file) {
+        return (
+                <AceWrap 
+                    data={data} 
+                    mode={mode} 
+                    active={active} 
+                    theme={theme} 
+                    placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}
+                />
+        )
+    }
+    else {
+        return <div class='request-url'>
+            {output_file ? `Output stored in ` : ""} <strong>{output_file}</strong>
+            <br />
+            <br />
+        </div>
+    }
+}

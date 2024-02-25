@@ -3,17 +3,22 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.18
+  - Update dotextensions-build/cli to 0.0.43a10
+    - Fixes dothttp not working
+  - chore: update renderer to not show output in output shell if output_file exists
+
 ## 1.0.17
 - Chore: update doc links for azure auth cli.
 
 
 ## 1.0.16
-- Update dothextensions-build/cli to 0.0.43a7
+- Update dotextensions-build/cli to 0.0.43a7
   - Fixes error message for azure auth requeests in case of failure to acquire token.
 
 
 ## 1.0.15
-- Update dothextensions-build/cli to 0.0.43a6
+- Update dotextensions-build/cli to 0.0.43a6
   - chore bump versions for `faker`, `waitress`, `requests-pkcs12`
 - Adds init script execution which runes before loading data (usefull for loading variables)
 - Update prerequest support to payload variables
