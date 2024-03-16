@@ -3,8 +3,11 @@ import { IncomingMessage } from 'http';
 import * as https from 'https';
 import { platform, arch } from 'os';
 import * as semver from 'semver';
-import { Extract as extract } from 'unzipper';
 import { Constants, EXTENSION_VERSION } from '../extension/web/utils/constants';
+import * as yauzl from 'yauzl';
+import { file } from 'tmp-promise'
+import path = require('node:path');
+
 
 export interface version {
     downloadUrls: {
@@ -122,12 +125,57 @@ export interface Progress {
     report(val: { message: string, increment: number }): void;
 }
 
+async function unzip(packagePath: string, outputPath: string): Promise<string> {
+	return new Promise((resolve, reject) => {
+		// using yauzl to unzip the file
+        yauzl.open(packagePath, { lazyEntries: true }, (err, zipfile) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            if (!zipfile) {
+                reject(new Error('No zipfile'));
+                return;
+            }
+            zipfile.readEntry();
+            zipfile.on('entry', (entry) => {
+                if (/\/$/.test(entry.fileName)) {
+                    zipfile.readEntry();
+                } else {
+                    zipfile.openReadStream(entry, (err, readStream) => {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        if (!readStream) {
+                            reject(new Error('No readStream'));
+                            return;
+                        }
+                        readStream.on('end', () => {
+                            zipfile.readEntry();
+                        });
+
+                        const filePath = path.join(outputPath, entry.fileName);
+						fs.mkdirSync(path.dirname(filePath), { recursive: true });
+                        const writeStream = fs.createWriteStream(filePath);
+                        readStream.pipe(writeStream);
+                    });
+                }
+            });
+            zipfile.on('end', () => {
+                resolve(outputPath);
+            });
+        });
+	});
+}
+
 export async function downloadDothttp(downloadLocation: string, url: string, progress: Progress) {
     console.log("downloading to ", downloadLocation);
     if (!fs.existsSync(downloadLocation)) {
         fs.mkdirSync(downloadLocation);
     }
     console.log(`download from url ${url}`)
+    const {fd, path: tempPath, cleanup} = await file();
     var res = await getStream(url!);
     if (res.statusCode === 302) {
         res = await getStream(res.headers.location!);
@@ -144,25 +192,22 @@ export async function downloadDothttp(downloadLocation: string, url: string, pro
     }
     var contentDownloaded = 0;
 
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve, _reject) => {
         res.on('data', function (data) {
             contentDownloaded += data.length;
             const increment = (data.length / range) * 100
             const totalPercent = (contentDownloaded / range) * 100
             console.log(`downloaded ${totalPercent}`)
             progress.report({ message: 'completed successfully', increment: increment })
+            fs.writeSync(fd, data);
         })
-        res.pipe(extract({ path: downloadLocation }))
-            .on('close', () => {
-                progress.report({ message: 'completed successfully', increment: 100 })
-                resolve(null);
-            })
-            .on('error', (error) => {
-                progress.report({ message: 'ran into error', increment: 100 })
-                reject(error);
-            })
-            ;
+        res.on("end", async function(){
+            resolve(null);
+        })
     });
+    console.log(`temp path is ${tempPath}`);
+    await unzip(tempPath, downloadLocation);
+    await cleanup();
     return;
 }
 
