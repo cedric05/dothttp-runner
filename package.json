@@ -22,7 +22,9 @@
 		"Intellij Http Client",
 		"Postman",
 		"Soap",
-		"rest-client"
+		"rest-client",
+		"restclient",
+		"thunder client"
 	],
 	"categories": [
 		"Programming Languages",
