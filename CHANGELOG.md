@@ -4,6 +4,9 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## 1.0.22
+  - Update dotextensions-build/cli to 0.0.43a16
+    - Updates dependent packages (requests, msal, faker, certifi, urllib3)
 
 ## 1.0.21
   - Update dotextensions-build/cli to 0.0.43a14
