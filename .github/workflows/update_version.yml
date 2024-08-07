@@ -1,0 +1,62 @@
+name: "Update version"
+
+on:
+  workflow_dispatch: 
+    inputs:
+      # get arguments and pass it to update_version.py
+      dotextensions_version:
+        description: 'dotextensions version (for 0.0.43-alpha.1, `0.0.43` is dotextensions_version)'
+        required: true
+        default: '0.0.43'
+      alpha:
+        description: 'alpha version (for 0.0.43-alpha.1 `1` is alpha version)'
+        required: true
+      dothttp_runner_version:
+        description: 'dothttp-runner version (semver like 1.0.10)'
+        required: true
+
+env:
+  python_version: 3.8
+  dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
+  alpha: ${{ github.event.inputs.alpha }}
+  dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
+  storage_account_name: 'cedric05artifacts'
+  AZURE_CLI_VERSION: '2.0.80'
+
+jobs:
+  Update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Git Fetch
+        run: |
+          git fetch --all
+      # switch to branch `VERSION`
+      - name: Switch to branch
+        run: git checkout VERSION
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Update version
+        run: |
+          # if latest, pass --latest otherwise --no-latest
+          # if stable, pass --stable otherwise --no-stable
+          python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} 
+      - name: Commit changes
+        run: |
+          git config --local user.email "kesavarapu.siva@gmail.com"
+          git config --local user.name "cedric05"
+          git add .
+          git commit -m "Update version to ${{ env.dotextensions_version }}-alpha.${{ env.alpha }}, dothttp-runner version ${{ env.dothttp_runner_version }}"
+      - name: Push changes
+        run: git push origin VERSION
+      - name: Update in Azure blob storage
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          inlineScript: |
+            # upload file to azure blob storage
+            echo '{"dotextensions_version": "${{ env.dotextensions_version }}", "alpha": "${{ env.alpha }}", "dothttp_runner_version": "${{ env.dothttp_runner_version }}"}' > version.json
+            az storage blob upload --account-name ${{ env.storage_account_name }} --account-key ${{ secrets.AZURE_STORAGE_KEY }} --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
