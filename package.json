@@ -929,7 +929,7 @@
 		"@types/httpsnippet": "^1.23.0",
 		"@types/js-yaml": "^4.0.9",
 		"@types/json-stringify-safe": "^5.0.0",
-		"@types/lodash": "^4.14.168",
+		"@types/lodash": "^4.17.7",
 		"@types/mime-types": "^2.1.4",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^v16.11.7",
