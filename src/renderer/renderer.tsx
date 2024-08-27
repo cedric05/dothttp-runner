@@ -40,7 +40,83 @@ enum TabType {
 
 const MAX_DEFAULT_FORMAT_LEN = 2 * 1024 * 1024;
 
-export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExecuteResponse, metadata: NotebookExecutionMetadata }>, context: RendererContext<any> }> = ({ out, context }) => {
+type HttpResponseAndMetadata = {
+    response: DothttpExecuteResponse;
+    metadata: NotebookExecutionMetadata;
+};
+
+export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndMetadata], context: RendererContext<any> }> = ({ multiResponse, context }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const handleLeftClick = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+    const handleRightClick = () => {
+        if (currentIndex < multiResponse.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+
+    const handleSkip5Forward = () => {
+        if (currentIndex < multiResponse.length - 5) {
+            setCurrentIndex(currentIndex + 5);
+        } else {
+            setCurrentIndex(multiResponse.length - 1);
+        }
+    };
+
+    const handleSkip5Backward = () => {
+        if (currentIndex >= 5) {
+            setCurrentIndex(currentIndex - 5);
+        } else {
+            setCurrentIndex(0);
+        }
+    };
+
+    const handleGoToLast = () => {
+        setCurrentIndex(multiResponse.length - 1);
+    };
+
+    return (
+        <div>
+            <div>
+                <Response
+                    out={{
+                        response: multiResponse[currentIndex].response,
+                        metadata: multiResponse[currentIndex].metadata
+                    }}
+                    context={context}
+                />
+            </div>
+            <div>
+                <button onClick={handleLeftClick} disabled={currentIndex === 0}>
+                    Left
+                </button>
+                {multiResponse.length > 5 && (
+                    <div>
+                        <button onClick={handleSkip5Backward} disabled={currentIndex < 5}>
+                            Back 5
+                        </button>
+                        <button onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5}>
+                            Skip 5
+                        </button>
+                        <button onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1}>
+                            Last
+                        </button>
+                    </div>
+                )}
+                <button onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1}>
+                    Right
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata>, context: RendererContext<any> }> = ({ out, context }) => {
     const { response: props } = out
     // createStates
     const [activeIndex, setActive] = useState(TabType.Response);
@@ -335,13 +411,13 @@ interface AceWrapConditionalProps {
 const AceWrapConditional: FunctionComponent<AceWrapConditionalProps> = ({ output_file, data, mode, active, theme }) => {
     if (!output_file) {
         return (
-                <AceWrap 
-                    data={data} 
-                    mode={mode} 
-                    active={active} 
-                    theme={theme} 
-                    placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}
-                />
+            <AceWrap
+                data={data}
+                mode={mode}
+                active={active}
+                theme={theme}
+                placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}
+            />
         )
     }
     else {
