@@ -89,6 +89,9 @@ export class NotebookKernel {
 
         });
         let isOk = false;
+        // here capture the output, instead of replaceing output, insert output in the beginning;
+        
+        console.log(cell.outputs);
         try {
             const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;
             const metadata: NotebookExecutionMetadata = {
