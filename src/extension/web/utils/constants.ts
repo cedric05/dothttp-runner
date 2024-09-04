@@ -89,7 +89,7 @@ export enum Constants {
 
 	NOTEBOOK_MIME_TYPE = "x-application/dotbook",
 
-
+	
 	NOTEBOOK_ID = 'dothttp-book',
 
 	// download stuff

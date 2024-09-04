@@ -46,78 +46,74 @@ type HttpResponseAndMetadata = {
 };
 
 export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndMetadata], context: RendererContext<any> }> = ({ multiResponse, context }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const [currentIndex, setIndex] = useState(0);
 
     const handleLeftClick = () => {
         if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
+            setIndex(currentIndex - 1);
         }
     };
 
     const handleRightClick = () => {
         if (currentIndex < multiResponse.length - 1) {
-            setCurrentIndex(currentIndex + 1);
+            setIndex(currentIndex + 1);
         }
     };
 
     const handleSkip5Forward = () => {
         if (currentIndex < multiResponse.length - 5) {
-            setCurrentIndex(currentIndex + 5);
-        } else {
-            setCurrentIndex(multiResponse.length - 1);
+            setIndex(currentIndex + 5);
         }
     };
 
     const handleSkip5Backward = () => {
         if (currentIndex >= 5) {
-            setCurrentIndex(currentIndex - 5);
-        } else {
-            setCurrentIndex(0);
+            setIndex(currentIndex - 5);
         }
     };
 
     const handleGoToLast = () => {
-        setCurrentIndex(multiResponse.length - 1);
+        setIndex(multiResponse.length - 1);
     };
+
+    const getToFirst = () => {
+        setIndex(0);
+    };
+
 
     return (
         <div>
             <div>
                 <Response
-                    out={{
-                        response: multiResponse[currentIndex].response,
-                        metadata: multiResponse[currentIndex].metadata
-                    }}
+                    out={multiResponse[currentIndex]}
                     context={context}
                 />
             </div>
+
             <div>
-                <button onClick={handleLeftClick} disabled={currentIndex === 0}>
-                    Left
+                <button onClick={getToFirst} disabled={currentIndex === 0} title="go to first"> First </button>
+                <button onClick={handleSkip5Backward} disabled={currentIndex < 5} title="Go back 5">
+                    &lt;&lt;
                 </button>
-                {multiResponse.length > 5 && (
-                    <div>
-                        <button onClick={handleSkip5Backward} disabled={currentIndex < 5}>
-                            Back 5
-                        </button>
-                        <button onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5}>
-                            Skip 5
-                        </button>
-                        <button onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1}>
-                            Last
-                        </button>
-                    </div>
-                )}
-                <button onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1}>
-                    Right
+                <button onClick={handleLeftClick} disabled={currentIndex === 0} title="go back">
+                    &lt;
                 </button>
+                <div> {currentIndex + 1} / {multiResponse.length}</div>
+                <button onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1} title="go further">
+                    &gt;
+                </button>
+                <button onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5} title="skip 5">
+                    &gt;&gt;
+                </button>
+                <button onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
             </div>
         </div>
     );
 };
 
-export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata>, context: RendererContext<any> }> = ({ out, context }) => {
-    const { response: props } = out
+export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata>, context: RendererContext<any> }> = ({ out: httpResponse, context }) => {
+    const { response: props } = httpResponse
     // createStates
     const [activeIndex, setActive] = useState(TabType.Response);
 
@@ -128,7 +124,7 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
 
     // retriveResponse
     const { headers, url, status } = props.response
-    const { executionTime } = out.metadata
+    const { executionTime } = httpResponse.metadata
     let { body, output_file } = props.response
     const { filenameExtension, http: dothttpCode, script_result, history } = props
 
@@ -138,6 +134,7 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
     }
     let redirectHistory = history ?? []
     const [responseBody, setResponseBody] = useState(body);
+    setResponseBody(body)
 
     let scriptLog = `${script_result?.stdout}\n${script_result?.error}`;
     if (!(script_result?.stdout || script_result?.error)) {
@@ -201,9 +198,9 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
                 <button id={`format-${uuid}`} class='search-button' title='Format'
                     onClick={() => setResponseBody(formatBody(filenameExtension, responseBody))}>Beautify <Icon name={ClearAll} /></button>
                 <button id={saveButtonId} class='search-button' title='Open In Editor'
-                    onClick={() => saveResponse(context, props, out.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
+                    onClick={() => saveResponse(context, props, httpResponse.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
                 <button id={`generate-lang-${uuid}`} class='search-button' title="Generate Language"
-                    onClick={() => generateLanguage(context, props, out.metadata)}>Generate<Icon name={LinkExternal} /></button>
+                    onClick={() => generateLanguage(context, props, httpResponse.metadata)}>Generate<Icon name={LinkExternal} /></button>
             </span>
         </div>
         <br />

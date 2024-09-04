@@ -7,6 +7,7 @@ import { LocalStorageService } from './storage';
 import { PropertyTree } from '../../views/tree';
 import { Constants } from '../utils/constants';
 import { Configuration } from '../utils/config';
+import { TextDecoder } from 'util';
 var mime = require('mime-types');
 
 const hasInbuiltPreview = ["html",
@@ -25,6 +26,7 @@ export class NotebookKernel {
     readonly id = NotebookKernel.id;
     readonly label = 'Dot Book Kernel';
     readonly supportedLanguages = [Constants.dothttpNotebook];
+    readonly decoder = new TextDecoder();
 
     readonly _controller: vscode.NotebookController;
     private _executionOrder = 0;
@@ -89,9 +91,24 @@ export class NotebookKernel {
 
         });
         let isOk = false;
-        // here capture the output, instead of replaceing output, insert output in the beginning;
-        
-        console.log(cell.outputs);
+
+        // previous execution outputs
+        var dotbookOutputs = []
+        for (let output of cell.outputs) {
+            for (let item of output.items) {
+                if (item.mime === Constants.NOTEBOOK_MIME_TYPE) {
+                    const decodedData = this.decoder.decode(item.data);
+                    const httpResponseWithMetadata = JSON.parse(decodedData)
+                    if (Array.isArray(httpResponseWithMetadata)) {
+                        dotbookOutputs = httpResponseWithMetadata
+                    } else {
+                        dotbookOutputs.push(httpResponseWithMetadata)
+                    }
+                    break;
+                }
+            }
+        }
+
         try {
             const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;
             const metadata: NotebookExecutionMetadata = {
@@ -137,7 +154,9 @@ export class NotebookKernel {
                         out.headers = {};
                         const outs: Array<vscode.NotebookCellOutputItem> = [];
                         const nativeContentTypes = this.parseAndAdd(out.response);
-                        outs.push(vscode.NotebookCellOutputItem.json({ response: out, metadata: metadata }, Constants.NOTEBOOK_MIME_TYPE));
+                        // insert into dotbookOutputs at the start
+                        dotbookOutputs.unshift({response:out, metadata});
+                        outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
                         outs.push(...nativeContentTypes);
                         await execution.clearOutput();
                         execution.replaceOutput([
