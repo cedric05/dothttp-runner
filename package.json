@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.23",
+	"version": "1.0.24",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -868,6 +868,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Set true if you no longer wants suggestion"
+					},
+					"dothttp.conf.notebook.numofresponses":{
+						"type": "number",
+						"default": 5,
+						"description": "Number of responses to show in notebook"
 					}
 				},
 				"label": "dothttp",

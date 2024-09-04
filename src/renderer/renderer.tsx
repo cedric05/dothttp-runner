@@ -92,21 +92,21 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
             </div>
 
             <div>
-                <button onClick={getToFirst} disabled={currentIndex === 0} title="go to first"> First </button>
-                <button onClick={handleSkip5Backward} disabled={currentIndex < 5} title="Go back 5">
+                <button class={currentIndex === 0 ? 'nextbutton-disabled' : 'nextbutton'} onClick={getToFirst} disabled={currentIndex === 0} title="go to first"> First </button>
+                <button class={currentIndex < 5 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleSkip5Backward} disabled={currentIndex < 5} title="Go back 5">
                     &lt;&lt;
                 </button>
-                <button onClick={handleLeftClick} disabled={currentIndex === 0} title="go back">
+                <button class={currentIndex === 0 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleLeftClick} disabled={currentIndex === 0} title="go back">
                     &lt;
                 </button>
-                <div> {currentIndex + 1} / {multiResponse.length}</div>
-                <button onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1} title="go further">
+                <span> {currentIndex + 1} / {multiResponse.length}</span>
+                <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1} title="go further">
                     &gt;
                 </button>
-                <button onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5} title="skip 5">
+                <button class={currentIndex >= multiResponse.length - 5 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5} title="skip 5">
                     &gt;&gt;
                 </button>
-                <button onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
+                <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
             </div>
         </div>
     );

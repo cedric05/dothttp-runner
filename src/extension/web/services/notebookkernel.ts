@@ -155,7 +155,15 @@ export class NotebookKernel {
                         const outs: Array<vscode.NotebookCellOutputItem> = [];
                         const nativeContentTypes = this.parseAndAdd(out.response);
                         // insert into dotbookOutputs at the start
-                        dotbookOutputs.unshift({response:out, metadata});
+                        // limit number responses in cell
+                        let maxResponsesInCell = this.config?.numResponsesInNotebookCell;
+                        if (maxResponsesInCell == undefined) {
+                            maxResponsesInCell = 5;
+                        }
+                        if (maxResponsesInCell != 0 && dotbookOutputs.length >= maxResponsesInCell) {
+                            dotbookOutputs = dotbookOutputs.slice(0, maxResponsesInCell - 1);
+                        }
+                        dotbookOutputs.unshift({ response: out, metadata });
                         outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
                         outs.push(...nativeContentTypes);
                         await execution.clearOutput();

@@ -12,7 +12,8 @@ export enum Constants {
 	runConf = "dothttp.conf.runrecent",
 	reUseOldTab = "dothttp.conf.run.reuseold",
 	responseDirectory = "dothttp.conf.response.savedirectory",
-
+	numOfResponsesInNotebookcell = "dothttp.conf.notebook.numofresponses",
+	
 	CONF_OPEN_NOTEBOOK_SUGGESTION = "dothttp.conf.hideopennotebookfromfile",
 	CONFIG_DOTHTTP_USE_STABLE = "dothttp.conf.useunstable",
 	CONFIG_HTTP_AGENT = "dothttp.conf.agent",

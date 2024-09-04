@@ -55,6 +55,23 @@ svg {
     transform: translateY(5px);
 }
 
+.nextbutton {
+    background: var(--theme-background);
+    border: 0.1px solid var(--vscode-contrastActiveBorder);
+    padding: 10px 10px 10px 10px;
+    opacity: 0.6;
+    color: var(--vscode-editor-foreground);
+}
+
+
+.nextbutton-disabled {
+    background: var(--theme-background);
+    border: 0.1px solid var(--vscode-contrastActiveBorder);
+    padding: 10px 10px 10px 10px;
+    opacity: 0.6;
+    color: var(--vscode-disabledForeground);
+}
+
 
 .search-button {
     background: none;
