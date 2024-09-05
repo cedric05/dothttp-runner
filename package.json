@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.23",
+	"version": "1.0.24",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -868,6 +868,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Set true if you no longer wants suggestion"
+					},
+					"dothttp.conf.notebook.numofresponses":{
+						"type": "number",
+						"default": 5,
+						"description": "Number of responses to show in notebook"
 					}
 				},
 				"label": "dothttp",
@@ -929,10 +934,10 @@
 		"@types/httpsnippet": "^1.23.0",
 		"@types/js-yaml": "^4.0.9",
 		"@types/json-stringify-safe": "^5.0.0",
-		"@types/lodash": "^4.14.168",
+		"@types/lodash": "^4.17.7",
 		"@types/mime-types": "^2.1.4",
 		"@types/mocha": "^8.0.4",
-		"@types/node": "^v16.11.7",
+		"@types/node": "^v22.5.2",
 		"@types/openapi-to-postmanv2": "^3.2.0",
 		"@types/prop-types": "^15.7.4",
 		"@types/semver": "^7.3.4",

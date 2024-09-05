@@ -12,7 +12,6 @@ export async function fsExists(uri: Uri) {
 
 export async function read(uri: Uri) {
     const stat = await workspace.fs.readFile(uri);
-    // @ts-expect-error
     return new TextDecoder().decode(stat);
 }
 
@@ -28,7 +27,6 @@ export async function isDirectory(uri: Uri) {
 
 
 export async function writeFile(uri: Uri, s: string) {
-    // @ts-expect-error
     await workspace.fs.writeFile(uri, new TextEncoder().encode(s));
 }
 

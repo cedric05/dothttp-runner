@@ -40,8 +40,80 @@ enum TabType {
 
 const MAX_DEFAULT_FORMAT_LEN = 2 * 1024 * 1024;
 
-export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExecuteResponse, metadata: NotebookExecutionMetadata }>, context: RendererContext<any> }> = ({ out, context }) => {
-    const { response: props } = out
+type HttpResponseAndMetadata = {
+    response: DothttpExecuteResponse;
+    metadata: NotebookExecutionMetadata;
+};
+
+export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndMetadata], context: RendererContext<any> }> = ({ multiResponse, context }) => {
+
+    const [currentIndex, setIndex] = useState(0);
+
+    const handleLeftClick = () => {
+        if (currentIndex > 0) {
+            setIndex(currentIndex - 1);
+        }
+    };
+
+    const handleRightClick = () => {
+        if (currentIndex < multiResponse.length - 1) {
+            setIndex(currentIndex + 1);
+        }
+    };
+
+    const handleSkip5Forward = () => {
+        if (currentIndex < multiResponse.length - 5) {
+            setIndex(currentIndex + 5);
+        }
+    };
+
+    const handleSkip5Backward = () => {
+        if (currentIndex >= 5) {
+            setIndex(currentIndex - 5);
+        }
+    };
+
+    const handleGoToLast = () => {
+        setIndex(multiResponse.length - 1);
+    };
+
+    const getToFirst = () => {
+        setIndex(0);
+    };
+
+
+    return (
+        <div>
+            <div>
+                <Response
+                    out={multiResponse[currentIndex]}
+                    context={context}
+                />
+            </div>
+
+            <div>
+                <button class={currentIndex === 0 ? 'nextbutton-disabled' : 'nextbutton'} onClick={getToFirst} disabled={currentIndex === 0} title="go to first"> First </button>
+                <button class={currentIndex < 5 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleSkip5Backward} disabled={currentIndex < 5} title="Go back 5">
+                    &lt;&lt;
+                </button>
+                <button class={currentIndex === 0 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleLeftClick} disabled={currentIndex === 0} title="go back">
+                    &lt;
+                </button>
+                <span> {currentIndex + 1} / {multiResponse.length}</span>
+                <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleRightClick} disabled={currentIndex === multiResponse.length - 1} title="go further">
+                    &gt;
+                </button>
+                <button class={currentIndex >= multiResponse.length - 5 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleSkip5Forward} disabled={currentIndex >= multiResponse.length - 5} title="skip 5">
+                    &gt;&gt;
+                </button>
+                <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
+            </div>
+        </div>
+    );
+};
+
+export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata>, context: RendererContext<any> }> = ({ out: httpResponse, context }) => {
+    const { response: props } = httpResponse
     // createStates
     const [activeIndex, setActive] = useState(TabType.Response);
 
@@ -52,7 +124,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
 
     // retriveResponse
     const { headers, url, status } = props.response
-    const { executionTime } = out.metadata
+    const { executionTime } = httpResponse.metadata
     let { body, output_file } = props.response
     const { filenameExtension, http: dothttpCode, script_result, history } = props
 
@@ -62,6 +134,7 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
     }
     let redirectHistory = history ?? []
     const [responseBody, setResponseBody] = useState(body);
+    setResponseBody(body)
 
     let scriptLog = `${script_result?.stdout}\n${script_result?.error}`;
     if (!(script_result?.stdout || script_result?.error)) {
@@ -125,9 +198,9 @@ export const Response: FunctionComponent<{ out: Readonly<{ response: DothttpExec
                 <button id={`format-${uuid}`} class='search-button' title='Format'
                     onClick={() => setResponseBody(formatBody(filenameExtension, responseBody))}>Beautify <Icon name={ClearAll} /></button>
                 <button id={saveButtonId} class='search-button' title='Open In Editor'
-                    onClick={() => saveResponse(context, props, out.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
+                    onClick={() => saveResponse(context, props, httpResponse.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
                 <button id={`generate-lang-${uuid}`} class='search-button' title="Generate Language"
-                    onClick={() => generateLanguage(context, props, out.metadata)}>Generate<Icon name={LinkExternal} /></button>
+                    onClick={() => generateLanguage(context, props, httpResponse.metadata)}>Generate<Icon name={LinkExternal} /></button>
             </span>
         </div>
         <br />
@@ -335,13 +408,13 @@ interface AceWrapConditionalProps {
 const AceWrapConditional: FunctionComponent<AceWrapConditionalProps> = ({ output_file, data, mode, active, theme }) => {
     if (!output_file) {
         return (
-                <AceWrap 
-                    data={data} 
-                    mode={mode} 
-                    active={active} 
-                    theme={theme} 
-                    placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}
-                />
+            <AceWrap
+                data={data}
+                mode={mode}
+                active={active}
+                theme={theme}
+                placeholder={output_file ? `check ${output_file}` : `Empty Response from Server`}
+            />
         )
     }
     else {

@@ -49,6 +49,7 @@ export class Configuration {
     responseSaveDirectory!: string;
     agent!: string;
     hideOpenNotebookSuggestion = true;
+    numResponsesInNotebookCell!:number;
 
     configchange = vscode.workspace.onDidChangeConfiguration((event) => this.update(event));
 
@@ -69,6 +70,7 @@ export class Configuration {
         this.history = vsCodeconfig.get(Constants.history) as boolean;
         this.agent = vsCodeconfig.get(Constants.CONFIG_HTTP_AGENT) as string;
         this.hideOpenNotebookSuggestion = vsCodeconfig.get(Constants.CONF_OPEN_NOTEBOOK_SUGGESTION) as boolean;
+        this.numResponsesInNotebookCell = vsCodeconfig.get(Constants.numOfResponsesInNotebookcell) as number;
     }
 
     public async update(event: vscode.ConfigurationChangeEvent) {
