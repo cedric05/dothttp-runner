@@ -3,6 +3,15 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.24-1.0.23
+- Keep history of cell response for comparision.
+  - max number of responses to keep in notebook can be configured by `dothttp.conf.notebook.numofresponses`. 
+    - if `0`, it keeps all, default is five.
+  - Update dependent packages
+    - follow-redirects to 1.15.8
+    - @types/node to 22.5.2
+    - @types/lodash to 4.17.7
+
 
 ## 1.0.22
   - Update dotextensions-build/cli to 0.0.43a16
