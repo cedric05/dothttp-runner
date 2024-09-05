@@ -82,7 +82,6 @@ jobs:
         with:
            node-version: 20.x
       - run: npm install 
-      # - run: npm install --legacy-peer-deps
       - shell: pwsh
         run: npm run package
       - run: npx vsce package
@@ -99,6 +98,8 @@ jobs:
       - run: npx vsce publish --packagePath $(find . -iname *.vsix)
         env:
           VSCE_PAT: ${{ secrets.MARKETPLACE_PAT }}
+        continue-on-error: true
       - run: npx ovsx publish --packagePath $(find . -iname *.vsix)
         env:
           OVSX_PAT: ${{ secrets.OVSX_ACCESS_TOKEN }}
+        continue-on-error: true
