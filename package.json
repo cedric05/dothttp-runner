@@ -939,7 +939,7 @@
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^v22.5.2",
 		"@types/openapi-to-postmanv2": "^3.2.0",
-		"@types/prop-types": "^15.7.4",
+		"@types/prop-types": "^15.7.12",
 		"@types/semver": "^7.5.8",
 		"@types/temp": "^0.9.1",
 		"@types/uuid": "^8.3.0",
