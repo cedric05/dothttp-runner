@@ -869,7 +869,7 @@
 						"default": false,
 						"description": "Set true if you no longer wants suggestion"
 					},
-					"dothttp.conf.notebook.numofresponses":{
+					"dothttp.conf.notebook.numofresponses": {
 						"type": "number",
 						"default": 5,
 						"description": "Number of responses to show in notebook"
@@ -939,10 +939,10 @@
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^v22.5.2",
 		"@types/openapi-to-postmanv2": "^3.2.0",
-		"@types/prop-types": "^15.7.4",
+		"@types/prop-types": "^15.7.12",
 		"@types/semver": "^7.5.8",
 		"@types/temp": "^0.9.1",
-		"@types/uuid": "^8.3.0",
+		"@types/uuid": "^10.0.0",
 		"@types/vkbeautify": "^0.99.2",
 		"@types/vscode-notebook-renderer": "1.57.9",
 		"@types/whatwg-url": "^8.2.0",
@@ -966,7 +966,7 @@
 		"style-loader": "^2.0.0",
 		"svg-inline-loader": "^0.8.2",
 		"ts-loader": "^8.0.14",
-		"typescript": "^5.3.3",
+		"typescript": "^5.5.4",
 		"vkbeautify": "^0.99.3",
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.92.1",
@@ -977,7 +977,7 @@
 		"axios": "^1.6.7",
 		"buffer": "^6.0.3",
 		"curl-to-har": "^1.0.1",
-		"curl-to-postmanv2": "^0.5.1",
+		"curl-to-postmanv2": "^1.8.1",
 		"dateformat": "^4.5.1",
 		"highlight.js": "^11.5.1",
 		"httpsnippet": "^1.25.0",
@@ -993,7 +993,7 @@
 		"tmp-promise": "^3.0.3",
 		"url": "^0.11.0",
 		"util": "^0.12.4",
-		"uuid": "^8.3.2",
+		"uuid": "^10.0.0",
 		"vscode-uri": "^3.0.8",
 		"whatwg-url": "^8.5.0",
 		"yauzl": "^3.1.2"
