@@ -49,6 +49,23 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
 
     const [currentIndex, setIndex] = useState(0);
 
+    // save indexes for opening in comparision view
+
+    const [indexList, setIndexList] = useState([] as Array<number>);
+
+    const selectIndex = (index: number) => {
+        if (indexList.includes(index)) {
+            setIndexList(indexList.filter(i => i !== index));
+        } else {
+            setIndexList([...indexList, index]);
+        }
+        if (indexList.length === 2) {
+            // open comparision view
+            // instead of sending indexes, send the whole response
+            context.postMessage!({ "response1": multiResponse[indexList[0]].response.body, "response2": multiResponse[indexList[1]].response.body, "request": MessageType.compare, });
+        }
+    }
+
     const handleLeftClick = () => {
         if (currentIndex > 0) {
             setIndex(currentIndex - 1);
@@ -107,6 +124,13 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
                     &gt;&gt;
                 </button>
                 <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
+
+                <button class={indexList.includes(currentIndex) ? 'nextbutton-selected' : 'nextbutton'} onClick={() => selectIndex(currentIndex)} title="compare">
+
+                    {indexList.includes(currentIndex) ? "Selected for Comparison" : "Select"}
+
+                </button>
+
             </div>
         </div>
     );

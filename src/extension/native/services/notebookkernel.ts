@@ -2,7 +2,7 @@ import { NotebookKernel } from "../../web/services/notebookkernel";
 import * as vscode from 'vscode'
 import { DothttpExecuteResponse, MessageType, NotebookExecutionMetadata } from "../../../common/response";
 import { generateLang, generateLangFromOptions } from "../commands/export/generate";
-import { addHistory, contructFileName, showInUntitledView } from "../commands/run";
+import { addHistory, contructFileName, showEditor, showInUntitledView } from "../commands/run";
 import { ClientHandler } from "./client";
 import DotHttpEditorView from "../../views/editor";
 
@@ -35,6 +35,25 @@ export class ProNotebookKernel extends NotebookKernel {
             case MessageType.save: {
                 const fileNameWithInfo = contructFileName(uri2, { curl: false, target: target }, response, date);
                 return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
+            }
+            case MessageType.compare :{
+                //             context.postMessage!({ "response1": multiResponse[indexList[0]], "response2": multiResponse[indexList[1]], "request": MessageType.compare, });
+                const { response1, response2 } = e.message;
+                // open comparision view with response1 and response2 in vscode
+                const leftUri = vscode.Uri.parse(`untitled:response1.txt`);
+                const rightUri = vscode.Uri.parse(`untitled:response2.txt`);
+    
+                // Create and show the diff editor
+                await vscode.workspace.openTextDocument(leftUri).then(textDoc => {
+                    showEditor(textDoc, response1, -2);
+                });
+    
+                await vscode.workspace.openTextDocument(rightUri).then(textDoc => {
+                    showEditor(textDoc, response2, -2);
+                });
+    
+                await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, 'Comparison');
+    
             }
             default:
                 break;
