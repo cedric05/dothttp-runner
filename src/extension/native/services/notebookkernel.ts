@@ -6,6 +6,10 @@ import { addHistory, contructFileName, showEditor, showInUntitledView } from "..
 import { ClientHandler } from "./client";
 import DotHttpEditorView from "../../views/editor";
 
+interface CompareBodyItem {
+    body: string,
+    index: number,
+}
 
 export class ProNotebookKernel extends NotebookKernel {
     client1!: ClientHandler;
@@ -20,40 +24,41 @@ export class ProNotebookKernel extends NotebookKernel {
 
 
     async onMessage(e: any) {
-        const { metadata, response } = e.message;
-        const {
-            target,
-            date,
-            uri: jsonEncodedString,
-            // cellNo
-        } = metadata as NotebookExecutionMetadata;
-        const uri2 = vscode.Uri.file(jsonEncodedString.fsPath as unknown as string)
         switch (e.message.request) {
             case MessageType.generate: {
+                const { metadata, response } = e.message;
+                const {
+                    target,
+                    date,
+                    uri: jsonEncodedString,
+                    // cellNo
+                } = metadata as NotebookExecutionMetadata;
+                const uri2 = vscode.Uri.file(jsonEncodedString.fsPath as unknown as string)
+
                 return generateLang({ uri: uri2, target, content: response.http })
             }
             case MessageType.save: {
+                const { metadata, response } = e.message;
+                const {
+                    target,
+                    date,
+                    uri: jsonEncodedString,
+                    // cellNo
+                } = metadata as NotebookExecutionMetadata;
+                const uri2 = vscode.Uri.file(jsonEncodedString.fsPath as unknown as string)
+
                 const fileNameWithInfo = contructFileName(uri2, { curl: false, target: target }, response, date);
                 return showInUntitledView(fileNameWithInfo.filename, fileNameWithInfo.header, response);
             }
-            case MessageType.compare :{
-                //             context.postMessage!({ "response1": multiResponse[indexList[0]], "response2": multiResponse[indexList[1]], "request": MessageType.compare, });
-                const { response1, response2 } = e.message;
+            case MessageType.compare: {
+                const responses = e.message.responses as Array<CompareBodyItem>;
+
                 // open comparision view with response1 and response2 in vscode
-                const leftUri = vscode.Uri.parse(`untitled:response1.txt`);
-                const rightUri = vscode.Uri.parse(`untitled:response2.txt`);
-    
-                // Create and show the diff editor
-                await vscode.workspace.openTextDocument(leftUri).then(textDoc => {
-                    showEditor(textDoc, response1, -2);
-                });
-    
-                await vscode.workspace.openTextDocument(rightUri).then(textDoc => {
-                    showEditor(textDoc, response2, -2);
-                });
-    
-                await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, 'Comparison');
-    
+                const leftUri = await createEditor(responses[0]);
+                const rightUri = await createEditor(responses[1]);
+
+                await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, `Comparison ${responses[0].index}-${responses[1].index}`);
+
             }
             default:
                 break;
@@ -123,4 +128,13 @@ export class ProNotebookKernel extends NotebookKernel {
         addHistory(out, options.filename + "-notebook-cell.http", { target: options.target });
         return out
     }
+}
+
+async function createEditor(compareItem: CompareBodyItem) {
+    const leftUri = vscode.Uri.parse(`untitled:body-${compareItem.index}.txt`);
+    // Create and show the diff editor
+    await vscode.workspace.openTextDocument(leftUri).then(textDoc => {
+        showEditor(textDoc, compareItem.body, -2);
+    });
+    return leftUri;
 }

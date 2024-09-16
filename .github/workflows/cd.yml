@@ -70,7 +70,7 @@ jobs:
           npm run package
           node dist/prefetch.js
       - run: npx vsce package --target ${{ env.target }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: dothttp-runner-${{ env.target }}
           path: "*.vsix"
@@ -85,7 +85,7 @@ jobs:
       - shell: pwsh
         run: npm run package
       - run: npx vsce package
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: without-cli
           path: "*.vsix"

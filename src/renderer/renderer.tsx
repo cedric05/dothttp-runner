@@ -58,12 +58,26 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
             setIndexList(indexList.filter(i => i !== index));
         } else {
             setIndexList([...indexList, index]);
+            if (indexList.length === 1) {
+                // open comparision view
+                // instead of sending indexes, send the whole response
+                context.postMessage!(
+                    {
+                        "responses": [
+                            {
+                                "body": multiResponse[indexList[0]].response.response.body,
+                                "index": indexList[0] + 1
+                            },
+                            {
+                                "body": multiResponse[index].response.response.body,
+                                "index": index + 1
+                            }
+                        ],
+                        "request": MessageType.compare,
+                    });
+            }
         }
-        if (indexList.length === 2) {
-            // open comparision view
-            // instead of sending indexes, send the whole response
-            context.postMessage!({ "response1": multiResponse[indexList[0]].response.body, "response2": multiResponse[indexList[1]].response.body, "request": MessageType.compare, });
-        }
+
     }
 
     const handleLeftClick = () => {
