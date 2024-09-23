@@ -982,7 +982,7 @@
 		"highlight.js": "^11.5.1",
 		"httpsnippet": "^1.25.0",
 		"json-stringify-safe": "^5.0.1",
-		"jsonc-parser": "^3.0.0",
+		"jsonc-parser": "^3.3.1",
 		"mime-types": "^2.1.30",
 		"openapi-to-postmanv2": "^4.18.0",
 		"semver": "^7.6.3",
