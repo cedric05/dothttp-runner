@@ -65,5 +65,6 @@ export interface Test {
 
 export enum MessageType {
     save,
-    generate
+    generate,
+    compare,
 }

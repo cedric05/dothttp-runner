@@ -49,6 +49,37 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
 
     const [currentIndex, setIndex] = useState(0);
 
+    // save indexes for opening in comparision view
+
+    const [indexList, setIndexList] = useState([] as Array<number>);
+
+    const selectIndex = (index: number) => {
+        if (indexList.includes(index)) {
+            setIndexList(indexList.filter(i => i !== index));
+        } else {
+            setIndexList([...indexList, index]);
+            if (indexList.length === 1) {
+                // open comparision view
+                // instead of sending indexes, send the whole response
+                context.postMessage!(
+                    {
+                        "responses": [
+                            {
+                                "body": multiResponse[indexList[0]].response.response.body,
+                                "index": indexList[0] + 1
+                            },
+                            {
+                                "body": multiResponse[index].response.response.body,
+                                "index": index + 1
+                            }
+                        ],
+                        "request": MessageType.compare,
+                    });
+            }
+        }
+
+    }
+
     const handleLeftClick = () => {
         if (currentIndex > 0) {
             setIndex(currentIndex - 1);
@@ -107,6 +138,13 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
                     &gt;&gt;
                 </button>
                 <button class={currentIndex === multiResponse.length - 1 ? 'nextbutton-disabled' : 'nextbutton'} onClick={handleGoToLast} disabled={currentIndex === multiResponse.length - 1} title="go to last"> Last </button>
+
+                <button class={indexList.includes(currentIndex) ? 'nextbutton-selected' : 'nextbutton'} onClick={() => selectIndex(currentIndex)} title="compare">
+
+                    {indexList.includes(currentIndex) ? "Selected for Comparison" : "Select"}
+
+                </button>
+
             </div>
         </div>
     );
