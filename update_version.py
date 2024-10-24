@@ -17,6 +17,10 @@ def main(args):
     dotextensions_semver = f"{args.dotextensions_version}-alpha.{args.alpha}"
     dothttp_runner_version = args.dothttp_runner_version
 
+    print(f'dotextensions_version: {dotextensions_version}')
+    print(f'dotextensions_semver: {dotextensions_semver}')
+    print(f'dothttp_runner_version: {dothttp_runner_version}')
+
     data["availableversions"].append(
         {
             "downloadUrls": {
