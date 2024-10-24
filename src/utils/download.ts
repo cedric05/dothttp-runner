@@ -100,13 +100,13 @@ export async function getVersion(useUnStable: boolean): Promise<version> {
     throw new Error('Version Not Registered')
 }
 
-export function fetchDownloadUrl(accepted: version) {
-    switch (platform()) {
+export function fetchPlatformDownloadurl(accepted: version, platform: NodeJS.Platform, arch: NodeJS.Architecture){
+    switch (platform) {
         case "win32":
             return accepted.downloadUrls.windows;
         case "linux":
             {
-                switch (arch()) {
+                switch (arch) {
                     case "arm64":
                         return accepted.downloadUrls.linux_arm64;
                     case "x64":
@@ -120,6 +120,10 @@ export function fetchDownloadUrl(accepted: version) {
         default:
             throw new Error('un supported platform')
     }
+}
+
+export function fetchDownloadUrl(accepted: version) {
+    return fetchPlatformDownloadurl(accepted, platform(), arch() as NodeJS.Architecture);
 }
 export interface Progress {
     report(val: { message: string, increment: number }): void;

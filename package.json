@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.24",
+	"version": "1.0.25",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -982,7 +982,7 @@
 		"highlight.js": "^11.5.1",
 		"httpsnippet": "^1.25.0",
 		"json-stringify-safe": "^5.0.1",
-		"jsonc-parser": "^3.0.0",
+		"jsonc-parser": "^3.3.1",
 		"mime-types": "^2.1.30",
 		"openapi-to-postmanv2": "^4.18.0",
 		"semver": "^7.6.3",
@@ -996,6 +996,6 @@
 		"uuid": "^10.0.0",
 		"vscode-uri": "^3.0.8",
 		"whatwg-url": "^8.5.0",
-		"yauzl": "^3.1.2"
+		"yauzl": "^3.1.3"
 	}
 }

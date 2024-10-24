@@ -3,6 +3,15 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## 1.0.25
+- Update dotextensions-build to 0.0.43-a23
+  - Allows user to use arthematic expressions in json payload
+- Fix linux arm64 extension: packages correct platform version of dotextensions-build
+- Update dependent packages
+  - yauzl to 3.1.3
+  - jsonc-parser to 3.3.1
+
 ## 1.0.24-1.0.23
 - Keep history of cell response for comparision.
   - max number of responses to keep in notebook can be configured by `dothttp.conf.notebook.numofresponses`. 
