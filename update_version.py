@@ -25,6 +25,8 @@ def main(args):
                 "linux": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
                 "windows": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-x86-windows.zip",
                 "darwin": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
+                "darwin_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin-arm.zip",
+                "darwin_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
             },
             "latest": not args.no_latest,
             "stable": not args.no_stable,
