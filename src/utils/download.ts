@@ -15,7 +15,9 @@ export interface version {
         linux_arm64: string,
         linux_amd64: string,
         windows?: string,
-        darwin?: string
+        darwin: string,
+        darwin_arm64?: string
+        darwin_amd64?: string
     }
     version: string,
     versionNotes?: string,
@@ -100,13 +102,13 @@ export async function getVersion(useUnStable: boolean): Promise<version> {
     throw new Error('Version Not Registered')
 }
 
-export function fetchDownloadUrl(accepted: version) {
-    switch (platform()) {
+export function fetchPlatformDownloadurl(accepted: version, platform: NodeJS.Platform, arch: NodeJS.Architecture){
+    switch (platform) {
         case "win32":
             return accepted.downloadUrls.windows;
         case "linux":
             {
-                switch (arch()) {
+                switch (arch) {
                     case "arm64":
                         return accepted.downloadUrls.linux_arm64;
                     case "x64":
@@ -115,11 +117,23 @@ export function fetchDownloadUrl(accepted: version) {
                         throw new Error('un supported platform')
                 }
             }
-        case "darwin":
-            return accepted.downloadUrls.darwin;
+        case "darwin":{
+            switch (arch) {
+                case "arm64":
+                    return accepted.downloadUrls.darwin_arm64 ?? accepted.downloadUrls.darwin;
+                case "x64":
+                    return accepted.downloadUrls.darwin_amd64 ?? accepted.downloadUrls.darwin;
+                default:
+                    throw new Error('un supported platform')
+            }
+        }
         default:
             throw new Error('un supported platform')
     }
+}
+
+export function fetchDownloadUrl(accepted: version) {
+    return fetchPlatformDownloadurl(accepted, platform(), arch() as NodeJS.Architecture);
 }
 export interface Progress {
     report(val: { message: string, increment: number }): void;

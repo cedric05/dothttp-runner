@@ -1,19 +1,26 @@
-import { platform } from "os";
-import { downloadDothttp, fetchDownloadUrl, getVersion } from "./download";
+import { downloadDothttp, fetchPlatformDownloadurl, getVersion } from "./download";
 import { promises as fsPromises } from "fs";
+import { argv } from "process";
 
-async function downloadLatest() {
+async function downloadLatest(platformType: NodeJS.Platform, arch: NodeJS.Architecture) {
     let version = await getVersion(false);
-    const url = fetchDownloadUrl(version);
+    const url = fetchPlatformDownloadurl(version, platformType, arch);
     await downloadDothttp("./", url!, { report: console.log })
-    if (platform() !== 'win32') {
+    if (platformType !== 'win32') {
         await fsPromises.chmod("./cli/cli", 0o755);
     }
 }
-downloadLatest().then(() => {
+
+const platformType = argv[2] as NodeJS.Platform;
+const arch = argv[3] as NodeJS.Architecture;
+
+console.log("prefetching");
+console.log(`downloading platform=${platformType} arch=${arch}`);
+
+downloadLatest(platformType, arch).then(() => {
     console.log("downloaded successfully");
     process.exit(0);
 }).catch((err) => {
     console.error(err);
     process.exit(1);
-})
+});
