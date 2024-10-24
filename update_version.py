@@ -20,7 +20,7 @@ def main(args):
     print(f'dotextensions_version: {dotextensions_version}')
     print(f'dotextensions_semver: {dotextensions_semver}')
     print(f'dothttp_runner_version: {dothttp_runner_version}')
-
+    
     data["availableversions"].append(
         {
             "downloadUrls": {
@@ -41,6 +41,8 @@ def main(args):
         "maxVersion": args.dotextensions_version,
         "minVersion": "0.0.8",
     }
+
+    print(f"updated matrix: {data}")
 
     with open("version.json", "w") as f:
         json.dump(data, f, indent=4)
