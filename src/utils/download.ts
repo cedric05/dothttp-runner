@@ -15,7 +15,9 @@ export interface version {
         linux_arm64: string,
         linux_amd64: string,
         windows?: string,
-        darwin?: string
+        darwin: string,
+        darwin_arm64?: string
+        darwin_amd64?: string
     }
     version: string,
     versionNotes?: string,
@@ -115,8 +117,16 @@ export function fetchPlatformDownloadurl(accepted: version, platform: NodeJS.Pla
                         throw new Error('un supported platform')
                 }
             }
-        case "darwin":
-            return accepted.downloadUrls.darwin;
+        case "darwin":{
+            switch (arch) {
+                case "arm64":
+                    return accepted.downloadUrls.darwin_arm64 ?? accepted.downloadUrls.darwin;
+                case "x64":
+                    return accepted.downloadUrls.darwin_amd64 ?? accepted.downloadUrls.darwin;
+                default:
+                    throw new Error('un supported platform')
+            }
+        }
         default:
             throw new Error('un supported platform')
     }

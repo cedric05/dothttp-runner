@@ -14,10 +14,13 @@ async function downloadLatest(platformType: NodeJS.Platform, arch: NodeJS.Archit
 const platformType = argv[2] as NodeJS.Platform;
 const arch = argv[3] as NodeJS.Architecture;
 
+console.log("prefetching");
+console.log(`downloading platform=${platformType} arch=${arch}`);
+
 downloadLatest(platformType, arch).then(() => {
     console.log("downloaded successfully");
     process.exit(0);
 }).catch((err) => {
     console.error(err);
     process.exit(1);
-})
+});
