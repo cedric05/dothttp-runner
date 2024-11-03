@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.26",
+	"version": "1.0.27",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -924,7 +924,6 @@
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "npm run test-compile && npm run lint",
-		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
@@ -947,13 +946,10 @@
 		"@types/vscode-notebook-renderer": "1.57.9",
 		"@types/whatwg-url": "^8.2.0",
 		"@types/yauzl": "^2.10.3",
-		"@typescript-eslint/eslint-plugin": "^4.14.1",
-		"@typescript-eslint/parser": "^4.14.1",
 		"@vscode/codicons": "0.0.36",
 		"babel-core": "^6.26.3",
 		"css-loader": "^7.1.2",
 		"dot-preact-highlight": "^2.0.0",
-		"eslint": "^7.19.0",
 		"glob": "^7.2.0",
 		"http-status-codes": "^2.3.0",
 		"mocha": "^10.7.3",
