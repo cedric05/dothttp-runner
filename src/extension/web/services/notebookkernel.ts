@@ -105,6 +105,9 @@ export class NotebookKernel {
                         dotbookOutputs.push(httpResponseWithMetadata)
                     }
                     break;
+                } else if (item.mime === "application/vnd.code.notebook.stderr") {
+                    /// history is deleted because of error and history is stored in metadata with key `history`
+                    dotbookOutputs = output.metadata?.history ?? [];
                 }
             }
         }
@@ -142,7 +145,7 @@ export class NotebookKernel {
                     execution.replaceOutput([
                         new vscode.NotebookCellOutput([
                             vscode.NotebookCellOutputItem.stderr(out.error_message!)
-                        ])
+                        ], { "history": dotbookOutputs })
                     ])
                 } else {
                     if (curl) {
