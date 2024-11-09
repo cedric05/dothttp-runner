@@ -29,7 +29,7 @@
             },
             "patterns": [
                 {
-                    "include": "source.json"
+                    "include": "source.javascript"
                 }
             ]
         },

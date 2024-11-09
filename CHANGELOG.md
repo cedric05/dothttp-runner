@@ -3,6 +3,12 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+## 1.0.31
+- Fix header completions appearing in all areas causing bad experience (like payload and test script)
+- Fix Url completion not working properly with notebook
+- Update grammer, json payload doesnot need to have quotes for strings.
+
 ## 1.0.30
 - package.json version issue fixed.
 

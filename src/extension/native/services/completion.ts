@@ -4,7 +4,7 @@
  * see https://github.com/tanhakabir/rest-book/blob/5b519c618c707d0087a55e99605131583cd81375/LICENSE for license 
  */
 
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, Position, ProviderResult, SnippetString, TextDocument } from 'vscode';
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, DocumentLink, Position, ProviderResult, SnippetString, TextDocument } from 'vscode';
 import * as parser from 'jsonc-parser';
 import * as _ from 'lodash';
 import { Method, MIMEType, RequestHeaderField } from '../../web/types/completiontypes';
@@ -14,6 +14,9 @@ import { Utils } from 'vscode-uri';
 import { fsExists, read } from '../../web/utils/fsUtils';
 import { ClientHandler } from './client';
 import { ApplicationServices } from '../../web/services/global';
+import { Constants } from '../../web/utils/constants';
+import { TypeResult } from '../../web/types/types';
+import { DothttpTypes } from '../../web/types/misc';
 
 export class UrlCompletionProvider implements CompletionItemProvider {
     static readonly triggerCharacters = [
@@ -36,11 +39,11 @@ export class UrlCompletionProvider implements CompletionItemProvider {
 
 
     provideCompletionItems(document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
-        return this.getHistoryUrls(document.fileName);
+        return this.getHistoryUrls(document.fileName, document);
     }
 
-    private async getHistoryUrls(fileName: string): Promise<CompletionItem[]> {
-        const historyUrls = this.store?.fetchUrls().map(item => ({
+    private async getHistoryUrls(fileName: string, document: TextDocument): Promise<CompletionItem[]> {
+        const historyUrls = this.store?.fetchUrls().filter(item => item.url).map(item => ({
             insertText: item.url,
             label: item.url,
             kind: CompletionItemKind.Unit,
@@ -48,9 +51,14 @@ export class UrlCompletionProvider implements CompletionItemProvider {
             detail: item.url,
             keepWhitespace: true,
         }));
-        const targets = await this.client?.getDocumentSymbols(fileName);
-        if (targets?.error) {
-            return historyUrls ?? [];
+
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+
+        var targets;
+        if (!isNotebook) {
+            targets = await this.client?.getDocumentSymbols(fileName);
+        } else {
+            targets = await this.client?.getVirtualDocumentSymbols(document.getText(), document.fileName);
         }
 
         // @ts-expect-error
@@ -190,9 +198,19 @@ export class VariableCompletionProvider implements CompletionItemProvider {
 
 export class HeaderCompletionItemProvider implements CompletionItemProvider {
     static readonly triggerCharacters = [':'];
+    clientHandler: ClientHandler;
 
-    provideCompletionItems(_document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
+    constructor(clientHandler: ClientHandler) {
+        this.clientHandler = clientHandler;
+    }
+
+    async provideCompletionItems(_document: TextDocument, _position: Position, _token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[]> {
         const result: CompletionItem[] = [];
+        const posResult: TypeResult = await this.getTypeResult(_document, _position);
+
+        if (posResult.type in [DothttpTypes.SCRIPT, DothttpTypes.PAYLOAD_DATA, DothttpTypes.PAYLOAD_ENCODED, DothttpTypes.PAYLOAD_FILE, DothttpTypes.PAYLOAD_JSON, DothttpTypes.PAYLOAD_MULTIPART, DothttpTypes.URL]) {
+            return [];
+        }
 
         for (const field of Object.values(MIMEType)) {
             result.push({
@@ -204,6 +222,17 @@ export class HeaderCompletionItemProvider implements CompletionItemProvider {
         }
 
         return result;
+    }
+
+    public async getTypeResult(document: TextDocument, position: Position) {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+        const offset = document.offsetAt(position);
+        if (isNotebook) {
+            return this.clientHandler.getTypeFromContentPosition(offset, document.getText(), "hover")
+        } else {
+            return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
+        }
+
     }
 }
 
