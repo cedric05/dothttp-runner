@@ -20,42 +20,11 @@ env:
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
   alpha: ${{ github.event.inputs.alpha }}
   dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
-  storage_account_name: 'cedric05artifacts'
-  AZURE_CLI_VERSION: '2.0.80'
 
 jobs:
-  Update-version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Git Fetch
-        run: |
-          git fetch --all
-      # switch to branch `VERSION`
-      - name: Switch to branch
-        run: git checkout VERSION
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.python_version }}
-      - name: Update version
-        run: |
-          # if latest, pass --latest otherwise --no-latest
-          # if stable, pass --stable otherwise --no-stable
-          python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} 
-      - name: Commit changes
-        run: |
-          git config --local user.email "kesavarapu.siva@gmail.com"
-          git config --local user.name "cedric05"
-          git add .
-          git commit -m "Update version to ${{ env.dotextensions_version }}-alpha.${{ env.alpha }}, dothttp-runner version ${{ env.dothttp_runner_version }}"
-      - name: Push changes
-        run: git push origin VERSION
-      - name: Update in Azure blob storage
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.AZURE_CLI_VERSION }}
-          inlineScript: |
-            # upload file to azure blob storage
-            az storage blob upload --account-name ${{ env.storage_account_name }} --account-key ${{ secrets.AZURE_STORAGE_KEY }} --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
+  call-update-version:
+    uses: ./.github/workflow-templates/update_version_template.yml
+    with:
+      dotextensions_version: ${{ env.dotextensions_version }}
+      alpha: ${{ env.alpha }}
+      dothttp_runner_version: ${{ env.dothttp_runner_version }}

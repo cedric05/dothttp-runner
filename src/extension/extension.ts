@@ -194,7 +194,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new ExtendHttpCompletionProvider()),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new UrlCompletionProvider(clientHandler, urlStoreService), ...UrlCompletionProvider.triggerCharacters),
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new VariableCompletionProvider(fileStateService), ...VariableCompletionProvider.triggerCharacters),
-		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(), ...HeaderCompletionItemProvider.triggerCharacters),
+		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(clientHandler), ...HeaderCompletionItemProvider.triggerCharacters),
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
 
