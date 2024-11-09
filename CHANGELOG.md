@@ -7,6 +7,7 @@
 ## 1.0.31
 - Fix header completions appearing in all areas causing bad experience (like payload and test script)
 - Fix Url completion not working properly with notebook
+- Update grammer, json payload doesnot need to have quotes for strings.
 
 ## 1.0.30
 - package.json version issue fixed.
