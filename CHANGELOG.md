@@ -3,6 +3,10 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.30
+- package.json version issue fixed.
+
+
 ## 1.0.29
 - Dothttp Diagnostics is now configurable
 -  Update dotextensions-build to 0.0.43-a26
