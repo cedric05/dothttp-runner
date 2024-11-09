@@ -10,7 +10,7 @@
 	},
 	"icon": "rocket.png",
 	"engines": {
-		"vscode": "^1.63.0"
+		"vscode": "*"
 	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/cedric05"
