@@ -6,6 +6,7 @@ export enum Constants {
 	pythonPath = "dothttp.conf.pythonpath",
 	dothttpPath = "dothttp.conf.path",
 	experimental = "dothttp.conf.experimental",
+	diagnostics = "dothttp.conf.diagnostics",
 	nocookie = "dothttp.conf.nocookie",
 	history = "dothttp.conf.history",
 	showheaders = "dothttp.conf.showheaders",
