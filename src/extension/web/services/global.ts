@@ -13,6 +13,7 @@ import { Configuration } from "../utils/config";
 import { UrlStore } from "../types/url";
 import { NotebookKernel } from "./notebookkernel";
 import { ApplicationBuilder } from "./builder";
+import { VscodeOutputChannelWrapper } from "../../native/services/languageservers/channelWrapper";
 
 export class ApplicationServices {
     private static _state: ApplicationServices;
@@ -34,6 +35,7 @@ export class ApplicationServices {
     private urlStore?: UrlStore;
     private notebookkernel?: NotebookKernel;
     private context?: vscode.ExtensionContext;
+    private channelWrapper: VscodeOutputChannelWrapper;
     embeddedContent: Map<string, string>;
 
     private constructor(builder: ApplicationBuilder) {
@@ -53,6 +55,7 @@ export class ApplicationServices {
         this.versionInfo = builder.versionInfo;
         this.config = builder.config;
         this.context = builder.context;
+        this.channelWrapper = builder.channelWrapper!;
         this.embeddedContent = new Map<string, string>();
         this.context?.subscriptions.push(this.diagnostics!);
     }
@@ -102,6 +105,10 @@ export class ApplicationServices {
 
     getEnvProvder() {
         return this.envTree;
+    }
+
+    getOutputChannelWrapper(){
+        return this.channelWrapper;
     }
 
     getPropTreeProvider() {

@@ -4,22 +4,21 @@ import { once } from 'events';
 import { runSync } from '../../../downloader';
 import { RunType, IResult, ICommand, CmdClientError } from "../../../web/types/types";
 import * as child_process from 'child_process';
-import * as vscode from 'vscode'
+import { VscodeOutputChannelWrapper } from './channelWrapper';
+import { ApplicationServices } from '../../../web/services/global';
 
 import EventEmitter = require('events');
-
-
 
 export abstract class BaseSpanClient implements ICommandClient {
     proc!: child_process.ChildProcess;
     private static count = 1; // restricts only stdserver or httpserver not both!!!!
-    channel: vscode.OutputChannel;
+    channel: VscodeOutputChannelWrapper;
     options: { pythonpath: string, stdargs: string[], type: RunType; }
     running: boolean = false;
 
     constructor(options: { pythonpath: string, stdargs: string[], type: RunType; }) {
         this.options = options;
-        this.channel = vscode.window.createOutputChannel('Dothttp');
+        this.channel = ApplicationServices.get().getOutputChannelWrapper();
     }
     isRunning(): boolean {
         return this.running
@@ -91,10 +90,10 @@ export class StdoutClient extends BaseSpanClient {
         });
         // start readline to listen
         this.rl.on("line", (line) => {
-            try{
+            try {
                 const result: IResult = JSON.parse(line);
                 this.eventS.emit(result.id + '', result);
-            } catch(error){
+            } catch (error) {
                 console.log(`some rogue statemnt ${error}`)
             }
         });

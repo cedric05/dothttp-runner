@@ -13,6 +13,7 @@ import { Configuration } from "../utils/config";
 import { UrlStore } from "../types/url";
 import { NotebookKernel } from "./notebookkernel";
 import { ApplicationServices } from "./global";
+import { VscodeOutputChannelWrapper } from "../../native/services/languageservers/channelWrapper";
 
 
 export class ApplicationBuilder {
@@ -34,6 +35,7 @@ export class ApplicationBuilder {
     urlStore?: UrlStore;
     notebookkernel?: NotebookKernel;
     context?: vscode.ExtensionContext;
+    channelWrapper?: VscodeOutputChannelWrapper;
 
     setStorageService(storageService: LocalStorageService) {
         this.storageService = storageService;
@@ -108,4 +110,10 @@ export class ApplicationBuilder {
         this.clientHandler2 = client;
         return this;
     }
+
+    setChannelWrapper(channelWrapper: VscodeOutputChannelWrapper) {
+        this.channelWrapper = channelWrapper;
+        return this;
+    }
+
 }

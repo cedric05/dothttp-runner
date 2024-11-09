@@ -33,6 +33,7 @@ import { activate as webExtensionActivate, loadNoteBookControllerSafely } from '
 import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
 import * as fs from 'fs'
+import { VscodeOutputChannelWrapper } from './native/services/languageservers/channelWrapper';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -67,6 +68,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	symbolProvider.setClientHandler(clientHandler);
 	symbolProvider.setDiagnostics(diagnostics);
 	const configInstance = Configuration.instance();
+	const channelWrapper = new VscodeOutputChannelWrapper(configInstance);
 	notebookKernel.configure(clientHandler2, fileStateService, propertyTree, configInstance);
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
@@ -85,6 +87,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setConfig(configInstance)
 		.setContext(context)
 		.setNotebookkernel(notebookKernel)
+		.setChannelWrapper(channelWrapper)
 		.setHistoryTreeProvider(historyTreeProvider)
 		.build();
 
