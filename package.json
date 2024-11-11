@@ -937,7 +937,7 @@
 		"@types/glob": "^7.1.4",
 		"@types/httpsnippet": "^1.23.0",
 		"@types/js-yaml": "^4.0.9",
-		"@types/json-stringify-safe": "^5.0.0",
+		"@types/json-stringify-safe": "^5.0.3",
 		"@types/lodash": "^4.17.7",
 		"@types/mime-types": "^2.1.4",
 		"@types/mocha": "^10.0.9",
