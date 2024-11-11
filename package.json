@@ -980,7 +980,7 @@
 		"curl-to-har": "^1.0.1",
 		"curl-to-postmanv2": "^1.8.1",
 		"dateformat": "^4.5.1",
-		"highlight.js": "^11.5.1",
+		"highlight.js": "^11.10.0",
 		"httpsnippet": "^1.25.0",
 		"json-stringify-safe": "^5.0.1",
 		"jsonc-parser": "^3.3.1",
