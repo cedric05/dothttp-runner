@@ -10,8 +10,8 @@
     "patterns": [
         {
             "begin": "^\\s*>\\s{1}{%?\\s*",
-            "name": "http.request.body.javascript",
-            "end": "^\\s*%} python\\s*",
+            "name": "http.request.body.script",
+            "end": "^\\s*%} (python)?\\s*",
             "patterns": [
                 {
                     "include": "source.python"
