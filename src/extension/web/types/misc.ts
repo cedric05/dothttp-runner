@@ -32,7 +32,8 @@ export enum DothttpTypes {
     OUTPUT = "output",
     SCRIPT = "script",
     COMMENT = "comment",
-    IMPORT = "import"
+    IMPORT = "import",
+    AWSAUTH = "aws_auth"
 }
 
 type Immutable<T> = {
@@ -109,6 +110,12 @@ example:
 
 visit [docs](https://docs.dothttp.dev/docs/auth#basic-authentication)
 
+`),
+    "aws_auth": new MarkdownString(`Configured with HttpDef AWS authentication mechanism
+example: 
+\`awsauth('dummy-access-id' , 'dummy-secret-token' , 's3', 'us-east-1')\`
+
+visit [docs](https://docs.dothttp.dev/docs/auth#aws-signature-v4-authentication)
 `),
     "digest_auth": new MarkdownString(`Configured with HttpDef Digest authentication mechanism
 
