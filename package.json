@@ -967,7 +967,7 @@
 		"style-loader": "^4.0.0",
 		"svg-inline-loader": "^0.8.2",
 		"ts-loader": "^8.0.14",
-		"typescript": "^5.5.4",
+		"typescript": "^5.6.3",
 		"vkbeautify": "^0.99.3",
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.92.1",
