@@ -16,30 +16,44 @@ def main(args):
     # below is semver version
     dotextensions_semver = f"{args.dotextensions_version}-alpha.{args.alpha}"
     dothttp_runner_version = args.dothttp_runner_version
+    dothttp_extensions_min_version = args.dothttp_extensions_min_version
 
     print(f'dotextensions_version: {dotextensions_version}')
     print(f'dotextensions_semver: {dotextensions_semver}')
     print(f'dothttp_runner_version: {dothttp_runner_version}')
+    print(f'dothttp_extensions_min_version: {dothttp_extensions_min_version}')
     
-    data["availableversions"].append(
-        {
-            "downloadUrls": {
-                "linux_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-arm64.zip",
-                "linux_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
-                "linux": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
-                "windows": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-x86-windows.zip",
-                "darwin": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
-                "darwin_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin-arm.zip",
-                "darwin_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
-            },
-            "latest": not args.no_latest,
-            "stable": not args.no_stable,
-            "version": dotextensions_semver,
-        }
-    )
+    # before appending check if version already exists
+    version_present_in_availableversions = False
+    for version_info in data["availableversions"]:
+        if version_info["version"] == dotextensions_semver:
+            print(f"version {dotextensions_semver} already exists in version.json")
+            version_present_in_availableversions = True
+            break
+    if not version_present_in_availableversions:
+        data["availableversions"].append(
+            {
+                "downloadUrls": {
+                    "linux_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-arm64.zip",
+                    "linux_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
+                    "linux": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
+                    "windows": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-x86-windows.zip",
+                    "darwin": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
+                    "darwin_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin-arm.zip",
+                    "darwin_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
+                },
+                "latest": not args.no_latest,
+                "stable": not args.no_stable,
+                "version": dotextensions_semver,
+            }
+        )
+    if not dothttp_extensions_min_version:
+        last_version_name = list(data["matrix"].keys())[-1]
+        dothttp_extensions_min_version = data["matrix"][last_version_name]["minVersion"]
+    
     data["matrix"][dothttp_runner_version] = {
         "maxVersion": args.dotextensions_version,
-        "minVersion": "0.0.8",
+        "minVersion": dothttp_extensions_min_version,
     }
 
     print(f"updated matrix: {data}")
@@ -60,6 +74,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--no_stable",  help="is stable version", default=False, required=False, action='store_true'
+    )
+    parser.add_argument(
+        "--dothttp_extensions_min_version", help="dothttp extensions min version", required=False,
     )
     args = parser.parse_args()
     main(args)
