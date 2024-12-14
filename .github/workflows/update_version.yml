@@ -14,12 +14,16 @@ on:
       dothttp_runner_version:
         description: 'dothttp-runner version (semver like 1.0.10)'
         required: true
+      dothttp_extensions_min_version:
+        description: 'min dothttp version'
+        required: false
 
 env:
   python_version: 3.8
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
   alpha: ${{ github.event.inputs.alpha }}
   dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
+  dothttp_extensions_min_version: ${{ github.event.inputs.dothttp_extensions_min_version }}
   storage_account_name: 'cedric05artifacts'
   AZURE_CLI_VERSION: '2.0.80'
 
@@ -43,7 +47,7 @@ jobs:
         run: |
           # if latest, pass --latest otherwise --no-latest
           # if stable, pass --stable otherwise --no-stable
-          python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} 
+          python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
       - name: Commit changes
         run: |
           git config --local user.email "kesavarapu.siva@gmail.com"
