@@ -988,7 +988,7 @@
 		"mime-types": "^2.1.30",
 		"openapi-to-postmanv2": "^4.24.0",
 		"semver": "^7.6.3",
-		"shell-quote": "^1.7.3",
+		"shell-quote": "^1.8.2",
 		"swagger-to-har2": "^1.0.4",
 		"temp": "^0.9.4",
 		"tingodb": "^0.6.1",
