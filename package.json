@@ -948,7 +948,7 @@
 		"@types/semver": "^7.5.8",
 		"@types/temp": "^0.9.4",
 		"@types/uuid": "^10.0.0",
-		"@types/vkbeautify": "^0.99.2",
+		"@types/vkbeautify": "^0.99.4",
 		"@types/vscode-notebook-renderer": "1.72.3",
 		"@types/whatwg-url": "^8.2.0",
 		"@types/yauzl": "^2.10.3",
