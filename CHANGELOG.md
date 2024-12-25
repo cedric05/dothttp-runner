@@ -3,6 +3,14 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.35
+- Update `dotextensions-build` to version 0.0.43
+  - **Feat:** variable can be created from other variable via template feature `f'{var1} {var2}'`
+  - **chore:** Updates jinja2 version
+- Update `npm` packages
+  - shell-quote
+
+
 ## 1.0.34
 - Update `dotextensions-build` to version 0.0.43-a29
   - **Feat:** Notebook request dothttp exception is now shown in the DothttpUI view instead of simple text.

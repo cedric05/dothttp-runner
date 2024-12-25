@@ -10,7 +10,8 @@ on:
         default: '0.0.43'
       alpha:
         description: 'alpha version (for 0.0.43-alpha.1 `1` is alpha version)'
-        required: true
+        required: false
+        default: ''
       dothttp_runner_version:
         description: 'dothttp-runner version (semver like 1.0.10)'
         required: true
@@ -47,7 +48,11 @@ jobs:
         run: |
           # if latest, pass --latest otherwise --no-latest
           # if stable, pass --stable otherwise --no-stable
-          python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+            if [ -z "${{ env.alpha }}" ]; then
+              python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+            else
+              python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+            fi
       - name: Commit changes
         run: |
           git config --local user.email "kesavarapu.siva@gmail.com"
