@@ -12,9 +12,14 @@ def main(args):
         data = json.load(f)
 
     # python version type follows below pattern
-    dotextensions_version = f"{args.dotextensions_version}a{args.alpha}"
-    # below is semver version
-    dotextensions_semver = f"{args.dotextensions_version}-alpha.{args.alpha}"
+    if args.alpha:
+        dotextensions_version = f"{args.dotextensions_version}a{args.alpha}"
+        # below is semver version
+        dotextensions_semver = f"{args.dotextensions_version}-alpha.{args.alpha}"
+    else:
+        dotextensions_version = f"{args.dotextensions_version}"
+        # below is semver version
+        dotextensions_semver = f"{args.dotextensions_version}"
     dothttp_runner_version = args.dothttp_runner_version
     dothttp_extensions_min_version = args.dothttp_extensions_min_version
 
@@ -67,7 +72,7 @@ if __name__ == "__main__":
         description="Update version matrix in version.json"
     )
     parser.add_argument("--dotextensions_version", help="dotextensions version")
-    parser.add_argument("--alpha", help="dothttp alpha version")
+    parser.add_argument("--alpha", help="dothttp alpha version", default="")
     parser.add_argument("--dothttp_runner_version", help="dothttp-runner version")
     parser.add_argument(
         "--no_latest",  help="is latest version", default=False, required=False, action='store_true'
