@@ -6,13 +6,13 @@ import { EnvTreeItem } from '../../views/tree';
 
 
 
-export function enableCommand(node: EnvTreeItem) {
+export function enableEnvCommand(node: EnvTreeItem) {
     ApplicationServices.get().getFileStateService()?.addEnv(
         window.activeTextEditor?.document.uri!, node.env);
     ApplicationServices.get().getEnvProvder()?.refresh();
 }
 
-export function disableCommand(node: EnvTreeItem) {
+export function disableEnvCommand(node: EnvTreeItem) {
     ApplicationServices.get().getFileStateService()?.removeEnv(
         window.activeTextEditor?.document.uri!, node.env);
     ApplicationServices.get().getEnvProvder()?.refresh();

@@ -149,7 +149,8 @@ export class FileState implements IFileState {
         const fileinfo = this.getFileInfo(filename);
         const index = fileinfo.envs.indexOf(env);
         if (index > -1) {
-            fileinfo.envs.splice(index);
+            // delete just one instead of all
+            fileinfo.envs.splice(index, 1);
         }
         this.updateFileinfo(filename, fileinfo);
     }

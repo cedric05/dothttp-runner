@@ -3,6 +3,9 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.37
+- **Fix** disable env not working properly fixed
+
 ## 1.0.36
 - A single environment state is applied to the entire workspace folder.  
 - A single property state is applied to the entire workspace folder.  

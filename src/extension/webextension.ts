@@ -9,7 +9,7 @@ import { EnvTree, PropertyTree } from './views/tree';
 import { ApplicationBuilder } from './web/services/builder';
 import { Constants } from './web/utils/constants';
 import { Configuration } from './web/utils/config';
-import { copyProperty, disableCommand, enableCommand } from './web/commands/enable';
+import { copyProperty, disableEnvCommand, enableEnvCommand } from './web/commands/enable';
 
 export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "web");
@@ -35,8 +35,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(...[
         vscode.window.registerTreeDataProvider(Constants.envTreeView, envTree),
         vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envTree.refresh()),
-        vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand),
-        vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand),
+        vscode.commands.registerCommand(Constants.enableEnvCommand, enableEnvCommand),
+        vscode.commands.registerCommand(Constants.disableEnvCommand, disableEnvCommand),
         vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty),
         vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envTree.disableAllEnv() }),
     ])
