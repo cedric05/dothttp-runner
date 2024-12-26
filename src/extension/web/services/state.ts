@@ -65,6 +65,9 @@ export class FileState implements IFileState {
     }
 
     private static getKeyFromUri(filename: Uri): string {
+        if (filename.scheme === 'vscode-notebook-cell') {
+            filename = vscode.Uri.parse(filename.fsPath);
+        }
         let workspace = vscode.workspace.getWorkspaceFolder(filename);
         const name = workspace?.name ?? 'empty-workspace';
         let key = `${FileState.section}.${name}`;
@@ -146,7 +149,8 @@ export class FileState implements IFileState {
         const fileinfo = this.getFileInfo(filename);
         const index = fileinfo.envs.indexOf(env);
         if (index > -1) {
-            fileinfo.envs.splice(index);
+            // delete just one instead of all
+            fileinfo.envs.splice(index, 1);
         }
         this.updateFileinfo(filename, fileinfo);
     }

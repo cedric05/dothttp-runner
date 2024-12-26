@@ -64,7 +64,9 @@ jobs:
         with:
           node-version: 20.18.0
       # - run: npm install --legacy-peer-deps
-      - run: npm install 
+      - run: |
+          npm run generate_license
+          npm install 
       - shell: pwsh
         run: |
           echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_ENV

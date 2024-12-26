@@ -319,10 +319,18 @@ const Status: FunctionComponent<{ code: number, method?: String, url: string, ex
     } else if (code < 600) {
         statusType = 'server-err';
     }
+    var detailed_phrase = "";
+    if (phrase){
+        if (code == 0){
+            detailed_phrase = "REQUEST_PARSE_ERROR";
+        } else {
+            detailed_phrase = getReasonPhrase(code).toLowerCase();
+        }
+    }
 
 
     return <div class="status-and-url">
-        <span className={`status-label status-label-${statusType!}`} >{code} {phrase ? "" : getReasonPhrase(code).toLowerCase()}</span>
+        <span className={`status-label status-label-${statusType!}`} >{code} {detailed_phrase}</span>
         {method ? <span >{method}</span> : <span></span>}
         {executionTime ? <span class='execution-summary' >{executionTime}s</span> : <span></span>}
         <span class='request-url'>   {url}</span>
