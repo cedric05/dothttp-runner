@@ -141,41 +141,33 @@ export class NotebookKernel {
             }
 
             try {
-                if (out.error) {
+                if (curl) {
                     execution.replaceOutput([
-                        new vscode.NotebookCellOutput([
-                            vscode.NotebookCellOutputItem.stderr(out.error_message!)
-                        ], { "history": dotbookOutputs })
-                    ])
+                        new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
+                    ]);
                 } else {
-                    if (curl) {
-                        execution.replaceOutput([
-                            new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
-                        ]);
-                    } else {
-                        out.body = "";
-                        out.headers = {};
-                        const outs: Array<vscode.NotebookCellOutputItem> = [];
-                        const nativeContentTypes = this.parseAndAdd(out.response);
-                        // insert into dotbookOutputs at the start
-                        // limit number responses in cell
-                        let maxResponsesInCell = this.config?.numResponsesInNotebookCell;
-                        if (maxResponsesInCell == undefined) {
-                            maxResponsesInCell = 5;
-                        }
-                        if (maxResponsesInCell != 0 && dotbookOutputs.length >= maxResponsesInCell) {
-                            dotbookOutputs = dotbookOutputs.slice(0, maxResponsesInCell - 1);
-                        }
-                        dotbookOutputs.unshift({ response: out, metadata });
-                        outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
-                        outs.push(...nativeContentTypes);
-                        await execution.clearOutput();
-                        execution.replaceOutput([
-                            new vscode.NotebookCellOutput(outs)
-                        ]);
+                    out.body = "";
+                    out.headers = {};
+                    const outs: Array<vscode.NotebookCellOutputItem> = [];
+                    const nativeContentTypes = this.parseAndAdd(out.response);
+                    // insert into dotbookOutputs at the start
+                    // limit number responses in cell
+                    let maxResponsesInCell = this.config?.numResponsesInNotebookCell;
+                    if (maxResponsesInCell == undefined) {
+                        maxResponsesInCell = 5;
                     }
-                    isOk = true;
+                    if (maxResponsesInCell != 0 && dotbookOutputs.length >= maxResponsesInCell) {
+                        dotbookOutputs = dotbookOutputs.slice(0, maxResponsesInCell - 1);
+                    }
+                    dotbookOutputs.unshift({ response: out, metadata });
+                    outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
+                    outs.push(...nativeContentTypes);
+                    await execution.clearOutput();
+                    execution.replaceOutput([
+                        new vscode.NotebookCellOutput(outs)
+                    ]);
                 }
+                isOk = true;
             } catch (error) {
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([

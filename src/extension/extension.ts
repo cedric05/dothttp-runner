@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { workspace } from 'vscode';
-import { copyProperty, disableCommand, enableCommand, toggleExperimentalFlag } from './web/commands/enable';
+import { copyProperty, disableEnvCommand, enableEnvCommand, toggleExperimentalFlag } from './web/commands/enable';
 import { generateLangForHttpFile } from "./native/commands/export/generate";
 import { exportToPostman } from "./native/commands/export/postman";
 import { createNewNotebook, FileTypes, saveHttpFileasNotebook, saveNotebookAsHttpFileFromCommand } from "./web/lib/http2book";
@@ -153,8 +153,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(...[
 		vscode.window.registerTreeDataProvider(Constants.envTreeView, envTree),
 		vscode.commands.registerCommand(Constants.refreshEnvCommand, () => envTree.refresh()),
-		vscode.commands.registerCommand(Constants.enableEnvCommand, enableCommand),
-		vscode.commands.registerCommand(Constants.disableEnvCommand, disableCommand),
+		vscode.commands.registerCommand(Constants.enableEnvCommand, enableEnvCommand),
+		vscode.commands.registerCommand(Constants.disableEnvCommand, disableEnvCommand),
 		vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty),
 		vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envTree.disableAllEnv() }),
 	])
