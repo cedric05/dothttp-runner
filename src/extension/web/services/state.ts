@@ -65,6 +65,9 @@ export class FileState implements IFileState {
     }
 
     private static getKeyFromUri(filename: Uri): string {
+        if (filename.scheme === 'vscode-notebook-cell') {
+            filename = vscode.Uri.parse(filename.fsPath);
+        }
         let workspace = vscode.workspace.getWorkspaceFolder(filename);
         const name = workspace?.name ?? 'empty-workspace';
         let key = `${FileState.section}.${name}`;

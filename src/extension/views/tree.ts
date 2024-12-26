@@ -8,7 +8,7 @@ import { Constants } from '../web/utils/constants';
 
 
 const FIFTEEN_MINS = 15 * 60 * 1000;
-export interface Position {
+export interface EnvTreeItem {
     env: string;
     envProperty?: string
 }
@@ -78,7 +78,8 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             label: `${element.key}: ${element.hidden ? element.value.substring(0, 2) + 'xxxxx(masked)' : element.value}`,
             tooltip: `property ${enabled}`,
             contextValue: enabled,
-            collapsibleState: vscode.TreeItemCollapsibleState.None
+            collapsibleState: vscode.TreeItemCollapsibleState.None,
+            iconPath: new vscode.ThemeIcon(element.enabled ? 'check' : 'circle-slash'),
         } as vscode.TreeItem;
     }
     getChildren(element?: PropertyTreeItem): vscode.ProviderResult<PropertyTreeItem[]> {
@@ -179,9 +180,9 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
 
 }
 
-export class EnvTree implements vscode.TreeDataProvider<Position> {
-    private _onDidChangeTreeData: vscode.EventEmitter<Position | null> = new vscode.EventEmitter<Position | null>();
-    readonly onDidChangeTreeData: vscode.Event<Position | null> = this._onDidChangeTreeData.event;
+export class EnvTree implements vscode.TreeDataProvider<EnvTreeItem> {
+    private _onDidChangeTreeData: vscode.EventEmitter<EnvTreeItem | null> = new vscode.EventEmitter<EnvTreeItem | null>();
+    readonly onDidChangeTreeData: vscode.Event<EnvTreeItem | null> = this._onDidChangeTreeData.event;
 
     private tree!: DothttpJson;
     private autoRefresh = true;
@@ -218,7 +219,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
 
 
 
-    public getProperty(node: Position) {
+    public getProperty(node: EnvTreeItem) {
         if (node.env && node.envProperty) {
             return this.tree[node.env][node.envProperty]
         }
@@ -226,13 +227,13 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
 
 
 
-    getChildren(pos?: Position): Thenable<Position[]> {
+    getChildren(pos?: EnvTreeItem): Thenable<EnvTreeItem[]> {
         if (pos) {
             if (pos.envProperty)
                 return Promise.resolve([]);
             else {
                 const env: EnvList = this.tree[pos.env];
-                const childs: Position[] = Object.keys(env).map(propKey => ({
+                const childs: EnvTreeItem[] = Object.keys(env).map(propKey => ({
                     env: pos.env,
                     envProperty: propKey,
                 }))
@@ -250,7 +251,7 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
         }
     }
 
-    getTreeItem(pos: Position): vscode.TreeItem {
+    getTreeItem(pos: EnvTreeItem): vscode.TreeItem {
         if (pos.env) {
             const item = new vscode.TreeItem(
                 this.getLabel(pos), pos.envProperty ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
@@ -265,9 +266,11 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
             if (!pos.envProperty) {
                 if (this.hasEnv(pos.env)) {
                     item.contextValue = viewState.enabled;
+                    item.iconPath =  new vscode.ThemeIcon( 'check');
                 }
                 else {
                     item.contextValue = viewState.environment;
+                    item.iconPath =  new vscode.ThemeIcon('circle-slash');
                 }
             }
             else {
@@ -279,10 +282,9 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
     }
 
     constructor() {
-        vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidChangeTextDocument(e => this.onDocumentChanged(e));
     }
-    private getLabel(pos: Position): string | vscode.TreeItemLabel {
+    private getLabel(pos: EnvTreeItem): string | vscode.TreeItemLabel {
         if (pos.envProperty) {
             return `${pos.envProperty}: ${this.tree[pos.env][pos.envProperty]}`
         } else {
@@ -339,14 +341,6 @@ export class EnvTree implements vscode.TreeDataProvider<Position> {
                 this.filename = files[0];
             }
         });
-    }
-
-    onActiveEditorChanged(): void {
-        const editor = vscode.window.activeTextEditor;
-        if (!this.filename && editor && basename(editor.document.fileName) === ".dothttp.json") {
-            this.filename = editor.document.uri;
-            this.refresh();
-        }
     }
 
     private onDocumentChanged(changeEvent: vscode.TextDocumentChangeEvent): void {

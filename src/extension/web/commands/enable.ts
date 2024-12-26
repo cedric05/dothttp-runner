@@ -2,17 +2,17 @@ import * as vscode from 'vscode';
 import { window } from 'vscode';
 import { Constants } from '../utils/constants';
 import { ApplicationServices } from "../services/global";
-import { Position } from '../../views/tree';
+import { EnvTreeItem } from '../../views/tree';
 
 
 
-export function enableCommand(node: Position) {
+export function enableCommand(node: EnvTreeItem) {
     ApplicationServices.get().getFileStateService()?.addEnv(
         window.activeTextEditor?.document.uri!, node.env);
     ApplicationServices.get().getEnvProvder()?.refresh();
 }
 
-export function disableCommand(node: Position) {
+export function disableCommand(node: EnvTreeItem) {
     ApplicationServices.get().getFileStateService()?.removeEnv(
         window.activeTextEditor?.document.uri!, node.env);
     ApplicationServices.get().getEnvProvder()?.refresh();
@@ -20,7 +20,7 @@ export function disableCommand(node: Position) {
 
 
 
-export function copyProperty(node: Position) {
+export function copyProperty(node: EnvTreeItem) {
     const value = ApplicationServices.get().getEnvProvder()?.getProperty(node);
     if (value) {
         vscode.env.clipboard.writeText(value);
