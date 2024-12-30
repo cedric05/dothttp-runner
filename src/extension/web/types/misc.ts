@@ -18,6 +18,7 @@ export enum DothttpTypes {
     NAME = "name",
     EXTRA_ARGS = "extra_args",
     URL = "url",
+    VARIABLE = "variable",
     BASIC_AUTH = "basic_auth",
     DIGEST_AUTH = "digest_auth",
     NTLM_AUTH = "ntlm_auth",

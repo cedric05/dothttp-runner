@@ -54,6 +54,8 @@ export interface TypeResult {
     "target_base": string | null;
     "base_start": number | null;
     "filename": string | null;
+    "name": string | null;
+    "value": any;
 }
 
 export enum RunType {

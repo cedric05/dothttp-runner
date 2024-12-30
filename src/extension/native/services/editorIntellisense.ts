@@ -167,7 +167,15 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
     async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover | null> {
         const result = await this.getTypeResult(document, position);
         const typeAtPos = result.type;
-        if (typeAtPos !== DothttpTypes.COMMENT) {
+        if (typeAtPos === DothttpTypes.VARIABLE){
+            // if value is of type json
+            if (result.value) {
+                if (typeof result.value === 'object') {
+                    return new vscode.Hover(`Name : ${result.name}: Value: ${JSON.stringify(result.value, null, 2)}`);
+                }
+                return new vscode.Hover(`Name : ${result.name}: Value: ${result.value}` );
+            }
+        } else if (typeAtPos !== DothttpTypes.COMMENT) {
             return new vscode.Hover(DotHovers[typeAtPos]);
         }
         return null;
@@ -177,7 +185,7 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
         const result = await this.getTypeResult(document, position);
         if (result.type === DothttpTypes.NAME) {
             return new vscode.Location(document.uri, document.positionAt(result.base_start!));
-        } if (result.type === DothttpTypes.IMPORT) {
+        } else if (result.type === DothttpTypes.IMPORT) {
             let filename = result.filename!;
             if (!filename.endsWith('.http')) {
                 filename = filename + '.http';
