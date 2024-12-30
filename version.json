@@ -1410,6 +1410,10 @@
         "1.0.37": {
             "maxVersion": "0.0.44",
             "minVersion": "0.0.8"
+        },
+        "1.0.38": {
+            "maxVersion": "0.0.44",
+            "minVersion": "0.0.8"
         }
     }
 }
