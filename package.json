@@ -962,7 +962,7 @@
 		"mongodb": "^3.6.5",
 		"os-browserify": "^0.3.0",
 		"path-browserify": "^1.0.1",
-		"preact": "^10.25.1",
+		"preact": "^10.25.4",
 		"querystring-es3": "^0.2.1",
 		"stream-browserify": "^3.0.0",
 		"style-loader": "^4.0.0",
