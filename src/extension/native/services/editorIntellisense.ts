@@ -143,7 +143,8 @@ class TypeResultMixin {
                 throw new Error("notebook uri mismatch");
             }
             const contexts = notebookDoc.notebook.getCells().map(cell => cell.document.getText());
-            return this.clientHandler.resolveContentFromContentPosition(offset, document.getText(), contexts, env, properties, document.uri.fsPath, "hover")
+            const propertyFile = this.fileStateService.getEnvFile()?.fsPath ?? null;
+            return this.clientHandler.resolveContentFromContentPosition(offset, document.getText(), contexts, propertyFile, env, properties, document.uri.fsPath, "hover")
         } else {
             return this.clientHandler.resolveContentFromFilePosition(offset, document.fileName, env, properties, "hover");
         }
