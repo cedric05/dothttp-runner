@@ -19,6 +19,7 @@ export class ClientHandler {
     static IMPORT_POSTMAN_COMMAND = "/import/postman";
     static GET_HAR_FORMAT_COMMAND = "/file/parse";
     static CONTENT_TYPE_COMMAND = "/content/type";
+    static CONTENT_RESOLVE_COMMAND = "/content/resolve";
     static HAR_IMPORT_COMMAND = "/export/har2http";
     static POSTMAN_EXPORT_COMMAND = "/export/http2postman";
 
@@ -108,6 +109,20 @@ export class ClientHandler {
             filename, position: position, source
         }) as TypeResult;
     }
+
+    async resolveContentFromContentPosition(position: number, content: string | null, contexts: string[], env: string[], properties?: { [prop: string]: string }, source?: string): Promise<TypeResult> {
+        return await this.cli?.request(ClientHandler.CONTENT_RESOLVE_COMMAND, {
+            content, position: position, source, env, properties,
+            contexts
+        }) as TypeResult;
+    }
+
+    async resolveContentFromFilePosition(position: number, filename: string | null, env: string[], properties?: { [prop: string]: string }, source?: string): Promise<TypeResult> {
+        return await this.cli?.request(ClientHandler.CONTENT_RESOLVE_COMMAND, {
+            file: filename, position: position, source, env, properties
+        }) as TypeResult;
+    }
+
 
     async getTypeFromContentPosition(position: number, content: string, source?: string): Promise<TypeResult> {
         return await this.cli?.request(ClientHandler.CONTENT_TYPE_COMMAND, {

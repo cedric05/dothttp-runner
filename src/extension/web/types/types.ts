@@ -56,6 +56,7 @@ export interface TypeResult {
     "filename": string | null;
     "name": string | null;
     "value": any;
+    "resolved": any;
 }
 
 export enum RunType {
