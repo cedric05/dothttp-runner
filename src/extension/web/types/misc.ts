@@ -43,6 +43,9 @@ type Immutable<T> = {
 
 export const DotHovers = {
     // TODO add documentation link
+
+    "variable": new MarkdownString(`Variable defined in httpdef
+visit variable define [docs](https://docs.dothttp.dev/docs/variables)`),
     "name": new MarkdownString(`Unique Identifier incase of multiple httpdef in single file
 
 visit naming [docs](https://docs.dothttp.dev/docs/multidef#definenaming)

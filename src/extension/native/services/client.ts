@@ -110,9 +110,10 @@ export class ClientHandler {
         }) as TypeResult;
     }
 
-    async resolveContentFromContentPosition(position: number, content: string | null, contexts: string[], env: string[], properties?: { [prop: string]: string }, source?: string): Promise<TypeResult> {
+    async resolveContentFromContentPosition(position: number, content: string | null, contexts: string[], env: string[], properties: { [prop: string]: string }, filename: string | null, source?: string): Promise<TypeResult> {
         return await this.cli?.request(ClientHandler.CONTENT_RESOLVE_COMMAND, {
             content, position: position, source, env, properties,
+            file: filename,
             contexts
         }) as TypeResult;
     }

@@ -143,7 +143,7 @@ class TypeResultMixin {
                 throw new Error("notebook uri mismatch");
             }
             const contexts = notebookDoc.notebook.getCells().map(cell => cell.document.getText());
-            return this.clientHandler.resolveContentFromContentPosition(offset, document.getText(), contexts, env, properties, "hover")
+            return this.clientHandler.resolveContentFromContentPosition(offset, document.getText(), contexts, env, properties, document.uri.fsPath, "hover")
         } else {
             return this.clientHandler.resolveContentFromFilePosition(offset, document.fileName, env, properties, "hover");
         }
@@ -198,12 +198,17 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
                 hover_text = result.resolved;
             }
         }
-        if (typeAtPos !== DothttpTypes.VARIABLE) {
-            hover_text = `## Resolved
-\`${hover_text}\`
-\n\n\n\n\n\n\n\n\n\n\n\ ##### Docs \n  ${DotHovers[typeAtPos].value}`;
+        var ret;
+        if (hover_text) {
+            ret = new vscode.MarkdownString(`## Resolved
+\`\`\`json
+${hover_text}
+\`\`\`
+\n\n\n\n\n\n\n\n\n\n\n\ ##### Docs \n  ${DotHovers[typeAtPos].value}`);
+        } else {
+            ret = DotHovers[typeAtPos].value;
         }
-        return new vscode.Hover(hover_text);
+        return new vscode.Hover(ret);
     }
     async provideDefinition(document: vscode.TextDocument, position: vscode.Position):
         Promise<vscode.Definition | vscode.LocationLink[]> {
