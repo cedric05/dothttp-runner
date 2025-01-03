@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation, Command } from 'vscode';
 import { ClientHandler } from "./client";
-import { DotTttpSymbol } from "../../web/types/types";
+import { DotTttpSymbol, ResolveResult } from "../../web/types/types";
 import * as json from 'jsonc-parser';
 import { parseURL } from 'whatwg-url';
 import { parse as parseQueryString } from 'querystring';
@@ -131,22 +131,22 @@ class TypeResultMixin {
         }
     }
 
-    public async resolveType(document: vscode.TextDocument, position: vscode.Position) {
+    public async resolveType(document: vscode.TextDocument, position: vscode.Position): Promise<ResolveResult> {
         const isNotebook = document.uri.scheme === Constants.notebookscheme;
         const offset = document.offsetAt(position);
         const env = this.fileStateService.getEnv(document.uri);
         const properties: { [prop: string]: string } = {}
         this.fileStateService.getProperties(document.uri).filter(prop => prop.enabled).map(prop => { properties[prop.key] = prop.value });
+        const propertyFile = this.fileStateService.getEnvFile()?.fsPath ?? null;
         if (isNotebook) {
             const notebookDoc = vscode.window.activeNotebookEditor;
             if (notebookDoc?.notebook.uri.fsPath !== document.uri.fsPath) {
                 throw new Error("notebook uri mismatch");
             }
             const contexts = notebookDoc.notebook.getCells().map(cell => cell.document.getText());
-            const propertyFile = this.fileStateService.getEnvFile()?.fsPath ?? null;
-            return this.clientHandler.resolveContentFromContentPosition(offset, document.getText(), contexts, propertyFile, env, properties, document.uri.fsPath, "hover")
+            return this.clientHandler.resolveContentFromContentPosition(offset, document.uri.fsPath, document.getText(), contexts, propertyFile, env, properties, "hover")
         } else {
-            return this.clientHandler.resolveContentFromFilePosition(offset, document.fileName, env, properties, "hover");
+            return this.clientHandler.resolveContentFromFilePosition(offset, document.fileName, propertyFile, env, properties, "hover");
         }
     }
 }
@@ -199,9 +199,20 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
                 hover_text = result.resolved;
             }
         }
+        var resolved_property = "";
+        if (result.property_at_pos) {
+            resolved_property =
+                `## Resolved Properties \`${result.property_at_pos.name}\`
+\`\`\`jsonc
+${JSON.stringify(result.property_at_pos.value, null, 2)}
+\`\`\`
+\n\n\n\n\n`;
+        }
         var ret;
         if (hover_text) {
-            ret = new vscode.MarkdownString(`## Resolved
+            ret = new vscode.MarkdownString(
+                `${resolved_property}
+## After Replacing Properties
 \`\`\`json
 ${hover_text}
 \`\`\`
