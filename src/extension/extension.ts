@@ -105,6 +105,57 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 			}
 		}));
+
+	const createHttpFile = vscode.commands.registerCommand('dothttp.command.createHttpFile', async (uri) => {
+		const fileName = await vscode.window.showInputBox({
+			prompt: "Enter the name for the HTTP file",
+			placeHolder: "example.http",
+			value: "new-http-file.http",
+			validateInput: (value) => {
+				if (!value.endsWith('.http')) {
+					return 'File name must end with ".http"';
+				}
+				return null;
+			}
+		});
+
+		if (fileName) {
+			const filePath = vscode.Uri.joinPath(uri, fileName);
+			try {
+				await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+				vscode.window.showInformationMessage(`HTTP file "${fileName}" created!`);
+			} catch (err) {
+				vscode.window.showErrorMessage(`Failed to create file: ${err}`);
+			}
+		}
+	});
+
+	// Command to create an HNBK file
+	const createHnbkFile = vscode.commands.registerCommand('dothttp.command.createHnbkFile', async (uri) => {
+		const fileName = await vscode.window.showInputBox({
+			prompt: "Enter the name for the HNBK file",
+			placeHolder: "example.hnbk",
+			value: "new-hnbk-file.hnbk",
+			validateInput: (value) => {
+				if (!value.endsWith('.hnbk')) {
+					return 'File name must end with ".hnbk"';
+				}
+				return null;
+			}
+		});
+
+		if (fileName) {
+			const filePath = vscode.Uri.joinPath(uri, fileName);
+			try {
+				await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+				vscode.window.showInformationMessage(`HNBK file "${fileName}" created!`);
+			} catch (err) {
+				vscode.window.showErrorMessage(`Failed to create file: ${err}`);
+			}
+		}
+	});
+
+	context.subscriptions.push(createHttpFile, createHnbkFile);
 	context.subscriptions.push(...[
 		vscode.commands.registerTextEditorCommand(Constants.RUN_FILE_COMMAND, runFileCommand),
 		vscode.commands.registerTextEditorCommand(Constants.GEN_CURL_FILE_COMMAND, genCurlCommand),

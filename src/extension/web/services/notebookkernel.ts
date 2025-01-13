@@ -114,6 +114,12 @@ export class NotebookKernel {
 
         try {
             const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;
+            // this should happen in client
+            if (out.errors){
+                out.response.body = out.errors.map(e => `${e.var} : ${e.message}`).join("\n");
+                out.body = out.response.body;
+                out.http = out.response.body;
+            }
             const metadata: NotebookExecutionMetadata = {
                 uri: cell.document.uri,
                 cellNo: cell.index,

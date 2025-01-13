@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.44",
+	"version": "1.0.45",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -176,6 +176,22 @@
 			}
 		],
 		"commands": [
+			{
+				"command": "dothttp.command.createHttpFile",
+				"title": "Create HTTP File",
+				"shortTitle": "Dothttp File",
+				"category": "Dothttp",
+				"icon": "$(new-file)",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.createHnbkFile",
+				"title": "Create Http Notebook",
+				"shortTitle": "Dothttp Notebook",
+				"category": "Dothttp",
+				"icon": "$(new-file)",
+				"enablement": "dothttpRunMode == full"
+			},
 			{
 				"command": "dothttp.command.newHttpBook",
 				"title": "Notebook",
@@ -732,6 +748,18 @@
 			],
 			"explorer/context": [
 				{
+					"command": "dothttp.command.createHttpFile",
+					"icon": "$(extensions)",
+					"title": "Create Http File",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"command": "dothttp.command.createHnbkFile",
+					"icon": "$(extensions)",
+					"title": "Create Http Notebook",
+					"when": "dothttpRunMode == full"
+				},
+				{
 					"command": "dothttp.command.export.postman",
 					"title": "Export Http To Postman",
 					"icon": "$(extensions)",
@@ -939,10 +967,10 @@
 		"@types/httpsnippet": "^1.23.0",
 		"@types/js-yaml": "^4.0.9",
 		"@types/json-stringify-safe": "^5.0.3",
-		"@types/lodash": "^4.17.13",
+		"@types/lodash": "^4.17.14",
 		"@types/mime-types": "^2.1.4",
 		"@types/mocha": "^10.0.9",
-		"@types/node": "^v22.9.0",
+		"@types/node": "^v22.10.5",
 		"@types/openapi-to-postmanv2": "^3.2.0",
 		"@types/prop-types": "^15.7.14",
 		"@types/semver": "^7.5.8",
@@ -971,7 +999,7 @@
 		"typescript": "^5.7",
 		"vkbeautify": "^0.99.3",
 		"vscode-test": "^1.5.0",
-		"webpack": "^5.92.1",
+		"webpack": "^5.97.1",
 		"@types/vscode": "^1.63.0",
 		"webpack-cli": "^6.0.1"
 	},

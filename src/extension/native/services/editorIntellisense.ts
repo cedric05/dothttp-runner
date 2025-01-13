@@ -201,12 +201,18 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
         }
         var resolved_property = "";
         if (result.property_at_pos) {
-            resolved_property =
-                `## Resolved Properties \`${result.property_at_pos.name}\`
+            if (result.property_at_pos.value) {
+                resolved_property =
+                    `## Resolved Properties \`${result.property_at_pos.name}\`
 \`\`\`jsonc
 ${JSON.stringify(result.property_at_pos.value, null, 2)}
 \`\`\`
 \n\n\n\n\n`;
+            } else {
+                resolved_property = `## Property UnResolved \`${result.property_at_pos.name}\`
+\`Property may be not resolved in content\`
+\n\n\n\n\n`;
+            }
         }
         var ret;
         if (hover_text) {
