@@ -4,6 +4,10 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## 1.0.46:
+- The VSCode publish step failure was resolved by addressing a rename in the `vscode/vsce` package.
+
+
 ## 1.0.45:
 - Create menu in explorer easy http file and notebook file
 - Update `dotextensions-build` to version 0.0.44a11
