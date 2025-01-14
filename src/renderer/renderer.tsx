@@ -320,8 +320,8 @@ const Status: FunctionComponent<{ code: number, method?: String, url: string, ex
         statusType = 'server-err';
     }
     var detailed_phrase = "";
-    if (phrase){
-        if (code == 0){
+    if (phrase) {
+        if (code == 0) {
             detailed_phrase = "REQUEST_PARSE_ERROR";
         } else {
             detailed_phrase = getReasonPhrase(code).toLowerCase();

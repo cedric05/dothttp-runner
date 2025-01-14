@@ -72,7 +72,8 @@ jobs:
           echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_ENV
           npm run package
           node dist/prefetch.js ${{ matrix.platform }} ${{ matrix.arch }}
-      - run: npx vsce package --target ${{ env.target }}
+          npm install -g @vscode/vsce
+      - run: vsce package --target ${{ env.target }}
       - uses: actions/upload-artifact@v4
         with:
           name: dothttp-runner-${{ env.target }}
@@ -86,8 +87,10 @@ jobs:
            node-version: 20.x
       - run: npm install 
       - shell: pwsh
-        run: npm run package
-      - run: npx vsce package
+        run: |
+          npm run package
+          npm install -g @vscode/vsce
+      - run: vsce package
       - uses: actions/upload-artifact@v4
         with:
           name: without-cli
@@ -101,7 +104,9 @@ jobs:
         with:
           node-version: 20.18.0
       - uses: actions/download-artifact@v4
-      - run: npx vsce publish --packagePath $(find . -iname *.vsix)
+      - run: |
+          npm install -g @vscode/vsce
+          vsce publish --packagePath $(find . -iname *.vsix)
         env:
           VSCE_PAT: ${{ secrets.MARKETPLACE_PAT }}
         continue-on-error: true

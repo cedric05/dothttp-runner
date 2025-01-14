@@ -1,7 +1,7 @@
 import { DothttpExecuteResponse } from '../../../common/response';
 import { DothttpRunOptions } from '../../web/types/misc';
 import { HttpFileTargetsDef } from '../../web/types/lang-parse';
-import { ICommandClient, RunType, DotTttpSymbol, TypeResult, ImportHarResult } from '../../web/types/types';
+import { ICommandClient, RunType, DotTttpSymbol, TypeResult, ImportHarResult, ResolveResult } from '../../web/types/types';
 import * as vscode from 'vscode';
 var mime = require('mime-types');
 
@@ -19,6 +19,8 @@ export class ClientHandler {
     static IMPORT_POSTMAN_COMMAND = "/import/postman";
     static GET_HAR_FORMAT_COMMAND = "/file/parse";
     static CONTENT_TYPE_COMMAND = "/content/type";
+    static CONTENT_RESOLVE_COMMAND = "/content/resolve";
+    static FILE_RESOLVE_COMMAND = "/file/resolve";
     static HAR_IMPORT_COMMAND = "/export/har2http";
     static POSTMAN_EXPORT_COMMAND = "/export/http2postman";
 
@@ -108,6 +110,37 @@ export class ClientHandler {
             filename, position: position, source
         }) as TypeResult;
     }
+
+    async resolveContentFromContentPosition(
+        position: number,
+        filename: string | null,
+        content: string | null,
+        contexts: string[],
+        propertyFile: string | null,
+        env: string[],
+        properties: { [prop: string]: string },
+        source?: string): Promise<ResolveResult> {
+        return await this.cli?.request(ClientHandler.CONTENT_RESOLVE_COMMAND, {
+            content, position: position, source, env, properties,
+            file: filename,
+            contexts,
+            'property-file': propertyFile
+        }) as ResolveResult;
+    }
+
+    async resolveContentFromFilePosition(
+        position: number,
+        filename: string | null,
+        propertyFile: string | null,
+        env: string[],
+        properties?: { [prop: string]: string },
+        source?: string): Promise<ResolveResult> {
+        return await this.cli?.request(ClientHandler.CONTENT_RESOLVE_COMMAND, {
+            file: filename, position: position, source, env, properties,
+            'property-file': propertyFile
+        }) as ResolveResult;
+    }
+
 
     async getTypeFromContentPosition(position: number, content: string, source?: string): Promise<TypeResult> {
         return await this.cli?.request(ClientHandler.CONTENT_TYPE_COMMAND, {

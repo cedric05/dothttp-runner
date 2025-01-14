@@ -3,6 +3,56 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+
+
+## 1.0.47:
+- Fix issue with dothttp-code version 1.0.45, notebook execute is not working properly
+
+
+## 1.0.46:
+- The VSCode publish step failure was resolved by addressing a rename in the `vscode/vsce` package.
+
+
+## 1.0.45:
+- Create menu in explorer easy http file and notebook file
+- Update `dotextensions-build` to version 0.0.44a11
+  - error will fail at the end of resolution of all properties
+
+
+## 1.0.44:
+- Update `dotextensions-build` to version 0.0.44a10
+- Enhance content resolution by including resolved property
+
+## 1.0.43
+- Update `dotextensions-build` to version 0.0.44.a9
+  - **Feat** Fixes loading properties from property file on hover over url/json dict
+
+
+## 1.0.42
+- Update `dotextensions-build` to version 0.0.44.a9
+  - **Feat** Fixes relative import issue for resolving on hover
+
+## 1.0.41
+- Update `dotextensions-build` to version 0.0.44.a7
+  - **Feat** Resolves variable/url/json/data/urlencoded on hover
+
+
+## 1.0.40
+- Update `dotextensions-build` to version 0.0.44.a2
+  - **Feat** Support variable substitution for math expressions and json
+
+## 1.0.39
+- Update `dotextensions-build` to version 0.0.44.a2
+  - **New** variable with hover and syntax grammer support
+
+
+## 1.0.38
+- **Chore** update webpack-cli, util versions
+- Update `dotextensions-build` to version 0.0.44.a1
+  - **Feat** Supports Variable syntax instead of doing it comments
+
+
+
 ## 1.0.37
 - **Fix** disable env not working properly fixed
 

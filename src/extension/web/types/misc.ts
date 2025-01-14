@@ -18,6 +18,7 @@ export enum DothttpTypes {
     NAME = "name",
     EXTRA_ARGS = "extra_args",
     URL = "url",
+    VARIABLE = "variable",
     BASIC_AUTH = "basic_auth",
     DIGEST_AUTH = "digest_auth",
     NTLM_AUTH = "ntlm_auth",
@@ -42,6 +43,9 @@ type Immutable<T> = {
 
 export const DotHovers = {
     // TODO add documentation link
+
+    "variable": new MarkdownString(`Variable defined in httpdef
+visit variable define [docs](https://docs.dothttp.dev/docs/variables)`),
     "name": new MarkdownString(`Unique Identifier incase of multiple httpdef in single file
 
 visit naming [docs](https://docs.dothttp.dev/docs/multidef#definenaming)
