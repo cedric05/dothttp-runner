@@ -54,6 +54,23 @@ export interface TypeResult {
     "target_base": string | null;
     "base_start": number | null;
     "filename": string | null;
+    "name": string | null;
+    "value": any;
+}
+
+export interface ResolveResult {
+    "type": DothttpTypes;
+    "target": string | null;
+    "target_base": string | null;
+    "base_start": number | null;
+    "filename": string | null;
+    "name": string | null;
+    "value": any;
+    "resolved": any;
+    "property_at_pos":{
+        name: string;
+        value: any;
+    }
 }
 
 export enum RunType {

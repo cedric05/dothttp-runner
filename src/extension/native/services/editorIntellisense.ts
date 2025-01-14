@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { EndOfLine, Range, SymbolInformation, Command } from 'vscode';
 import { ClientHandler } from "./client";
-import { DotTttpSymbol } from "../../web/types/types";
+import { DotTttpSymbol, ResolveResult } from "../../web/types/types";
 import * as json from 'jsonc-parser';
 import { parseURL } from 'whatwg-url';
 import { parse as parseQueryString } from 'querystring';
@@ -9,6 +9,7 @@ import { DotHovers, DothttpTypes } from '../../web/types/misc';
 import { Constants } from '../../web/utils/constants';
 import { Utils } from 'vscode-uri';
 import path = require('path');
+import { FileState } from '../../web/services/state';
 
 class RunHttpCommand implements Command {
     title: string = "Run http";
@@ -113,8 +114,11 @@ export class UrlExpander implements vscode.CodeActionProvider {
 
 class TypeResultMixin {
     clientHandler: ClientHandler;
-    constructor(client: ClientHandler) {
+    fileStateService: FileState;
+
+    constructor(client: ClientHandler, fileStateService: FileState) {
         this.clientHandler = client;
+        this.fileStateService = fileStateService;
     }
 
     public async getTypeResult(document: vscode.TextDocument, position: vscode.Position) {
@@ -125,7 +129,25 @@ class TypeResultMixin {
         } else {
             return this.clientHandler.getTypeFromFilePosition(offset, document.fileName, "hover");
         }
+    }
 
+    public async resolveType(document: vscode.TextDocument, position: vscode.Position): Promise<ResolveResult> {
+        const isNotebook = document.uri.scheme === Constants.notebookscheme;
+        const offset = document.offsetAt(position);
+        const env = this.fileStateService.getEnv(document.uri);
+        const properties: { [prop: string]: string } = {}
+        this.fileStateService.getProperties(document.uri).filter(prop => prop.enabled).map(prop => { properties[prop.key] = prop.value });
+        const propertyFile = this.fileStateService.getEnvFile()?.fsPath ?? null;
+        if (isNotebook) {
+            const notebookDoc = vscode.window.activeNotebookEditor;
+            if (notebookDoc?.notebook.uri.fsPath !== document.uri.fsPath) {
+                throw new Error("notebook uri mismatch");
+            }
+            const contexts = notebookDoc.notebook.getCells().map(cell => cell.document.getText());
+            return this.clientHandler.resolveContentFromContentPosition(offset, document.uri.fsPath, document.getText(), contexts, propertyFile, env, properties, "hover")
+        } else {
+            return this.clientHandler.resolveContentFromFilePosition(offset, document.fileName, propertyFile, env, properties, "hover");
+        }
     }
 }
 
@@ -165,19 +187,53 @@ def test_response_time():
 
 export class DothttpClickDefinitionProvider extends TypeResultMixin implements vscode.DefinitionProvider, vscode.HoverProvider {
     async provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.Hover | null> {
-        const result = await this.getTypeResult(document, position);
+        // along with document and position, 
+        // we need to send all variables, env, proeprties
+        const result = await this.resolveType(document, position);
         const typeAtPos = result.type;
-        if (typeAtPos !== DothttpTypes.COMMENT) {
-            return new vscode.Hover(DotHovers[typeAtPos]);
+        var hover_text = "";
+        if (result.resolved) {
+            if (typeof result.resolved === 'object') {
+                hover_text = JSON.stringify(result.resolved, null, 2);
+            } else if (typeAtPos != DothttpTypes.NAME) {
+                hover_text = result.resolved;
+            }
         }
-        return null;
+        var resolved_property = "";
+        if (result.property_at_pos) {
+            if (result.property_at_pos.value) {
+                resolved_property =
+                    `## Resolved Properties \`${result.property_at_pos.name}\`
+\`\`\`jsonc
+${JSON.stringify(result.property_at_pos.value, null, 2)}
+\`\`\`
+\n\n\n\n\n`;
+            } else {
+                resolved_property = `## Property UnResolved \`${result.property_at_pos.name}\`
+\`Property may be not resolved in content\`
+\n\n\n\n\n`;
+            }
+        }
+        var ret;
+        if (hover_text) {
+            ret = new vscode.MarkdownString(
+                `${resolved_property}
+## After Replacing Properties
+\`\`\`json
+${hover_text}
+\`\`\`
+\n\n\n\n\n\n\n\n\n\n\n\ ##### Docs \n  ${DotHovers[typeAtPos].value}`);
+        } else {
+            ret = DotHovers[typeAtPos].value;
+        }
+        return new vscode.Hover(ret);
     }
     async provideDefinition(document: vscode.TextDocument, position: vscode.Position):
         Promise<vscode.Definition | vscode.LocationLink[]> {
         const result = await this.getTypeResult(document, position);
         if (result.type === DothttpTypes.NAME) {
             return new vscode.Location(document.uri, document.positionAt(result.base_start!));
-        } if (result.type === DothttpTypes.IMPORT) {
+        } else if (result.type === DothttpTypes.IMPORT) {
             let filename = result.filename!;
             if (!filename.endsWith('.http')) {
                 filename = filename + '.http';

@@ -105,6 +105,57 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 			}
 		}));
+
+	const createHttpFile = vscode.commands.registerCommand('dothttp.command.createHttpFile', async (uri) => {
+		const fileName = await vscode.window.showInputBox({
+			prompt: "Enter the name for the HTTP file",
+			placeHolder: "example.http",
+			value: "new-http-file.http",
+			validateInput: (value) => {
+				if (!value.endsWith('.http')) {
+					return 'File name must end with ".http"';
+				}
+				return null;
+			}
+		});
+
+		if (fileName) {
+			const filePath = vscode.Uri.joinPath(uri, fileName);
+			try {
+				await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+				vscode.window.showInformationMessage(`HTTP file "${fileName}" created!`);
+			} catch (err) {
+				vscode.window.showErrorMessage(`Failed to create file: ${err}`);
+			}
+		}
+	});
+
+	// Command to create an HNBK file
+	const createHnbkFile = vscode.commands.registerCommand('dothttp.command.createHnbkFile', async (uri) => {
+		const fileName = await vscode.window.showInputBox({
+			prompt: "Enter the name for the HNBK file",
+			placeHolder: "example.hnbk",
+			value: "new-hnbk-file.hnbk",
+			validateInput: (value) => {
+				if (!value.endsWith('.hnbk')) {
+					return 'File name must end with ".hnbk"';
+				}
+				return null;
+			}
+		});
+
+		if (fileName) {
+			const filePath = vscode.Uri.joinPath(uri, fileName);
+			try {
+				await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+				vscode.window.showInformationMessage(`HNBK file "${fileName}" created!`);
+			} catch (err) {
+				vscode.window.showErrorMessage(`Failed to create file: ${err}`);
+			}
+		}
+	});
+
+	context.subscriptions.push(createHttpFile, createHnbkFile);
 	context.subscriptions.push(...[
 		vscode.commands.registerTextEditorCommand(Constants.RUN_FILE_COMMAND, runFileCommand),
 		vscode.commands.registerTextEditorCommand(Constants.GEN_CURL_FILE_COMMAND, genCurlCommand),
@@ -174,7 +225,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	]);
 
 
-	const clickProvider = new DothttpClickDefinitionProvider(clientHandler);
+	const clickProvider = new DothttpClickDefinitionProvider(clientHandler, fileStateService);
 	context.subscriptions.push(...[
 
 		vscode.languages.registerCodeLensProvider(Constants.LANG_CODE, symbolProvider),
@@ -183,7 +234,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, symbolProvider),
 		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new UrlExpander()),
-		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new TestScriptSuggetions(clientHandler)),
+		vscode.languages.registerCodeActionsProvider(Constants.LANG_CODE, new TestScriptSuggetions(clientHandler, fileStateService)),
 		vscode.languages.registerDocumentSymbolProvider({ scheme: 'file', language: Constants.LANG_CODE as string }, symbolProvider),
 		vscode.window.registerTreeDataProvider(Constants.dothttpHistory, historyTreeProvider),
 		vscode.commands.registerCommand(Constants.EXPORT_HISTORY, () => {

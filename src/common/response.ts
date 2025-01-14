@@ -35,7 +35,8 @@ export interface DothttpExecuteResponse {
     error?: boolean;
     error_message?: string;
     script_result?: ScriptResult
-    history?: Array<DothttpRedirectHistory>
+    history?: Array<DothttpRedirectHistory>,
+    errors?: Array<{ var: string, message: string }>,
 }
 
 export interface DothttpRedirectHistory {
