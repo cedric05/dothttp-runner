@@ -49,9 +49,17 @@ jobs:
           # if latest, pass --latest otherwise --no-latest
           # if stable, pass --stable otherwise --no-stable
             if [ -z "${{ env.alpha }}" ]; then
-              python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+              if [ -z "${{ env.dothttp_extensions_min_version }}" ]; then
+                python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --dothttp_runner_version ${{ env.dothttp_runner_version }}
+              else
+                python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+              fi
             else
-              python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+              if [ -z "${{ env.dothttp_extensions_min_version }}" ]; then
+                python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }}
+              else
+                python update_version.py --dotextensions_version ${{ env.dotextensions_version }} --alpha ${{ env.alpha }} --dothttp_runner_version ${{ env.dothttp_runner_version }} --dothttp_extensions_min_version ${{ env.dothttp_extensions_min_version }}
+              fi
             fi
       - name: Commit changes
         run: |

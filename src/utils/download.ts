@@ -75,7 +75,10 @@ export async function getJSON<T>(api: string): Promise<T> {
 
 export async function getVersion(useUnStable: boolean): Promise<version> {
     var resp = await getJSON<versionResponse>(Constants.versionApi);
+    console.log('response', resp);
     const compatibleMat = resp.matrix[EXTENSION_VERSION];
+    console.log("Extension version", EXTENSION_VERSION);
+    console.log("compatibleMat", resp.matrix[EXTENSION_VERSION]);
     if (compatibleMat) {
         const acceptableVersions = resp.availableversions
             .filter(mat => {
@@ -85,8 +88,8 @@ export async function getVersion(useUnStable: boolean): Promise<version> {
                     return mat.stable;
                 }
             })
-            .filter(mat => semver.lte(compatibleMat.minVersion, mat.version)
-                && semver.lte(mat.version, compatibleMat.maxVersion))
+            .filter(versionInfo => semver.lte(compatibleMat.minVersion, versionInfo.version)
+                && semver.lte(versionInfo.version, compatibleMat.maxVersion))
             .sort((a, b) => {
                 if (semver.gte(a.version, b.version)) {
                     return -1;
