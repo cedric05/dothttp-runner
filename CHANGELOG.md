@@ -4,6 +4,8 @@
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
 
+## 1.0.49 / 1.0.48:
+- Include property information for query and headers
 
 ## 1.0.47:
 - Fix issue with dothttp-code version 1.0.45, notebook execute is not working properly

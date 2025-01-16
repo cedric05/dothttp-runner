@@ -191,42 +191,56 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
         // we need to send all variables, env, proeprties
         const result = await this.resolveType(document, position);
         const typeAtPos = result.type;
-        var hover_text = "";
+        let hoverText = "";
+        let resolvedProperty = "";
+
         if (result.resolved) {
             if (typeof result.resolved === 'object') {
-                hover_text = JSON.stringify(result.resolved, null, 2);
-            } else if (typeAtPos != DothttpTypes.NAME) {
-                hover_text = result.resolved;
+            hoverText = JSON.stringify(result.resolved, null, 2);
+            } else if (typeAtPos !== DothttpTypes.NAME) {
+            hoverText = result.resolved;
             }
         }
-        var resolved_property = "";
+
         if (result.property_at_pos) {
             if (result.property_at_pos.value) {
-                resolved_property =
-                    `## Resolved Properties \`${result.property_at_pos.name}\`
+            resolvedProperty = `## Resolved Properties \`${result.property_at_pos.name}\`
 \`\`\`jsonc
 ${JSON.stringify(result.property_at_pos.value, null, 2)}
 \`\`\`
 \n\n\n\n\n`;
             } else {
-                resolved_property = `## Property UnResolved \`${result.property_at_pos.name}\`
+            resolvedProperty = `## Property UnResolved \`${result.property_at_pos.name}\`
 \`Property may be not resolved in content\`
 \n\n\n\n\n`;
             }
         }
-        var ret;
-        if (hover_text) {
-            ret = new vscode.MarkdownString(
-                `${resolved_property}
+
+        if (hoverText && resolvedProperty) {
+            return new vscode.Hover(new vscode.MarkdownString(
+            `${resolvedProperty}
 ## After Replacing Properties
-\`\`\`json
-${hover_text}
+\`\`\`jsonc
+${hoverText}
 \`\`\`
-\n\n\n\n\n\n\n\n\n\n\n\ ##### Docs \n  ${DotHovers[typeAtPos].value}`);
+\n\n\n\n##### Docs \n  ${DotHovers[typeAtPos].value}`
+            ));
+        } else if (hoverText) {
+            return new vscode.Hover(new vscode.MarkdownString(
+            `## After Replacing Properties
+\`\`\`jsonc
+${hoverText}
+\`\`\`
+\n\n\n\n##### Docs \n  ${DotHovers[typeAtPos].value}`
+            ));
+        } else if (resolvedProperty) {
+            return new vscode.Hover(new vscode.MarkdownString(
+            `${resolvedProperty}
+\n\n\n\n##### Docs \n  ${DotHovers[typeAtPos].value}`
+            ));
         } else {
-            ret = DotHovers[typeAtPos].value;
+            return new vscode.Hover(DotHovers[typeAtPos].value);
         }
-        return new vscode.Hover(ret);
     }
     async provideDefinition(document: vscode.TextDocument, position: vscode.Position):
         Promise<vscode.Definition | vscode.LocationLink[]> {
