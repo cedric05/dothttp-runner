@@ -1583,7 +1583,7 @@
         },
         "1.0.49": {
             "maxVersion": "0.0.44",
-            "minVersion": "1.0.8"
+            "minVersion": "0.0.8"
         }
     }
 }
