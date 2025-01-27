@@ -986,7 +986,7 @@
 		"dot-preact-highlight": "^2.0.0",
 		"glob": "^11.0.0",
 		"http-status-codes": "^2.3.0",
-		"mocha": "^10.8.2",
+		"mocha": "^11.1.0",
 		"mongodb": "^3.6.5",
 		"os-browserify": "^0.3.0",
 		"path-browserify": "^1.0.1",
