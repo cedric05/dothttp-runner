@@ -1142,6 +1142,20 @@
             "latest": true,
             "stable": true,
             "version": "0.0.44-alpha.13"
+        },
+        {
+            "downloadUrls": {
+                "linux_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-linux-arm64.zip",
+                "linux_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-linux-amd64.zip",
+                "linux": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-linux-amd64.zip",
+                "windows": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-x86-windows.zip",
+                "darwin": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-darwin.zip",
+                "darwin_arm64": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-darwin-arm.zip",
+                "darwin_amd64": "https://github.com/cedric05/dotextensions-build/releases/download/v-1.0.51/dotextensions-1.0.51-darwin.zip"
+            },
+            "latest": true,
+            "stable": true,
+            "version": "1.0.51"
         }
     ],
     "matrix": {
@@ -1587,6 +1601,10 @@
         },
         "1.0.50": {
             "maxVersion": "0.0.44",
+            "minVersion": "0.0.8"
+        },
+        "1.0.55": {
+            "maxVersion": "1.0.51",
             "minVersion": "0.0.8"
         }
     }
