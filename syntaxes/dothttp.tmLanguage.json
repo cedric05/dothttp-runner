@@ -188,7 +188,7 @@
             ]
         },
         "url": {
-            "begin": "(GET|POST|DELETE|OPTIONS|CONNECT|PUT|HEAD|TRACE)\\s*",
+            "begin": "(GET|POST|DELETE|PATCH|OPTIONS|CONNECT|PUT|HEAD|TRACE)\\s*",
             "beginCaptures": {
                 "0": {
                     "name": "variable.other.enummember"
