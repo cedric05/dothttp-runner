@@ -40,7 +40,7 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
         "cli",
         getCliWithExtension(),
     ).fsPath;
-    for (const [lookupLocation, assumedPath] of Object.entries({ extensionWithPath: cliWithExtension, configureddothttpPath, workspacedothttPath, defaultPath: defaultExePath })) {
+    for (const [lookupLocation, assumedPath] of Object.entries({ configureddothttpPath, extensionWithPath: cliWithExtension, workspacedothttPath, defaultPath: defaultExePath })) {
         console.log(`checking ${lookupLocation}: ${assumedPath}`);
         if (assumedPath && fs.existsSync(assumedPath)) {
             console.log(`working ${lookupLocation}: ${assumedPath}`);
