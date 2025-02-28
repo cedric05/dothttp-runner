@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.52",
+	"version": "1.0.53",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -33,6 +33,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onFileSystem:memfs",
 		"onNotebook:dothttp-book",
 		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
@@ -183,6 +184,13 @@
 				"category": "Dothttp",
 				"icon": "$(new-file)",
 				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.openFolderInRemote",
+				"title": "Dothttp: Open folder in remote",
+				"shortTitle": "Open folder in remote",
+				"category": "Dothttp",
+				"icon": "$(remote-explorer)"
 			},
 			{
 				"command": "dothttp.command.createHnbkFile",
@@ -556,6 +564,11 @@
 			],
 			"commandPalette": [
 				{
+					"group": "dothttp",
+					"command": "dothttp.command.openFolderInRemote",
+					"when": "dothttpRunMode == full"
+				},
+				{
 					"group": "toggle",
 					"command": "dothttp.command.toggle.reuse",
 					"when": "dothttpRunMode == full"
@@ -854,7 +867,7 @@
 					},
 					"dothttp.conf.diagnostics": {
 						"type": "boolean",
-						"default": false,
+						"default": true,
 						"description": "Enables error diagnostics"
 					},
 					"dothttp.conf.pythonpath": {

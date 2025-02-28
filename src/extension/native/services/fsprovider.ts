@@ -28,7 +28,7 @@ export class SimpleFsProvider implements FileSystemProvider {
         return this.clientHandler.readFile(uri);
     }
     writeFile(uri: Uri, content: Uint8Array, options: { readonly create: boolean; readonly overwrite: boolean; }): void | Thenable<void> {
-        throw new Error("Method not writefile.");
+        return this.clientHandler.writeFile(uri, content);
     }
     delete(uri: Uri, options: { readonly recursive: boolean; }): void | Thenable<void> {
         throw new Error("Method not delete.");

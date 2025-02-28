@@ -251,6 +251,24 @@ export class ClientHandler {
         }
     }
 
+    async writeFile(uri: vscode.Uri, content:  Uint8Array){
+        var ret: { "result": { "operation": string } } | { "error": boolean, "error_message": string } = await this.cli?.request("/fs/write", { source: uri.fsPath, content: Buffer.from(content).toString('base64') });
+        if ("error" in ret) {
+            switch (ret.error_message) {
+                case "FileNotFound":
+                    throw vscode.FileSystemError.FileNotFound(uri);
+                case "PermissionDenied":
+                    throw vscode.FileSystemError.NoPermissions(uri);
+                case "FileIsADirectory":
+                    throw vscode.FileSystemError.FileIsADirectory(uri);
+                case "UnknownError":
+                    throw vscode.FileSystemError.Unavailable;
+            }
+            throw new Error(ret.error_message);
+        }
+
+    }
+
 
     close() {
         this.cli?.stop();

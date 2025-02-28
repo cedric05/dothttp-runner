@@ -273,13 +273,33 @@ export async function activate(context: vscode.ExtensionContext) {
 	// new command which connects to remote folder
 	vscode.commands.registerCommand(Constants.OPEN_FODLER_IN_REMOTE, async () => {
 		await lazy_load;
-		// TODO ask for folder to open
-		const filelist = await fileSystemProvider.readDirectory(vscode.Uri.parse('memfs:/'));
-		console.log(`filelist ${filelist}`);
-
-		vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.parse('memfs:/') });
+		const rootUri = vscode.Uri.parse('memfs:/');
+		const selectedUri = await selectDirectory(fileSystemProvider, rootUri);
+		if (selectedUri) {
+			await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceReuseWindow: true });
+		}
 	});
 
+}
+
+async function selectDirectory(fsProvider: SimpleFsProvider, currentUri: vscode.Uri): Promise<vscode.Uri | undefined> {
+	const filelist = await fsProvider.readDirectory(currentUri);
+	const directories = filelist.filter(([name, type]) => type === vscode.FileType.Directory).map(([name, type]) => name);
+
+	const folder = await vscode.window.showQuickPick(directories.concat(['..']), {
+		placeHolder: currentUri.path,
+		canPickMany: false
+	});
+
+	if (folder === '..') {
+		const parentUri = vscode.Uri.joinPath(currentUri, '..');
+		return selectDirectory(fsProvider, parentUri);
+	} else if (folder) {
+		const selectedUri = vscode.Uri.joinPath(currentUri, folder);
+		return selectDirectory(fsProvider, selectedUri);
+	} else {
+		return currentUri;
+	}
 }
 
 
