@@ -189,6 +189,69 @@ export class ClientHandler {
         });
     }
 
+    async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+        var ret: { "result": { "operation": string, "files": [[string, string]] } } = await this.cli?.request("/fs/read-directory", { source: uri.fsPath });
+        return ret.result.files.map(([name, type]) => {
+            switch (type) {
+                case "file":
+                    return [name, vscode.FileType.File];
+                case "directory":
+                    return [name, vscode.FileType.Directory];
+                case "symlink":
+                    return [name, vscode.FileType.SymbolicLink];
+                default:
+                    return [name, vscode.FileType.Unknown];
+            }
+        });
+    }
+
+    async readFile(uri: vscode.Uri): Promise<Uint8Array> {
+        var ret: { "result": { "operation": string, "content": string } } | { "error": boolean, "error_message": string } = await this.cli?.request("/fs/read", { source: uri.fsPath });
+        if ("error" in ret) {
+            switch (ret.error_message) {
+                case "FileNotFound":
+                    throw vscode.FileSystemError.FileNotFound(uri);
+                case "PermissionDenied":
+                    throw vscode.FileSystemError.NoPermissions(uri);
+                case "FileIsADirectory":
+                    throw vscode.FileSystemError.FileIsADirectory(uri);
+                case "UnknownError":
+                    throw vscode.FileSystemError.Unavailable;
+            }
+            throw new Error(ret.error_message);
+        } else {
+            // convert base64 to buffer
+            var content = Buffer.from(ret.result.content, 'base64');
+            return new Uint8Array(content);
+        }
+    }
+
+    async statFile(uri: vscode.Uri): Promise<vscode.FileStat> {
+        var ret: { "result": { "operation": string, "stat": [number, number, number, number, number, number, number, number, number, number,] } } | { "error": boolean, "error_message": string } = await this.cli?.request("/fs/stat", { source: uri.fsPath });
+        if ("error" in ret) {
+            switch (ret.error_message) {
+                case "FileNotFound":
+                    throw vscode.FileSystemError.FileNotFound(uri);
+                case "PermissionDenied":
+                    throw vscode.FileSystemError.NoPermissions(uri);
+                case "FileIsADirectory":
+                    throw vscode.FileSystemError.FileIsADirectory(uri);
+                case "UnknownError":
+                    throw vscode.FileSystemError.Unavailable;
+            }
+            throw new Error(ret.error_message);
+        } else {
+            const [st_mode, st_ino, st_dev, st_nlink, st_uid, st_gid, st_size, st_atime, st_mtime, st_ctime] = ret.result.stat;
+            return {
+                type: (st_mode & 61440) === 16384 ? vscode.FileType.Directory : vscode.FileType.File,
+                ctime: st_ctime * 1000,
+                mtime: st_mtime * 1000,
+                size: st_size,
+            };
+        }
+    }
+
+
     close() {
         this.cli?.stop();
     }
