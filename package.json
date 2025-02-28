@@ -33,7 +33,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onFileSystem:memfs",
+		"onFileSystem:dothttpfs",
 		"onNotebook:dothttp-book",
 		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
@@ -187,7 +187,7 @@
 			},
 			{
 				"command": "dothttp.command.openFolderInRemote",
-				"title": "Dothttp: Open folder in remote",
+				"title": "Open folder in remote",
 				"shortTitle": "Open folder in remote",
 				"category": "Dothttp",
 				"icon": "$(remote-explorer)"

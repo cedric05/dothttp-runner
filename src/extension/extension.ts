@@ -74,7 +74,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const fileSystemProvider = new SimpleFsProvider(clientHandler);
 	context.subscriptions.push(
-		vscode.workspace.registerFileSystemProvider('memfs', fileSystemProvider, { isCaseSensitive: true })
+		vscode.workspace.registerFileSystemProvider('dothttpfs', fileSystemProvider, { isCaseSensitive: true })
 	);
 
 	const appServices = new ApplicationBuilder()
@@ -273,7 +273,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// new command which connects to remote folder
 	vscode.commands.registerCommand(Constants.OPEN_FODLER_IN_REMOTE, async () => {
 		await lazy_load;
-		const rootUri = vscode.Uri.parse('memfs:/');
+		const rootUri = vscode.Uri.parse('dothttpfs:/');
 		const selectedUri = await selectDirectory(fileSystemProvider, rootUri);
 		if (selectedUri) {
 			await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceReuseWindow: true });
