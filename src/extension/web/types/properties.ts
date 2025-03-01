@@ -1,12 +1,17 @@
 import * as vscode from 'vscode';
-export interface Iproperties {
-    key: string;
-    value: string;
-    enabled: boolean;
+export interface IProperty {
+    value: string,
+    description: string,
+    enabled: boolean
 }
+
+export interface IProperties {
+    [key: string]: IProperty[]
+}
+
 export interface FileInfo {
     envs: string[];
-    properties: Iproperties[];
+    properties: IProperties;
 }
 
 export interface IFileState {
@@ -15,8 +20,8 @@ export interface IFileState {
     removeEnv(file: vscode.Uri, env: string): void;
     hasEnv(file: vscode.Uri, env: string): boolean;
 
-    getProperties(file: vscode.Uri): Iproperties[];
-    addProperty(file: vscode.Uri, key: string, value: string): void;
+    getProperties(file: vscode.Uri): IProperties;
+    addProperty(file: vscode.Uri, key: string, value: string, description: string): void;
     disableProperty(file: vscode.Uri, key: string, value: string): void;
     enableProperty(file: vscode.Uri, key: string, value: string): void;
     removeProperty(file: vscode.Uri, key: string, value: string): void;

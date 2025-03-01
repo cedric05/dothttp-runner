@@ -32,6 +32,18 @@ export abstract class BaseSpanClient implements ICommandClient {
                 detached: true
             },
         );
+
+        this.proc.on("exit", (code, signal) => {
+            this.running = false;
+            console.log('dotextensions cli killed, will start shortly');
+            this.channel.appendLine(`exit code: ${code} signal: ${signal}`);
+            // start after 10 seconds, 
+            // this is to avoid multiple restarts
+            setTimeout(() => {
+                this.start();
+            }, 10 * 1000);
+        }
+        );
         this.running = true;
     }
     isSupportsNative(): boolean {

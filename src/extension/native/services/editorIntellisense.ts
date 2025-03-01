@@ -136,7 +136,13 @@ class TypeResultMixin {
         const offset = document.offsetAt(position);
         const env = this.fileStateService.getEnv(document.uri);
         const properties: { [prop: string]: string } = {}
-        this.fileStateService.getProperties(document.uri).filter(prop => prop.enabled).map(prop => { properties[prop.key] = prop.value });
+        Object.entries(this.fileStateService.getProperties(document.uri)).forEach(([key, options]) => {
+            for (const prop of options) {
+                if (prop.enabled) {
+                    properties[key] = prop.value;
+                }
+            }
+        });
         const propertyFile = this.fileStateService.getEnvFile()?.fsPath ?? null;
         if (isNotebook) {
             const notebookDoc = vscode.window.activeNotebookEditor;
@@ -196,21 +202,21 @@ export class DothttpClickDefinitionProvider extends TypeResultMixin implements v
 
         if (result.resolved) {
             if (typeof result.resolved === 'object') {
-            hoverText = JSON.stringify(result.resolved, null, 2);
+                hoverText = JSON.stringify(result.resolved, null, 2);
             } else if (typeAtPos !== DothttpTypes.NAME) {
-            hoverText = result.resolved;
+                hoverText = result.resolved;
             }
         }
 
         if (result.property_at_pos) {
             if (result.property_at_pos.value) {
-            resolvedProperty = `## Resolved Properties \`${result.property_at_pos.name}\`
+                resolvedProperty = `## Resolved Properties \`${result.property_at_pos.name}\`
 \`\`\`jsonc
 ${JSON.stringify(result.property_at_pos.value, null, 2)}
 \`\`\`
 \n\n\n\n\n`;
             } else {
-            resolvedProperty = `## Property UnResolved \`${result.property_at_pos.name}\`
+                resolvedProperty = `## Property UnResolved \`${result.property_at_pos.name}\`
 \`Property may be not resolved in content\`
 \n\n\n\n\n`;
             }
@@ -218,7 +224,7 @@ ${JSON.stringify(result.property_at_pos.value, null, 2)}
 
         if (hoverText && resolvedProperty) {
             return new vscode.Hover(new vscode.MarkdownString(
-            `${resolvedProperty}
+                `${resolvedProperty}
 ## After Replacing Properties
 \`\`\`jsonc
 ${hoverText}
@@ -227,7 +233,7 @@ ${hoverText}
             ));
         } else if (hoverText) {
             return new vscode.Hover(new vscode.MarkdownString(
-            `## After Replacing Properties
+                `## After Replacing Properties
 \`\`\`jsonc
 ${hoverText}
 \`\`\`
@@ -235,7 +241,7 @@ ${hoverText}
             ));
         } else if (resolvedProperty) {
             return new vscode.Hover(new vscode.MarkdownString(
-            `${resolvedProperty}
+                `${resolvedProperty}
 \n\n\n\n##### Docs \n  ${DotHovers[typeAtPos].value}`
             ));
         } else {

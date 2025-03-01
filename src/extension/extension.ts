@@ -34,6 +34,7 @@ import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
 import * as fs from 'fs'
 import { VscodeOutputChannelWrapper } from './native/services/languageservers/channelWrapper';
+import { SimpleFsProvider } from './native/services/fsprovider';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -70,6 +71,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const configInstance = Configuration.instance();
 	const channelWrapper = new VscodeOutputChannelWrapper(configInstance);
 	notebookKernel.configure(clientHandler2, fileStateService, propertyTree, configInstance);
+
+	const fileSystemProvider = new SimpleFsProvider(clientHandler);
+	context.subscriptions.push(
+		vscode.workspace.registerFileSystemProvider('dothttpfs', fileSystemProvider, { isCaseSensitive: true })
+	);
+
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
 		.setGlobalstorageService(globalStorageService)
@@ -91,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setHistoryTreeProvider(historyTreeProvider)
 		.build();
 
-	bootStrap(appServices); // lazy loading
+	const lazy_load = bootStrap(appServices); // lazy loading
 	loadNoteBookControllerSafely(context);
 
 
@@ -260,6 +267,39 @@ export async function activate(context: vscode.ExtensionContext) {
 			return content;
 		}
 	});
+
+	// open folder in remote
+
+	// new command which connects to remote folder
+	vscode.commands.registerCommand(Constants.OPEN_FODLER_IN_REMOTE, async () => {
+		await lazy_load;
+		const rootUri = vscode.Uri.parse('dothttpfs:/');
+		const selectedUri = await selectDirectory(fileSystemProvider, rootUri);
+		if (selectedUri) {
+			await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceReuseWindow: true });
+		}
+	});
+
+}
+
+async function selectDirectory(fsProvider: SimpleFsProvider, currentUri: vscode.Uri): Promise<vscode.Uri | undefined> {
+	const filelist = await fsProvider.readDirectory(currentUri);
+	const directories = filelist.filter(([_name, type]) => type === vscode.FileType.Directory).map(([name, _type]) => name);
+
+	const folder = await vscode.window.showQuickPick(directories.concat(['..']), {
+		placeHolder: currentUri.path,
+		canPickMany: false
+	});
+
+	if (folder === '..') {
+		const parentUri = vscode.Uri.joinPath(currentUri, '..');
+		return selectDirectory(fsProvider, parentUri);
+	} else if (folder) {
+		const selectedUri = vscode.Uri.joinPath(currentUri, folder);
+		return selectDirectory(fsProvider, selectedUri);
+	} else {
+		return currentUri;
+	}
 }
 
 

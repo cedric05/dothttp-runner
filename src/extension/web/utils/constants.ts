@@ -83,6 +83,8 @@ export enum Constants {
 	updatePropCommand = 'dothttpPropView.updateproperty',
 	removePropCommand = "dothttpPropView.removeproperty",
 	disableAllPropCommand = "dothttpPropView.disableAllProperties",
+	
+	OPEN_FODLER_IN_REMOTE = "dothttp.command.openFolderInRemote",
 	// tree vars
 	propViewEnabled = "dothttpPropViewEnabled",
 

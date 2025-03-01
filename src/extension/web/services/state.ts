@@ -1,4 +1,4 @@
-import { IFileState, FileInfo } from '../types/properties';
+import { IFileState, FileInfo, IProperties } from '../types/properties';
 import { LocalStorageService } from './storage';
 import { Uri } from 'vscode';
 import * as vscode from 'vscode';
@@ -16,7 +16,6 @@ export class VersionInfo {
     getVersionDothttpInfo() {
         return this.storage.getValue(VersionInfo.versionKey, '0.0.8');
     }
-
 }
 
 
@@ -57,7 +56,7 @@ export class FileState implements IFileState {
         } else {
             const value = this.storage.getValue(
                 key, {
-                envs: [], properties: []
+                envs: [], properties: {}
             });
             this.state.set(key, value);
             return value
@@ -78,7 +77,7 @@ export class FileState implements IFileState {
         const fileinfo = this.getFileInfo(filename);
         return fileinfo.envs
     }
-    getProperties(filename: Uri): FileInfo['properties'] {
+    getProperties(filename: Uri): IProperties {
         const fileinfo = this.getFileInfo(filename);
         return fileinfo.properties
     }
@@ -94,37 +93,45 @@ export class FileState implements IFileState {
         fileinfo.envs.push(env);
         this.updateFileinfo(filename, fileinfo);
     }
-    addProperty(filename: Uri, key: string, value: string): void {
+    addProperty(filename: Uri, key: string, value: string, description: string): void {
         const fileinfo = this.getFileInfo(filename);
         // paying pricing for old interface design
-        if (!(fileinfo.properties instanceof Array)) {
-            fileinfo.properties = [];
+        if (!(fileinfo.properties instanceof Object)) {
+            fileinfo.properties = {};
         }
-        if (fileinfo.properties
-            .filter(prop => prop.key === key && prop.value === value)
-            .length !== 0) {
-            // already added
-            return;
+
+        if (!fileinfo.properties[key]) {
+            fileinfo.properties[key] = [];
         }
-        fileinfo.properties.push({
-            key,
-            value,
-            enabled: true
-        });
+
+        var propertiesAlreadyHasValue = false;
+        fileinfo.properties[key].forEach(prop => {
+            if (prop.value === value) {
+                prop.enabled = true;
+                propertiesAlreadyHasValue = true;
+                prop.description = description;
+                return;
+            } else {
+                prop.enabled = false;
+            }
+        })
+        if (!propertiesAlreadyHasValue) {
+            fileinfo.properties[key].push({
+                value,
+                description: description,
+                enabled: true
+            });
+        }
         this.updateFileinfo(filename, fileinfo);
     }
 
-    disableProperty(filename: Uri, key: string, value: string) {
-        const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties.filter(prop => prop.key === key && prop.value === value).forEach(prop => {
-            prop.enabled = false;
-        })
-        this.updateFileinfo(filename, fileinfo);
+    disableProperty(_filename: Uri, _key: string, _value: string) {
+        // noOp
     }
 
     updateProperty(filename: Uri, key: string, prev_value: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties.filter(prop => prop.key === key && prop.value === prev_value).forEach(prop => {
+        fileinfo.properties[key].filter(prop => prop.value === prev_value).forEach(prop => {
             prop.value = value
         })
         this.updateFileinfo(filename, fileinfo);
@@ -132,7 +139,7 @@ export class FileState implements IFileState {
 
     enableProperty(filename: Uri, key: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties.filter(prop => prop.key === key && prop.value === value).forEach(prop => {
+        fileinfo.properties[key].filter(prop => prop.value === value).forEach(prop => {
             prop.enabled = true;
         })
         this.updateFileinfo(filename, fileinfo);
@@ -140,7 +147,7 @@ export class FileState implements IFileState {
 
     removeProperty(filename: Uri, key: string, value: string): void {
         const fileinfo = this.getFileInfo(filename);
-        fileinfo.properties = fileinfo.properties.filter(prop => !(prop.key === key && prop.value === value))
+        fileinfo.properties[key] = fileinfo.properties[key].filter(prop => !(prop.value === value))
         this.updateFileinfo(filename, fileinfo);
     }
 
@@ -158,14 +165,6 @@ export class FileState implements IFileState {
     private updateFileinfo(filename: Uri, fileinfo: FileInfo) {
         const key = FileState.getKeyFromUri(filename);
         this.storage.setValue(key, fileinfo);
-        fileinfo.properties = fileinfo.properties.sort(function (a, b) {
-            if (a.key < b.key) {
-                return -1;
-            } else if (a.key > b.key) {
-                return 1;
-            }
-            return 0;
-        })
         this.state.set(key, fileinfo)
     }
 }
