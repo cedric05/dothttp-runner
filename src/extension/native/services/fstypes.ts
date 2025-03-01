@@ -1,33 +1,26 @@
-export type ReadFileOperationResult = {
-    "result": {
-        "operation": string;
-        "content": string;
-    };
-} | {
-    "error": boolean;
-    "error_message": string;
-};
-
-export type StatFileOperationResult = {
-    "result": {
-        "operation": string;
-        "stat": [number, number, number, number, number, number, number, number, number, number];
-    };
-} | {
-    "error": boolean;
-    "error_message": string;
-};
-
-
-export type ReadDirectoryOperationResult = {
-    "result": { "operation": string, "files": [[string, string]] }
+export interface FsSuccessResult<CustomResult> {
+    result: CustomResult;
 }
 
-export type WriteFileOperationResult = {
-    "result": {
-        "operation": string;
-    };
-} | {
-    "error": boolean;
-    "error_message": string;
-};
+export interface FsErrorResult {
+    error: boolean;
+    error_message: string;
+}
+
+
+export type ReadFileOperationResult = FsSuccessResult<{ operation: string, content: string }> | FsErrorResult;
+
+export type StatFileOperationResult = FsSuccessResult<
+    { operation: string, stat: [number, number, number, number, number, number, number, number, number, number] }>
+    | FsErrorResult;
+
+export type ReadDirectoryOperationResult =
+    FsSuccessResult<
+        { operation: string, files: [[string, string]] }>
+    | FsErrorResult;
+
+
+export type SimpleOperationResult =
+    FsSuccessResult<
+        { operation: string }>
+    | FsErrorResult;

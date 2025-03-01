@@ -284,7 +284,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 async function selectDirectory(fsProvider: SimpleFsProvider, currentUri: vscode.Uri): Promise<vscode.Uri | undefined> {
 	const filelist = await fsProvider.readDirectory(currentUri);
-	const directories = filelist.filter(([name, type]) => type === vscode.FileType.Directory).map(([name, type]) => name);
+	const directories = filelist.filter(([_name, type]) => type === vscode.FileType.Directory).map(([name, _type]) => name);
 
 	const folder = await vscode.window.showQuickPick(directories.concat(['..']), {
 		placeHolder: currentUri.path,

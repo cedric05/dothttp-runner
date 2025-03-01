@@ -1,7 +1,7 @@
 import { Disposable, Event, FileChangeEvent, FileStat, FileSystemProvider, FileType, Uri } from "vscode";
 import { ClientHandler } from "./client";
 import * as vscode from 'vscode';
-import { WriteFileOperationResult } from "./fstypes";
+import { FsErrorResult, SimpleOperationResult } from "./fstypes";
 
 
 
@@ -10,28 +10,17 @@ export class SimpleFsProvider implements FileSystemProvider {
     constructor(clientHandler: ClientHandler) {
         this.clientHandler = clientHandler;
     }
-
     private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
 
     onDidChangeFile: Event<FileChangeEvent[]> = this._emitter.event;
 
-    watch(uri: Uri, options: { readonly recursive: boolean; readonly excludes: readonly string[]; }): Disposable {
-        throw new Error("Method not watch.");
+    watch(_uri: Uri, __options: { readonly recursive: boolean; readonly excludes: readonly string[]; }): Disposable {
+        throw new Error("method not implemented.");
     }
     async stat(uri: Uri): Promise<FileStat> {
         const ret = await this.clientHandler.statFile(uri);
         if ("error" in ret) {
-            switch (ret.error_message) {
-                case "FileNotFound":
-                    throw vscode.FileSystemError.FileNotFound(uri);
-                case "PermissionDenied":
-                    throw vscode.FileSystemError.NoPermissions(uri);
-                case "FileIsADirectory":
-                    throw vscode.FileSystemError.FileIsADirectory(uri);
-                case "UnknownError":
-                    throw vscode.FileSystemError.Unavailable;
-            }
-            throw new Error(ret.error_message);
+            throw this.handleError(ret);
         } else {
             const [st_mode, st_ino, st_dev, st_nlink, st_uid, st_gid, st_size, st_atime, st_mtime, st_ctime] = ret.result.stat;
             return {
@@ -44,66 +33,78 @@ export class SimpleFsProvider implements FileSystemProvider {
     }
     async readDirectory(uri: Uri): Promise<[string, vscode.FileType][]> {
         var ret = await this.clientHandler.readDirectory(uri);
-        return ret.result.files.map(([name, type]) => {
-            switch (type) {
-                case "file":
-                    return [name, vscode.FileType.File];
-                case "directory":
-                    return [name, vscode.FileType.Directory];
-                case "symlink":
-                    return [name, vscode.FileType.SymbolicLink];
-                default:
-                    return [name, vscode.FileType.Unknown];
-            }
-        });
+        if ("error" in ret) {
+            throw this.handleError(ret);
+        } else {
+            return ret.result.files.map(([name, type]) => {
+                switch (type) {
+                    case "file":
+                        return [name, vscode.FileType.File];
+                    case "directory":
+                        return [name, vscode.FileType.Directory];
+                    case "symlink":
+                        return [name, vscode.FileType.SymbolicLink];
+                    default:
+                        return [name, vscode.FileType.Unknown];
+                }
+            });
+        }
     }
-    createDirectory(uri: Uri): void | Thenable<void> {
-        throw new Error("Method not create directory.");
+    async createDirectory(uri: Uri) {
+        var ret = await this.clientHandler.createDirectory(uri);
+        if ("error" in ret) {
+            throw this.handleError(ret
+            );
+        }
     }
     async readFile(uri: Uri): Promise<Uint8Array> {
         var ret = await this.clientHandler.readFile(uri);
         if ("error" in ret) {
-            switch (ret.error_message) {
-                case "FileNotFound":
-                    throw vscode.FileSystemError.FileNotFound(uri);
-                case "PermissionDenied":
-                    throw vscode.FileSystemError.NoPermissions(uri);
-                case "FileIsADirectory":
-                    throw vscode.FileSystemError.FileIsADirectory(uri);
-                case "UnknownError":
-                    throw vscode.FileSystemError.Unavailable;
-            }
-            throw new Error(ret.error_message);
+            throw this.handleError(ret);
         } else {
-            // convert base64 to buffer
             var content = Buffer.from(ret.result.content, 'base64');
             return new Uint8Array(content);
         }
     }
     async writeFile(uri: Uri, content: Uint8Array,
-        options: { readonly create: boolean; readonly overwrite: boolean; }): Promise<void> {
-        var ret: WriteFileOperationResult = await this.clientHandler.writeFile(uri, content);
+        __options: { readonly create: boolean; readonly overwrite: boolean; }): Promise<void> {
+        var ret: SimpleOperationResult = await this.clientHandler.writeFile(uri, content);
         if ("error" in ret) {
-            switch (ret.error_message) {
-                case "FileNotFound":
-                    throw vscode.FileSystemError.FileNotFound(uri);
-                case "PermissionDenied":
-                    throw vscode.FileSystemError.NoPermissions(uri);
-                case "FileIsADirectory":
-                    throw vscode.FileSystemError.FileIsADirectory(uri);
-                case "UnknownError":
-                    throw vscode.FileSystemError.Unavailable;
-            }
-            throw new Error(ret.error_message);
+            throw this.handleError(ret);
         }
     }
-    delete(uri: Uri, options: { readonly recursive: boolean; }): void | Thenable<void> {
-        throw new Error("Method not delete.");
+    async delete(uri: Uri, __options: { readonly recursive: boolean; }) {
+        var ret = await this.clientHandler.deleteFile(uri);
+        if ("error" in ret) {
+            throw this.handleError(ret);
+        }
     }
-    rename(oldUri: Uri, newUri: Uri, options: { readonly overwrite: boolean; }): void | Thenable<void> {
-        throw new Error("Method not rename.");
+    async rename(oldUri: Uri, newUri: Uri, __options: { readonly overwrite: boolean; }) {
+        var ret = await this.clientHandler.renameFile(oldUri, newUri);
+        if ("error" in ret) {
+            throw this.handleError(ret);
+        }
     }
-    copy?(source: Uri, destination: Uri, options: { readonly overwrite: boolean; }): void | Thenable<void> {
-        throw new Error("Method not copy.");
+    async copy(source: Uri, destination: Uri, __options: { readonly overwrite: boolean; }) {
+        var ret = await this.clientHandler.copyFile(source, destination);
+        if ("error" in ret) {
+            throw this.handleError(ret);
+        }
+    }
+
+
+    handleError(result: FsErrorResult): vscode.FileSystemError | Error {
+        switch (result.error_message) {
+            case "FileNotFound":
+                return vscode.FileSystemError.FileNotFound();
+            case "PermissionDenied":
+                return vscode.FileSystemError.NoPermissions();
+            case "FileIsADirectory":
+                return vscode.FileSystemError.FileIsADirectory();
+            case "UnknownError":
+                return vscode.FileSystemError.Unavailable();
+            default:
+                return Error(result.error_message);
+        }
     }
 }
