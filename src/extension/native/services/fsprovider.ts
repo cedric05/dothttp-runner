@@ -108,3 +108,60 @@ export class SimpleFsProvider implements FileSystemProvider {
         }
     }
 }
+
+
+type DirectoryQuickPickItem = {
+    label: string;
+    uri: vscode.Uri;
+};
+
+async function selectDirectory(_fsProvider: SimpleFsProvider, currentUri: vscode.Uri): Promise<vscode.Uri | undefined> {
+    return new Promise(async function (resolve, _reject) {
+        const quickpick = vscode.window.createQuickPick<DirectoryQuickPickItem>();
+        quickpick.placeholder = 'Select a directory';
+        quickpick.canSelectMany = false;
+        quickpick.matchOnDescription = true;
+        quickpick.matchOnDetail = true;
+        quickpick.ignoreFocusOut = true;
+        quickpick.items = await listDirectories(_fsProvider, currentUri);
+        quickpick.onDidChangeValue(async value => {
+            if (value.endsWith('/')) {
+                quickpick.items = await listDirectories(_fsProvider, vscode.Uri.parse(value).with({ scheme: 'dothttpfs' }));
+            }
+        });
+        quickpick.onDidAccept(() => {
+            quickpick.selectedItems.length > 0 ? resolve(quickpick.selectedItems[0].uri) : resolve(undefined);
+            quickpick.hide();
+        });
+        quickpick.onDidHide(() => quickpick.dispose());
+        quickpick.show();
+
+    });
+}
+
+
+async function listDirectories(_fsProvider: SimpleFsProvider, currentUri: vscode.Uri): Promise<DirectoryQuickPickItem[]> {
+    const directories = (await _fsProvider.readDirectory(currentUri)).filter(([_, type]) => type === vscode.FileType.Directory);
+    return [...directories.map(([name]) => {
+        const uri = vscode.Uri.joinPath(currentUri, name);
+        return {
+            label: uri.fsPath,
+            uri: uri
+        }
+    }),
+    // include current directory as well
+    { label: currentUri.fsPath, uri: currentUri }
+    ];
+}
+
+
+export function openDothttpInRemote(lazy_load: Promise<void>, fileSystemProvider: SimpleFsProvider): (...args: any[]) => any {
+    return async () => {
+        await lazy_load;
+        const rootUri = vscode.Uri.parse('dothttpfs:/');
+        const selectedUri = await selectDirectory(fileSystemProvider, rootUri);
+        if (selectedUri) {
+            await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceReuseWindow: true });
+        }
+    };
+}

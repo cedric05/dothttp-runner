@@ -844,6 +844,11 @@
 					"when": "scmProvider == git",
 					"group": "dothttp"
 				}
+			],
+			"statusBar/windowIndicator": [
+				{
+					"command": "dothttp.command.openFolderInRemote"
+				}
 			]
 		},
 		"configuration": [
@@ -928,6 +933,13 @@
 				"type": "dothttp"
 			}
 		],
+		"remoteHelp": {
+			"documentation": "https://dothttp.dev/docs",
+			"feedback": "https://github.com/cedric05/dothttp-runner/issues",
+			"issues": "https://github.com/cedric05/dothttp-runner/issues",
+			"getStarted": "https://dothttp.dev/docs",
+			"reportIssue": "https://github.com/cedric05/dothttp-runner/issues"
+		},
 		"views": {
 			"dothttp-view-container": [
 				{
