@@ -73,6 +73,9 @@ export class NotebookKernel {
     private async _doExecution(cell: vscode.NotebookCell, curl = false): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
+        execution.token.onCancellationRequested(() => {
+            execution.end(false, Date.now())
+        });
         const start = Date.now();
         execution.start(start);
 
@@ -86,10 +89,6 @@ export class NotebookKernel {
             .map(cell => cell.document.getText());
 
         const target: string = await this._getTarget(uri, cellNo, httpDef);
-        execution.token.onCancellationRequested(() => {
-            execution.end(false, Date.now())
-
-        });
         let isOk = false;
 
         // previous execution outputs

@@ -3,6 +3,13 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.53
+- Updated dotextensions-build to version 0.0.44a18.
+- Property view now prevents duplicate keys and allows you to select the one you want.
+- Automatically retries if the CLI exits unexpectedly.
+- Added support for using CLI capabilities from a remote machine (not recommended for full-fledged editing).
+
+
 ## 1.0.52
 - Update `dotextensions-build` to version 0.0.44a15
   - Now Supports array indexing in variable

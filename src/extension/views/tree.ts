@@ -1,11 +1,8 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
-import { IFileState, Iproperties } from "../web/types/properties";
-import DotHttpEditorView from './editor';
-import path = require('path');
+import { IFileState, IProperty } from "../web/types/properties";
 import { Constants } from '../web/utils/constants';
-
 
 const FIFTEEN_MINS = 15 * 60 * 1000;
 export interface EnvTreeItem {
@@ -29,7 +26,7 @@ enum viewState {
 
 }
 
-type PropertyTreeItem = Iproperties & { hidden: boolean }
+type PropertyTreeItem = { key: string, value: string, hidden: boolean, enabled: boolean };
 
 
 export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
@@ -63,12 +60,18 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
     async refresh() {
         if (this.filename!) {
-            this.properties = this.fileStateService!
-                .getProperties(this.filename!)
-                .map((property) => {
-                    const hidden = this.hiddenProperties[property.key] ?? true;
-                    return { ...property, hidden: hidden };
+            this.properties = [];
+            Object.entries(
+                this.fileStateService!
+                    .getProperties(this.filename!)
+            ).forEach(([key, value]) => {
+                this.properties!.push({
+                    key: key,
+                    value: (value.filter(prop => prop.enabled).map(prop => prop.value) ?? [''])[0],
+                    hidden: this.hiddenProperties[key] ?? false,
+                    enabled: true
                 });
+            });
             this._onDidChangeTreeData.fire(null);
         }
     }
@@ -96,7 +99,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             .then(key => {
                 vscode.window.showInputBox({ placeHolder: `add property value for ${this.filename}` }).then(value => {
                     if (this.filename && key && (value || value === '')) {
-                        this.fileStateService!.addProperty(this.filename, key, value);
+                        this.fileStateService!.addProperty(this.filename, key, value, value);
                         this.refresh();
                     }
                 })
@@ -132,7 +135,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             */
             keys.forEach(key => {
                 // in case property exists, we want to enable back property
-                this.fileStateService!.addProperty(filename, key, properties[key]);
+                this.fileStateService!.addProperty(filename, key, properties[key], "Generated from dothttp test script");
                 this.fileStateService!.enableProperty(filename, key, properties[key]); // enable property
             })
             this.refresh();
@@ -154,22 +157,48 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     }
 
     async updateProperty(node: PropertyTreeItem) {
-        const updatedValue = await vscode.window.showInputBox({
-            placeHolder: `update property for key: \`${node.key}\` currently \`${node.value}\``,
-            value: node?.value
-        })
-        if (this.filename && (updatedValue || updatedValue === '') && node.value !== updatedValue) {
-            this.fileStateService?.updateProperty(this.filename!, node.key, node.value, updatedValue);
+        // inplace of input box, show list of available options, or let user enter value
+        var options: IProperty[] = this._fileStateService?.getProperties(this.filename!)[node.key] ?? [];
+        // iterate through options, and show quick pick
+        const selected = await vscode.window.showQuickPick([...options.map(prop => ({
+            label: prop.value,
+            description: `existing property, ${prop.description}`,
+            existing: true,
+            picked: false
+            // new emoji : https://emojicombos.com/
+        })), { label: "✍️ add new value", description: "add new value", picked: true, existing: false }], { canPickMany: false, ignoreFocusOut: true });
+        var updated_value: string | undefined = node.value;
+        var description = '';
+        if (!selected) {
+            return;
+        }
+        if (selected?.existing) {
+            updated_value = selected.label;
+            description = await vscode.window.showInputBox({
+                placeHolder: `do you want to update description?`,
+                value: selected.description
+            }) ?? '';
+        } else {
+            // ask for new value
+            updated_value = await vscode.window.showInputBox({
+                placeHolder: `update property for key: \`${node.key}\` currently \`${node.value}\``,
+                value: node?.value
+            })
+            if (updated_value) {
+                description = await vscode.window.showInputBox({
+                    placeHolder: `give description about ${updated_value}?`,
+                    value: updated_value
+                }) ?? '';
+            }
+        }
+        if (updated_value) {
+            this.fileStateService?.addProperty(this.filename!, node.key, updated_value, description);
             this.refresh();
         }
     }
 
     disableAllProperies() {
-        const props = this.fileStateService?.getProperties(this.filename!);
-        props?.forEach(prop => {
-            this.fileStateService!.disableProperty(this.filename!, prop.key, prop.value);
-        }
-        )
+        // no-Op
         this.refresh();
     }
 
@@ -266,11 +295,11 @@ export class EnvTree implements vscode.TreeDataProvider<EnvTreeItem> {
             if (!pos.envProperty) {
                 if (this.hasEnv(pos.env)) {
                     item.contextValue = viewState.enabled;
-                    item.iconPath =  new vscode.ThemeIcon( 'check');
+                    item.iconPath = new vscode.ThemeIcon('check');
                 }
                 else {
                     item.contextValue = viewState.environment;
-                    item.iconPath =  new vscode.ThemeIcon('circle-slash');
+                    item.iconPath = new vscode.ThemeIcon('circle-slash');
                 }
             }
             else {

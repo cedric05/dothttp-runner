@@ -175,10 +175,8 @@ export class VariableCompletionProvider implements CompletionItemProvider {
         }
 
         const properties = _.uniq(
-            this.fileStateService?.getProperties(document.uri)
-                .filter(prop => prop.enabled)
-                .map(prop => prop.key))
-            .map(this.variableCompletionItem("From Properties"))
+            Object.keys(this.fileStateService?.getProperties(document.uri) ?? [])
+                .map(this.variableCompletionItem("From Properties")))
         return _.concat([], ...envProperties, ...properties);
     }
 
