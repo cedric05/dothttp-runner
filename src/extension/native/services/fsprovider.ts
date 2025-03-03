@@ -161,7 +161,20 @@ export function openDothttpInRemote(lazy_load: Promise<void>, fileSystemProvider
         const rootUri = vscode.Uri.parse('dothttpfs:/');
         const selectedUri = await selectDirectory(fileSystemProvider, rootUri);
         if (selectedUri) {
-            await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceReuseWindow: true });
+            vscode.window.showInformationMessage('Do you want to attach as workspace folder?', 'Yes', 'No').then(async (value) => {
+                if (value === 'Yes') {
+                    vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, 0,
+                        {
+                            uri: selectedUri,
+                            name: "Dothttp Remote"
+                        }
+                    );
+                } else {
+                    // open in new window
+                    await vscode.commands.executeCommand('vscode.openFolder', selectedUri, { forceNewWindow: true });
+                }
+            });
+
         }
     };
 }

@@ -139,7 +139,7 @@ export async function runHttpFileWithOptions(options: { curl: boolean, target: s
     }, (progress, token) => {
         return new Promise(async (resolve) => {
             var prom;
-            if (document.uri.scheme === 'file') {
+            if (document.uri.scheme === 'file' || document.uri.scheme === 'dothttpfs') {
                 prom = DotHttpEditorView.runFile({ filename: options.uri, curl: options.curl, target: options.target });
             } else if (document.uri.scheme === DotHttpEditorView.scheme) {
                 prom = DotHttpEditorView.runContent({ content: document.getText(), curl: options.curl, target: options.target });

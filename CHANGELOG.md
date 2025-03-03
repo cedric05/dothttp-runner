@@ -3,6 +3,13 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.54
+- Updated dotextensions-build to version 0.0.44a19.
+- support migration to new format (properties)
+- fix running dothttp file(not notebook) in remote 
+- Ask for workspace or new window. (use workspace for ease)
+- Update lodash/openapi-to-postmanv2/curl-to-postmanv2
+
 ## 1.0.53
 - Updated dotextensions-build to version 0.0.44a18.
 - Property view now prevents duplicate keys and allows you to select the one you want.

@@ -1,7 +1,7 @@
 import * as json from 'jsonc-parser';
 import { basename } from 'path';
 import * as vscode from 'vscode';
-import { IFileState, IProperty } from "../web/types/properties";
+import { IFileState, IProperties, IProperty } from "../web/types/properties";
 import { Constants } from '../web/utils/constants';
 
 const FIFTEEN_MINS = 15 * 60 * 1000;
@@ -61,10 +61,24 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     async refresh() {
         if (this.filename!) {
             this.properties = [];
-            Object.entries(
+            var localProperties = Object.entries(
                 this.fileStateService!
                     .getProperties(this.filename!)
-            ).forEach(([key, value]) => {
+            );
+            if (localProperties instanceof Array) {
+                for (let i = 0; i < localProperties.length; i++) {
+                    // update properties to new format
+                    const { key, value } = (localProperties[i] as any as { key: string, value: string });
+                    this.fileStateService?.addProperty(this.filename!, key, value, '');
+                }
+                // refresh
+                localProperties = Object.entries(
+                    this.fileStateService!
+                        .getProperties(this.filename!)
+                );
+            }
+
+            localProperties.forEach(([key, value]) => {
                 this.properties!.push({
                     key: key,
                     value: (value.filter(prop => prop.enabled).map(prop => prop.value) ?? [''])[0],
