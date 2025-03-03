@@ -75,9 +75,14 @@ export default class DotHttpEditorView implements vscode.TextDocumentContentProv
     static getEnabledProperties(filename: vscode.Uri) {
         const fileservice = ApplicationServices.get().getFileStateService();
         const properties: any = {};
-        (fileservice?.getProperties(filename) ?? []).filter(prop => prop.enabled).forEach(prop => {
-            properties[prop.key] = prop.value;
-        })
+        Object.entries(fileservice?.getProperties(filename) ?? []).map(([key, options]) => {
+            for (var prop of options) {
+                if (prop.enabled) {
+                    properties[key] = prop.value;
+                    break;
+                }
+            }
+        });
         return properties;
     }
 }

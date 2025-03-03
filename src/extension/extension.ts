@@ -34,6 +34,7 @@ import { Constants } from './web/utils/constants';
 import { ProNotebookKernel } from './native/services/notebookkernel';
 import * as fs from 'fs'
 import { VscodeOutputChannelWrapper } from './native/services/languageservers/channelWrapper';
+import { openDothttpInRemote, SimpleFsProvider } from './native/services/fsprovider';
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -70,6 +71,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const configInstance = Configuration.instance();
 	const channelWrapper = new VscodeOutputChannelWrapper(configInstance);
 	notebookKernel.configure(clientHandler2, fileStateService, propertyTree, configInstance);
+
+	const fileSystemProvider = new SimpleFsProvider(clientHandler);
+	context.subscriptions.push(
+		vscode.workspace.registerFileSystemProvider('dothttpfs', fileSystemProvider, { isCaseSensitive: true })
+	);
+
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
 		.setGlobalstorageService(globalStorageService)
@@ -91,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setHistoryTreeProvider(historyTreeProvider)
 		.build();
 
-	bootStrap(appServices); // lazy loading
+	const lazy_load = bootStrap(appServices); // lazy loading
 	loadNoteBookControllerSafely(context);
 
 
@@ -248,7 +255,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new HeaderCompletionItemProvider(clientHandler), ...HeaderCompletionItemProvider.triggerCharacters),
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new KeywordCompletionItemProvider(), ...KeywordCompletionItemProvider.triggerCharacters),
-
+		// remote dothttp
+		vscode.commands.registerCommand(Constants.OPEN_FODLER_IN_REMOTE, openDothttpInRemote(lazy_load, fileSystemProvider)),
 	]);
 
 	workspace.registerTextDocumentContentProvider('embedded-content', {

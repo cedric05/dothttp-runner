@@ -3,11 +3,13 @@ import { DothttpRunOptions } from '../../web/types/misc';
 import { HttpFileTargetsDef } from '../../web/types/lang-parse';
 import { ICommandClient, RunType, DotTttpSymbol, TypeResult, ImportHarResult, ResolveResult } from '../../web/types/types';
 import * as vscode from 'vscode';
+import { ReadDirectoryOperationResult, ReadFileOperationResult, StatFileOperationResult, SimpleOperationResult } from './fstypes';
 var mime = require('mime-types');
 
 
 
 export class ClientHandler {
+
     running: boolean = false;
     cli?: ICommandClient;
     clientLaunchArguments?: { pythonpath: string; stdargs: string[]; type: RunType; };
@@ -187,6 +189,38 @@ export class ClientHandler {
             target: options.target,
             contexts: options.contexts,
         });
+    }
+
+    async readDirectory(uri: vscode.Uri): Promise<ReadDirectoryOperationResult> {
+        return this.cli?.request("/fs/read-directory", { source: uri.fsPath });
+    }
+
+    async readFile(uri: vscode.Uri): Promise<ReadFileOperationResult> {
+        return this.cli?.request("/fs/read", { source: uri.fsPath });
+    }
+
+    async statFile(uri: vscode.Uri): Promise<StatFileOperationResult> {
+        return this.cli?.request("/fs/stat", { source: uri.fsPath });
+    }
+
+    async writeFile(uri: vscode.Uri, content: Uint8Array): Promise<SimpleOperationResult> {
+        return this.cli?.request("/fs/write", { source: uri.fsPath, content: Buffer.from(content).toString('base64') });
+    }
+
+    async deleteFile(uri: vscode.Uri): Promise<SimpleOperationResult> {
+        return this.cli?.request("/fs/delete", { source: uri.fsPath });
+    }
+
+    async renameFile(oldUri: vscode.Uri, newUri: vscode.Uri): Promise<SimpleOperationResult> {
+        return this.cli?.request("/fs/rename", { old: oldUri.fsPath, new: newUri.fsPath });
+    }
+
+    async copyFile(source: vscode.Uri, destination: vscode.Uri): Promise<SimpleOperationResult> {
+        return this.cli?.request("/fs/copy", { source: source.fsPath, destination: destination.fsPath });
+    }
+
+    async createDirectory(uri: vscode.Uri): Promise<SimpleOperationResult> {
+        return this.cli?.request("/fs/create-directory", { source: uri.fsPath, });
     }
 
     close() {
