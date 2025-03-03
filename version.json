@@ -1684,6 +1684,10 @@
         "1.0.53": {
             "maxVersion": "0.0.44",
             "minVersion": "0.0.8"
+        },
+        "1.0.54": {
+            "maxVersion": "0.0.44",
+            "minVersion": "0.0.8"
         }
     }
 }
