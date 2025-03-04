@@ -68,7 +68,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             if (localProperties instanceof Array) {
                 for (let i = 0; i < localProperties.length; i++) {
                     // update properties to new format
-                    const { key, value } = (localProperties[i] as any as { key: string, value: string });
+                    const { key, value } = (localProperties[i][1] as any as { key: string, value: string });
                     this.fileStateService?.addProperty(this.filename!, key, value, '');
                 }
                 // refresh
