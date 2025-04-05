@@ -38,7 +38,13 @@ enum TabType {
     RedirectHistory,
 }
 
-const MAX_DEFAULT_FORMAT_LEN = 2 * 1024 * 1024;
+
+/**
+ * The maximum default format length, defined as 512 * 1024 bytes or 0.5MB.
+ * This constant is used to set a limit on the size of data that can be processed
+ * or formatted by default. Adjust this value if larger data sizes need to be handled.
+ */
+const MAX_DEFAULT_FORMAT_LEN = 1024 * 512;
 
 type HttpResponseAndMetadata = {
     response: DothttpExecuteResponse;
@@ -169,6 +175,8 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
 
     if (body.length < MAX_DEFAULT_FORMAT_LEN) {
         body = formatBody(filenameExtension, body);
+    } else {
+        body = `Response too large (exceeds 0.5MB) to display. Use "Open In Editor" to view the full response in a new tab.`;
     }
     let redirectHistory = history ?? []
     const [responseBody, setResponseBody] = useState(body);

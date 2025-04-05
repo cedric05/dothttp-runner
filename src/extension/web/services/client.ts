@@ -2,7 +2,7 @@ import { DothttpExecuteResponse } from '../../../common/response';
 import { HttpFileTargetsDef } from '../types/lang-parse';
 import { ICommandClient, DotTttpSymbol, TypeResult, ImportHarResult } from '../types/types';
 import * as vscode from 'vscode';
-import { ExecuteFileOptions, ClientHandler } from '../../native/services/client';
+import { ExecuteFileOptions, ClientHandler, addFileNameExtension } from '../../native/services/client';
 
 var mime = require('mime-types');
 
@@ -55,12 +55,7 @@ export class ClientHandler2 {
 
     async executeWithExtension(options: ExecuteFileOptions): Promise<DothttpExecuteResponse> {
         const out = await this.execute(options);
-        out['filenameExtension'] = 'txt';
-        const headers = out['headers'] ?? {};
-        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
-            out['filenameExtension'] = mime.extension(headers[key]);
-        });
-        return out;
+        return addFileNameExtension(out);
     }
 
     async documentSymbols(uri: vscode.Uri, content?: string, source?: string): Promise<DotTttpSymbol> {

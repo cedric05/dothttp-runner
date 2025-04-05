@@ -62,12 +62,7 @@ export class ClientHandler {
 
     async executeFileWithExtension(options: DothttpRunOptions): Promise<DothttpExecuteResponse> {
         const out = await this.executeFile(options);
-        out['filenameExtension'] = 'txt';
-        const headers = out['headers'] ?? {};
-        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
-            out['filenameExtension'] = mime.extension(headers[key]);
-        });
-        return out;
+        return addFileNameExtension(out);
     }
 
     async executeContent(options: DothttpRunOptions & { content: string; }): Promise<DothttpExecuteResponse> {
@@ -86,12 +81,7 @@ export class ClientHandler {
 
     async executeContentWithExtension(options: DothttpRunOptions & { content: string; }): Promise<DothttpExecuteResponse> {
         const out = await this.executeContent(options);
-        out['filenameExtension'] = 'txt';
-        const headers = out['headers'] ?? {};
-        Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
-            out['filenameExtension'] = mime.extension(headers[key]);
-        });
-        return out;
+        return addFileNameExtension(out);
     }
 
     async importPostman(options: { link: string | null; directory: string; save: boolean; filetype?: string; "postman-collection"?: any }) {
@@ -239,3 +229,24 @@ export type ExecuteFileOptions = {
     contexts?: Array<string>;
     properties?: { [prop: string]: string; };
 };
+
+export function addFileNameExtension(out: DothttpExecuteResponse) {
+    // if fileNameExtension is already set, return
+    let fileNameExtension = 'txt';
+    const headers = out['headers'] ?? {};
+    Object.keys(headers).filter(key => key.toLowerCase() === 'content-type').forEach(key => {
+        const contentType = headers[key];
+        if (contentType.startsWith('application/vnd.') && contentType.endsWith('+json')) {
+            fileNameExtension = 'json';
+        } else if (/application\/x-[\w\d-]+-json-[\\.\d\w-]+/.test(contentType)) {
+            fileNameExtension = 'json';
+        } else {
+            const extension = mime.extension(contentType);
+            if (extension) {
+                fileNameExtension = extension;
+            }
+        }
+    });
+    out['filenameExtension'] = fileNameExtension;
+    return out
+}
