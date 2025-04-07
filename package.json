@@ -1009,7 +1009,7 @@
 		"@babel/core": "^7.23.2",
 		"css-loader": "^7.1.2",
 		"dot-preact-highlight": "^2.0.0",
-		"glob": "^11.0.0",
+		"glob": "^11.0.1",
 		"http-status-codes": "^2.3.0",
 		"mocha": "^11.1.0",
 		"mongodb": "^3.6.5",
