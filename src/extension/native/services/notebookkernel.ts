@@ -138,3 +138,65 @@ async function createEditor(compareItem: CompareBodyItem) {
     });
     return leftUri;
 }
+
+
+export function executeMultipleTimes(notebookKernel: ProNotebookKernel): (...args: any[]) => any {
+	return async (cell) => {
+		// ask for the number of times to run
+		const runCount = await vscode.window.showInputBox({
+			prompt: "Enter the number of times to run the cell",
+			placeHolder: "5",
+			value: "5",
+			validateInput: (value) => {
+				const num = parseInt(value);
+				if (isNaN(num) || num <= 0) {
+					return 'Please enter a valid positive number';
+				}
+				return null;
+			}
+		});
+		if (!runCount) {
+			vscode.window.showWarningMessage("No run count provided");
+			return;
+		}
+		const runCountNum = parseInt(runCount);
+		if (isNaN(runCountNum) || runCountNum <= 0) {
+			vscode.window.showWarningMessage("Invalid run count provided");
+			return;
+		}
+		// ask for the delay between runs
+		const delay = await vscode.window.showInputBox({
+			prompt: "Enter the delay between runs (in milliseconds)",
+			placeHolder: "1000",
+			value: "1000",
+			validateInput: (value) => {
+				const num = parseInt(value);
+				if (isNaN(num) || num < 0) {
+					return 'Please enter a valid non-negative number';
+				}
+				return null;
+			}
+		});
+		if (!delay) {
+			vscode.window.showWarningMessage("No delay provided");
+			return;
+		}
+		const delayNum = parseInt(delay);
+		if (isNaN(delayNum) || delayNum < 0) {
+			vscode.window.showWarningMessage("Invalid delay provided");
+			return;
+		}
+		// Execute the cell multiple times with the specified delay
+		for (let i = 0; i < runCountNum; i++) {
+			// get notebook controller and execute the cell
+            try{
+                await notebookKernel.executeCell(cell);
+                // wait for the specified delay
+                await new Promise(resolve => setTimeout(resolve, delayNum));
+            } catch (error) {
+                console.error(`Error executing cell: ${error}`);
+                vscode.window.showErrorMessage(`Error executing cell: ${error}`);
+            }
+		}
+	};
+}

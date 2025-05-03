@@ -70,6 +70,10 @@ export class NotebookKernel {
         }
     }
 
+    public async executeCell(cell: vscode.NotebookCell): Promise<void> {
+        await this._doExecution(cell);
+    }
+
     private async _doExecution(cell: vscode.NotebookCell, curl = false): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
