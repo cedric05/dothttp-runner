@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.56",
+	"version": "1.0.57",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -464,6 +464,12 @@
 				"title": "Clear Notebook Cells",
 				"icon": "$(book)",
 				"category": "Dothttp"
+			},
+			{
+				"command": "dothttp.command.notebook.runmultiple",
+				"title": "Run Single Cell Multiple Times(usefull for testing)",
+				"icon": "$(run-all)",
+				"category": "Dothttp"
 			}
 		],
 		"menus": {
@@ -491,6 +497,10 @@
 				},
 				{
 					"command": "dothttp.command.notebook.gencurl",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
+				},
+				{
+					"command": "dothttp.command.notebook.runmultiple",
 					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
 				}
 			],
@@ -1009,7 +1019,7 @@
 		"@babel/core": "^7.23.2",
 		"css-loader": "^7.1.2",
 		"dot-preact-highlight": "^2.0.0",
-		"glob": "^11.0.0",
+		"glob": "^11.0.1",
 		"http-status-codes": "^2.3.0",
 		"mocha": "^11.1.0",
 		"mongodb": "^3.6.5",

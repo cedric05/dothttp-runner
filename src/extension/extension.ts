@@ -31,7 +31,7 @@ import { HistoryTreeProvider } from './views/historytree';
 import { EnvTree, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 import { Constants } from './web/utils/constants';
-import { ProNotebookKernel } from './native/services/notebookkernel';
+import { executeMultipleTimes, ProNotebookKernel } from './native/services/notebookkernel';
 import * as fs from 'fs'
 import { VscodeOutputChannelWrapper } from './native/services/languageservers/channelWrapper';
 import { openDothttpInRemote, SimpleFsProvider } from './native/services/fsprovider';
@@ -193,6 +193,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.RESTART_CLI_COMMAND, () => {
 			clientHandler.restart();
 		}),
+
+		vscode.commands.registerCommand(Constants.NOTEBOOK_EXECUTE_MULTIPLE_TIMES, executeMultipleTimes(notebookKernel)),
+
 		vscode.commands.registerCommand(Constants.RUN_NOTEBOOK_TARGET_IN_CELL, runTargetInCell),
 		vscode.commands.registerCommand(Constants.HTTPBOOK_SAVE_AS_HTTP, saveNotebookAsHttpFileFromCommand),
 		vscode.workspace.registerTextDocumentContentProvider(DotHttpEditorView.scheme, dothttpEditorView),
