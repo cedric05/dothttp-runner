@@ -149,7 +149,8 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             */
             keys.forEach(key => {
                 // in case property exists, we want to enable back property
-                this.fileStateService!.addProperty(filename, key, properties[key], "Generated from dothttp test script");
+                // include timestamp in description
+                this.fileStateService!.addProperty(filename, key, properties[key], "Generated from dothttp test script at" + new Date().toLocaleString());
                 this.fileStateService!.enableProperty(filename, key, properties[key]); // enable property
             })
             this.refresh();
@@ -173,6 +174,7 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
     async updateProperty(node: PropertyTreeItem) {
         // inplace of input box, show list of available options, or let user enter value
         var options: IProperty[] = this._fileStateService?.getProperties(this.filename!)[node.key] ?? [];
+        const clipboardText = await vscode.env.clipboard.readText();
         // iterate through options, and show quick pick
         const selected = await vscode.window.showQuickPick([...options.map(prop => ({
             label: prop.value,
@@ -180,7 +182,9 @@ export class PropertyTree implements vscode.TreeDataProvider<PropertyTreeItem> {
             existing: true,
             picked: false
             // new emoji : https://emojicombos.com/
-        })), { label: "✍️ add new value", description: "add new value", picked: true, existing: false }], { canPickMany: false, ignoreFocusOut: true });
+        })), { label: "✍️ add new value", description: "add new value", picked: true, existing: false }
+           , {label: clipboardText, description: "use value from clipboard", existing: false, picked: false}
+        ], { canPickMany: false, ignoreFocusOut: true });
         var updated_value: string | undefined = node.value;
         var description = '';
         if (!selected) {
