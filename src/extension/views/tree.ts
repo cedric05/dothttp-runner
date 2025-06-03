@@ -401,4 +401,13 @@ export class EnvTree implements vscode.TreeDataProvider<EnvTreeItem> {
         });
     }
 
+    toProperties(nodeEnv: EnvTreeItem, propertyTree: PropertyTree) {
+        const env = this.tree[nodeEnv.env];
+        const properties: { [prop: string]: string } = {};
+        Object.entries(env).forEach(([key, value]) => {
+            properties[key] = value;
+        });
+        propertyTree.addProperties(this.filename, properties);
+    }
+
 }

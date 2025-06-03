@@ -67,6 +67,7 @@ export enum Constants {
 	openEnvFileCommmand = 'dothttpEnvView.opendothttpjson',
 	CONFIGURE_ENV_FILE_COMMAND = 'dothttpEnvView.configureEnvFile',
 	disableAllEnvCommmand = "dothttpEnvView.disableAllEnv",
+	ENV_TO_PROPERTIES = "dothttp.command.env.to_properties",
 
 
 	enableEnvViewVar = 'dothttpEnvViewEnabled',

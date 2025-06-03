@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.58",
+	"version": "1.0.59",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -10,7 +10,7 @@
 	},
 	"icon": "rocket.png",
 	"engines": {
-		"vscode": "^1.63.0"
+		"vscode": "^1.75.0"
 	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/cedric05"
@@ -35,42 +35,9 @@
 	"activationEvents": [
 		"onFileSystem:dothttpfs",
 		"onNotebook:dothttp-book",
-		"onLanguage:dothttp-vscode",
 		"workspaceContains:**/*.http",
 		"workspaceContains:**/*.httpbook",
 		"workspaceContains:**/*.hnbk",
-		"onView:dothttpEnvView",
-		"onCommand:dothttp.command.run",
-		"onView:dothttpPropView",
-		"onView:dothttpHistory",
-		"onCommand:dothttp.command.run",
-		"onCommand:dothttp.command.gencurl",
-		"onCommand:dothttp.command.toggle.reuse",
-		"onCommand:dothttp.command.toggle.runrecent",
-		"onCommand:dothttp.command.toggle.experimental",
-		"onCommand:dothttp.command.toggle.showheaders",
-		"onCommand:dothttp.command.toggle.history",
-		"onCommand:dothttp.command.toggle.nocookie",
-		"onCommand:dothttp.command.toggle.unstable",
-		"onCommand:dothttp.command.toggle.hideopennotebookfromfile",
-		"onCommand:dothttp.command.import.external",
-		"onCommand:dothttpEnvView.refresh",
-		"onCommand:dothttpEnvView.enableenv",
-		"onCommand:dothttpEnvView.disableenv",
-		"onCommand:dothttpPropView.add",
-		"onCommand:dothttpPropView.enableproperty",
-		"onCommand:dothttpPropView.disableproperty",
-		"onCommand:dothttpPropView.copyPropertyValue",
-		"onCommand:dothttpPropView.updateproperty",
-		"onCommand:dothttpPropView.disableAllProperties",
-		"onCommand:dothttpEnvView.disableAllEnv",
-		"onCommand:dothttpPropView.removeproperty",
-		"onCommand:dothttpEnvView.opendothttpjson",
-		"onCommand:dothttpEnvView.configureEnvFile",
-		"onCommand:dothttpEnvView.copyPropertyValue",
-		"onCommand:dothttp.command.newHttpBook",
-		"onCommand:dothttp.command.newHttpFile",
-		"onCommand:dothttp.command.generatelang",
 		"onStartupFinished"
 	],
 	"main": "./dist/extension-node.js",
@@ -470,6 +437,12 @@
 				"title": "Run Single Cell Multiple Times(usefull for testing)",
 				"icon": "$(run-all)",
 				"category": "Dothttp"
+			},
+			{
+				"command": "dothttp.command.env.to_properties",
+				"title": "Convert Environment to Properties",
+				"icon": "$(gear)",
+				"category": "Dothttp"
 			}
 		],
 		"menus": {
@@ -598,6 +571,10 @@
 				},
 				{
 					"command": "dothttp.command.notebook.gencurl",
+					"when": "never"
+				},
+				{
+					"command": "dothttp.command.env.to_properties",
 					"when": "never"
 				},
 				{
@@ -804,6 +781,11 @@
 			"view/item/context": [
 				{
 					"command": "dothttpEnvView.enableenv",
+					"when": "view == dothttpEnvView && viewItem == environment",
+					"group": "inline"
+				},
+				{
+					"command": "dothttp.command.env.to_properties",
 					"when": "view == dothttpEnvView && viewItem == environment",
 					"group": "inline"
 				},

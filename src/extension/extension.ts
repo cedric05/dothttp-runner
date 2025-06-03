@@ -28,7 +28,7 @@ import { UrlStorageService } from './web/services/url';
 import { TingoHistoryService } from './native/services/tingohelpers';
 import DotHttpEditorView from './views/editor';
 import { HistoryTreeProvider } from './views/historytree';
-import { EnvTree, PropertyTree } from './views/tree';
+import { EnvTree, EnvTreeItem, PropertyTree } from './views/tree';
 import { activate as webExtensionActivate, loadNoteBookControllerSafely } from './webextension';
 import { Constants } from './web/utils/constants';
 import { executeMultipleTimes, ProNotebookKernel } from './native/services/notebookkernel';
@@ -218,6 +218,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.disableEnvCommand, disableEnvCommand),
 		vscode.commands.registerCommand(Constants.copyEnvValueCommand, copyProperty),
 		vscode.commands.registerCommand(Constants.disableAllEnvCommmand, () => { envTree.disableAllEnv() }),
+		vscode.commands.registerCommand(Constants.ENV_TO_PROPERTIES, (nodeEnv: EnvTreeItem) => { envTree.toProperties(nodeEnv, propertyTree) }),
 	])
 
 
