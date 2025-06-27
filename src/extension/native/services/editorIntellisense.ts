@@ -286,9 +286,18 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
             this._onDidChangeCodeLenses.fire()
         });
     }
+
     async provideCodeActions(document: vscode.TextDocument, range: vscode.Selection, _context: vscode.CodeActionContext, _token: vscode.CancellationToken): Promise<(vscode.Command | vscode.CodeAction)[]> {
         const text = document.getText(range);
         try {
+            const offerToConvertToProperty = new vscode.CodeAction("convert to property", vscode.CodeActionKind.RefactorExtract);
+            // ask for property name
+            offerToConvertToProperty.command = {
+                title: "Add property",
+                command: Constants.PROPERTY_FROM_TEXT,
+                arguments: [document.uri, range, text],
+            }
+
             if (!(range.start.line === range.end.line && range.start.character === range.end.character)) {
                 const formatted = json.format(text, undefined, { eol: document.eol === 1 ? '\n' : '\r\n', insertFinalNewline: true });
 
@@ -304,9 +313,10 @@ export class DothttpNameSymbolProvider implements vscode.CodeLensProvider<Dothtt
                         edits.push(wedit);
                     })
                     action.edit = wedit;
-                    return [action];
+                    return [action, offerToConvertToProperty];
                 }
             }
+            return [offerToConvertToProperty];
         } catch (e) {
         }
         return [];

@@ -202,6 +202,40 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.HTTP_AS_HTTPBOOK, saveHttpFileasNotebook),
 		vscode.commands.registerCommand(Constants.NEW_NOTEBOOK_COMMAND, () => createNewNotebook(FileTypes.DotNotebook)),
 		vscode.commands.registerCommand(Constants.NEW_HTTP_FILE_COMMAND, () => createNewNotebook(FileTypes.DotHttp)),
+		vscode.commands.registerCommand(Constants.PROPERTIES_TO_ENV, async () => {
+			const uri = vscode.window.activeTextEditor?.document.uri;
+			if (uri) {
+				const properties = fileStateService.getProperties(uri);
+				const enabled_properties = Object.entries(properties).filter(([_, value]) => value.find(p => p.enabled));
+				const env = enabled_properties.reduce((acc, [key, value]) => {
+					acc[key] = value.find(p => p.enabled)?.value ?? "";
+					return acc;
+				}, {} as { [key: string]: string });
+				// get directory to save env file from user input
+				const directory = await vscode.window.showWorkspaceFolderPick();
+				if (directory) {
+					// current timestamp in epoch
+					const timestamp = Date.now();
+					const filePath = vscode.Uri.joinPath(directory.uri, `env_${timestamp}.dothttpenv.json`);
+					await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(JSON.stringify({ "*": env }, null, 2)));
+					vscode.window.showInformationMessage(`Environment file "${filePath.fsPath}" created!`);
+				}
+			}
+		}),
+		vscode.commands.registerCommand(Constants.PROPERTY_FROM_TEXT, async (filename: vscode.Uri, range: vscode.Range, value: string) => {
+			const property = await vscode.window.showInputBox({
+				prompt: "Enter property name",
+				value: value,
+			});
+			if (property) {
+				const edit = new vscode.WorkspaceEdit();
+				edit.replace(filename, range, `{{${property}}}`);
+				await vscode.workspace.applyEdit(edit);
+				fileStateService.addProperty(filename, property, value, value)
+				propertyTree.refresh();
+			}
+
+		}),
 		vscode.commands.registerCommand(Constants.CLEAR_NOTEBOOK_CELLS, async (editor: vscode.SourceControlResourceState) => {
 			await vscode.commands.executeCommand("vscode.open", editor.resourceUri);
 			vscode.commands.executeCommand("notebook.clearAllCellsOutputs");

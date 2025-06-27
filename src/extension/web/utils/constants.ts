@@ -50,6 +50,10 @@ export enum Constants {
 	NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
 	NEW_HTTP_FILE_COMMAND = "dothttp.command.newHttpFile",
 
+	PROPERTY_FROM_TEXT = "dothttp.command.add.file.property",
+
+	PROPERTIES_TO_ENV = "dothttp.command.properties.to.env",
+
 	TOGGLE_PROPERTY = "dothttp.command.properites.toggle",
 
 
