@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.60",
+	"version": "1.0.61",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -150,6 +150,14 @@
 				"shortTitle": "Dothttp File",
 				"category": "Dothttp",
 				"icon": "$(new-file)",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.add.file.property",
+				"title": "Add Property",
+				"shortTitle": "Add Property",
+				"category": "Dothttp",
+				"icon": "$(add)",
 				"enablement": "dothttpRunMode == full"
 			},
 			{
@@ -443,6 +451,12 @@
 				"title": "Convert Environment to Properties",
 				"icon": "$(gear)",
 				"category": "Dothttp"
+			},
+			{
+				"command": "dothttp.command.properties.to.env",
+				"title": "Convert Properties to Environment",
+				"icon": "$(gear)",
+				"category": "Dothttp"
 			}
 		],
 		"menus": {
@@ -550,6 +564,15 @@
 					"group": "dothttp",
 					"command": "dothttp.command.openFolderInRemote",
 					"when": "dothttpRunMode == full"
+				},
+				{
+					"group": "dothttp",
+					"command": "dothttp.command.properties.to.env",
+					"when": "dothttpRunMode == full"
+				},
+				{
+					"command": "dothttp.command.add.file.property",
+					"when": "never"
 				},
 				{
 					"group": "toggle",
@@ -737,6 +760,11 @@
 				},
 				{
 					"command": "dothttpPropView.disableAllProperties",
+					"when": "view == dothttpPropView",
+					"group": "navigation"
+				},
+				{
+					"command": "dothttp.command.properties.to.env",
 					"when": "view == dothttpPropView",
 					"group": "navigation"
 				},

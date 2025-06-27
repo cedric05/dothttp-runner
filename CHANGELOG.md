@@ -3,6 +3,11 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.61
+- Create Property from notebook/text without leaving editor
+- Export properites to env file for quick edit.
+
+
 ## 1.0.60
 - Update dependencies
 - Updated dotextensions-build to version 0.0.44a23
