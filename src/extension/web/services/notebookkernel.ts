@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { DothttpExecuteResponse, NotebookExecutionMetadata, Response } from '../../../common/response';
 import { ClientHandler2 } from "./client";
 import { IFileState } from "../types/properties";
-import dateFormat from 'dateformat';
+import * as dateFormat from 'dateformat';
 import { LocalStorageService } from './storage';
 import { PropertyTree } from '../../views/tree';
 import { Constants } from '../utils/constants';
@@ -150,14 +150,12 @@ export class NotebookKernel {
             }
 
             try {
+                const outs: Array<vscode.NotebookCellOutputItem> = [];
                 if (curl) {
-                    execution.replaceOutput([
-                        new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(out.body, "text/x-shell")])
-                    ]);
+                    outs.push(vscode.NotebookCellOutputItem.text(out.body, "text/x-shell"));
                 } else {
                     out.body = "";
                     out.headers = {};
-                    const outs: Array<vscode.NotebookCellOutputItem> = [];
                     const nativeContentTypes = this.parseAndAdd(out.response);
                     // insert into dotbookOutputs at the start
                     // limit number responses in cell
@@ -169,13 +167,13 @@ export class NotebookKernel {
                         dotbookOutputs = dotbookOutputs.slice(0, maxResponsesInCell - 1);
                     }
                     dotbookOutputs.unshift({ response: out, metadata });
-                    outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
                     outs.push(...nativeContentTypes);
-                    await execution.clearOutput();
-                    execution.replaceOutput([
-                        new vscode.NotebookCellOutput(outs)
-                    ]);
                 }
+                outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
+                await execution.clearOutput();
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput(outs)
+                ]);
                 isOk = true;
             } catch (error) {
                 execution.replaceOutput([

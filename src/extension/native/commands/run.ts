@@ -5,7 +5,7 @@ import { Configuration } from '../../web/utils/config';
 import { ApplicationServices } from '../../web/services/global';
 import { getUnSavedUri } from "../../web/utils/fsUtils";
 import DotHttpEditorView from '../../views/editor';
-import dateFormat from 'dateformat';
+import * as dateFormat from 'dateformat';
 import path = require('path');
 import { TextEditorEdit, TextEditor } from 'vscode';
 import { DothttpExecuteResponse } from '../../../common/response';
