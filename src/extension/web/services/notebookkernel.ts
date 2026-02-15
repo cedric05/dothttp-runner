@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { DothttpExecuteResponse, NotebookExecutionMetadata, Response } from '../../../common/response';
 import { ClientHandler2 } from "./client";
 import { IFileState } from "../types/properties";
-import * as dateFormat from 'dateformat';
+import dateFormat from 'dateformat';
 import { LocalStorageService } from './storage';
 import { PropertyTree } from '../../views/tree';
 import { Constants } from '../utils/constants';

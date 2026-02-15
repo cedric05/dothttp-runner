@@ -4,7 +4,7 @@ import { Command, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, Tr
 import { HistoryItem, IHistoryService } from "../web/types/history";
 import transform from '../web/utils/text-colors';
 import DotHttpEditorView from "./editor";
-import * as dateFormat from 'dateformat';
+import dateFormat from 'dateformat';
 import querystring = require('querystring');
 import * as vscode from 'vscode';
 import { Constants } from '../web/utils/constants';
