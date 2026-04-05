@@ -40,7 +40,7 @@ export async function getNotebookUriToHttpContent(uri: Uri): Promise<string> {
                 return getMarkDownCode(text);
             }
             case NotebookCellKind.Code: {
-                return getHttpCode(await client!.getVirtualDocumentSymbols(text, "notebook-save"), text, cell.index);
+                return getHttpCode(await client!.getVirtualDocumentSymbols(text, "notebook-save", uri.fsPath), text, cell.index);
             };
         }
     }));
