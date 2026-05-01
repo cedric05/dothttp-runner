@@ -375,7 +375,7 @@ async function importSwagger(data: any, filename: string, directory: vscode.Uri,
             harFormat.push(har.har);
         }
     } else if (picktype === ImportOptions.swagger3) {
-        const result: any = await convertOpenApitoPostman({ 'type': 'json', data: hardata }, undefined);
+        const result: any = await convertOpenApitoPostman({ 'type': 'json', data: hardata }, {} as any);
         await postmanFromCollectionFile(directory, null, isNotebooK, picktype, result.output[0]['data']);
         return {
             error: false,

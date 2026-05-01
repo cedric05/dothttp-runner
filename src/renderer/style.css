@@ -204,3 +204,18 @@ button.tab[active] {
 .history-toggle {
     margin: 2px;
 }
+
+/* Monaco Editor Styles */
+.monaco-editor-container {
+    border: 1px solid var(--notebook-inactive-focused-cell-border-color);
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.monaco-editor {
+    height: 100%;
+}
+
+.monaco-editor .monaco-scrollable-element > .scrollbar {
+    background-color: var(--theme-background);
+}

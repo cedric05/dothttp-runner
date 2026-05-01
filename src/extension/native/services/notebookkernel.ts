@@ -13,13 +13,42 @@ interface CompareBodyItem {
 
 export class ProNotebookKernel extends NotebookKernel {
     client1!: ClientHandler;
-
+    private _renderer: vscode.NotebookRendererMessaging;
 
     constructor() {
         super()
-        const _renderer = vscode.notebooks.createRendererMessaging("dotbook");
-        _renderer.postMessage({ messageType: "capabilities", params: { hostType: vscode.env.appHost } });
-        _renderer.onDidReceiveMessage(this.onMessage.bind(this))
+        this._renderer = vscode.notebooks.createRendererMessaging("dotbook");
+        this._renderer.postMessage({ messageType: "capabilities", params: { hostType: vscode.env.appHost } });
+        this._renderer.onDidReceiveMessage(this.onMessage.bind(this))
+
+        // Send initial settings to renderer
+        this.sendSettingsToRenderer();
+
+        // Watch for configuration changes
+        vscode.workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('dothttp.conf.notebook')) {
+                this.sendSettingsToRenderer();
+            }
+        });
+    }
+
+    private sendSettingsToRenderer() {
+        const config = vscode.workspace.getConfiguration('dothttp.conf.notebook');
+        const settings = {
+            theme: config.get<string>('theme', 'auto'),
+            fontSize: config.get<number>('fontSize', 13),
+            fontFamily: config.get<string>('fontFamily', 'Menlo, Monaco, "Courier New", monospace'),
+            lineNumbers: config.get<string>('lineNumbers', 'on'),
+            minimap: config.get<boolean>('minimap', false),
+            wordWrap: config.get<string>('wordWrap', 'off'),
+        };
+
+        this._renderer.postMessage({
+            messageType: "settings",
+            settings
+        });
+
+        console.log('Sent Monaco settings to renderer:', settings);
     }
 
 

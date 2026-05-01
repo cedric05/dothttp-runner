@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import * as ClearAll from '@vscode/codicons/src/icons/clear-all.svg';
 import * as LinkExternal from '@vscode/codicons/src/icons/code.svg';
 import * as OpenInEditor from '@vscode/codicons/src/icons/open-preview.svg';
 
 import { getReasonPhrase } from 'http-status-codes';
-// import 'ace-builds/src-noconflict/theme-pastel_on_dark';
 import { FunctionComponent, h } from 'preact';
 import { useState } from 'preact/hooks';
 import { v4 as uuidv4 } from 'uuid';
-import { json as jsonPretty, xml as xmlPretty } from 'vkbeautify';
 import { RendererContext } from 'vscode-notebook-renderer';
 import { DothttpExecuteResponse, DothttpRedirectHistory, MessageType, NotebookExecutionMetadata } from '../common/response';
-const { HighLight } = require('dot-preact-highlight');
+import { MonacoEditor } from './MonacoEditor';
 
 
 
@@ -173,9 +170,7 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
     const { filenameExtension, http: dothttpCode, script_result, history } = props
 
 
-    if (body.length < MAX_DEFAULT_FORMAT_LEN) {
-        body = formatBody(filenameExtension, body);
-    } else {
+    if (body.length >= MAX_DEFAULT_FORMAT_LEN) {
         body = `Response too large (exceeds 0.5MB) to display. Use "Open In Editor" to view the full response in a new tab.`;
     }
     let redirectHistory = history ?? []
@@ -241,8 +236,6 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
                 testResultTab={testResultTab}
                 outputPropTab={outputPropTab} responseTabMeta={responseTab} redirectHistoryTab={redirectHistoryTab} />
             <span class='tab-bar-tools'>
-                <button id={`format-${uuid}`} class='search-button' title='Format'
-                    onClick={() => setResponseBody(formatBody(filenameExtension, responseBody))}>Beautify <Icon name={ClearAll} /></button>
                 <button id={saveButtonId} class='search-button' title='Open In Editor'
                     onClick={() => saveResponse(context, props, httpResponse.metadata)}>Open In Editor <Icon name={OpenInEditor} /> </button>
                 <button id={`generate-lang-${uuid}`} class='search-button' title="Generate Language"
@@ -346,17 +339,13 @@ const Status: FunctionComponent<{ code: number, method?: String, url: string, ex
 };
 
 
-const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, theme, mode }) => {
+const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string, mode: string, placeholder?: string }> = ({ data, active, mode }) => {
     if (mode == "txt") {
         return <div class='tab-content' id='data-container' hidden={!active}>
             <pre >{data}</pre>
         </div>;
     } else {
-        return <div class='tab-content' id='data-container' hidden={!active}>
-            <HighLight code={data}
-                theme={theme}
-                language={mode}></HighLight>
-        </div>;
+        return <MonacoEditor data={data} language={mode} active={active} />;
     }
 };
 
@@ -425,18 +414,6 @@ const RequestHistory: FunctionComponent<{ redirectHistory: DothttpRedirectHistor
 };
 
 
-function formatBody(filenameExtension: string | undefined, body: string) {
-    try {
-        if (filenameExtension === "json") {
-            body = jsonPretty(body, '\t');
-        } else if (filenameExtension == 'xml') {
-            body = xmlPretty(body, '\t');
-        }
-    } catch {
-        console.log("content-type is not same as server response");
-    }
-    return body;
-}
 
 function objectToDataGridRows(obj: Object | undefined): any {
     if (!obj) { return [] }

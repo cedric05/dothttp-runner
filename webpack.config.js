@@ -4,6 +4,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const NODE_ENV = process.env.NODE_ENV ?? "production";
 /**@type {import('webpack').Configuration}*/
 const baseConfig = {
@@ -109,6 +110,12 @@ const rendererConfig = {
 	experiments: {
 		outputModule: true,
 	},
+	plugins: [
+		new MonacoWebpackPlugin({
+			languages: ['json', 'xml', 'html', 'javascript', 'typescript', 'css', 'yaml', 'markdown', 'plaintext'],
+			// Don't specify features to include all of them by default
+		}),
+	],
 	module: {
 		rules: [
 			{
@@ -134,6 +141,10 @@ const rendererConfig = {
 			{
 				test: /\.svg$/,
 				loader: 'svg-inline-loader',
+			},
+			{
+				test: /\.ttf$/,
+				type: 'asset/resource',
 			},
 		],
 	}

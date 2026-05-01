@@ -1,21 +1,13 @@
 {
     "comments": {
-        // symbol used for single line comment. Remove this entry if your language does not support line comments
         "lineComment": "//",
-        // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
-        "blockComment": [ "/*", "*/" ]
-    },
-    // symbols used as brackets
-    "indentationRules": {
-        "increaseIndentPattern": "^.*json\\(\\{|^.*data\\(\\{|^.*files\\(|^.*multipart\\(|^.*form\\(",
-		"decreaseIndentPattern": "^\\s*((\\})|(\\)))"
+        "blockComment": ["/*", "*/"]
     },
     "brackets": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"]
     ],
-    // symbols that are auto closed when typing
     "autoClosingPairs": [
         ["{", "}"],
         ["[", "]"],
@@ -24,9 +16,9 @@
         ["'", "'"],
         ["'''", "'''"],
         ["\"\"\"", "\"\"\""],
+        ["{{", "}}"],
         { "open": "/*", "close": "*/", "notIn": ["string"] }
     ],
-    // symbols that can be used to surround a selection
     "surroundingPairs": [
         ["{", "}"],
         ["[", "]"],
@@ -34,5 +26,44 @@
         ["\"", "\""],
         ["'", "'"],
         ["\"\"\"", "\"\"\""],
-    ]
+        ["'''", "'''"],
+        ["{{", "}}"]
+    ],
+    "indentationRules": {
+        "increaseIndentPattern": "^\\s*(json|data|urlencoded|text|files|form|multipart|fileinput)\\s*\\(.*\\{\\s*$|^\\s*>\\s*\\{%\\s*$",
+        "decreaseIndentPattern": "^\\s*[}\\)]\\s*$|^\\s*%}\\s*$"
+    },
+    "folding": {
+        "markers": {
+            "start": "^\\s*(###|@name|GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)",
+            "end": "^\\s*(###|@name|GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)|\\Z"
+        }
+    },
+    "onEnterRules": [
+        {
+            "beforeText": "^\\s*#.*$",
+            "action": {
+                "indent": "none"
+            }
+        },
+        {
+            "beforeText": "^\\s*//.*$",
+            "action": {
+                "indent": "none"
+            }
+        },
+        {
+            "beforeText": ".*\\{\\s*$",
+            "action": {
+                "indentAction": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\\}",
+            "action": {
+                "indentAction": "outdent"
+            }
+        }
+    ],
+    "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)"
 }

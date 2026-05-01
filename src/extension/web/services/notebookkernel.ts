@@ -8,19 +8,10 @@ import { PropertyTree } from '../../views/tree';
 import { Constants } from '../utils/constants';
 import { Configuration } from '../utils/config';
 import { TextDecoder } from 'util';
-var mime = require('mime-types');
+// var mime = require('mime-types'); // No longer needed - using Monaco for all content
 
-const hasInbuiltPreview = ["html",
-    // support for below are taken care by text/x-json ...
-    /*
-    "json",
-     "xml",
-     "md",
-    */
-    "svg",
-    "png",
-    "jpeg",
-    "txt"]
+// Removed: hasInbuiltPreview - no longer using native renderers
+// const hasInbuiltPreview = ["html", "svg", "png", "jpeg", "txt"]
 export class NotebookKernel {
     static id = 'dothttp-kernel';
     readonly id = NotebookKernel.id;
@@ -154,11 +145,12 @@ export class NotebookKernel {
                 if (curl) {
                     outs.push(vscode.NotebookCellOutputItem.text(out.body, "text/x-shell"));
                 } else {
+                    // Prepare dotbook output
                     out.body = "";
                     out.headers = {};
-                    const nativeContentTypes = this.parseAndAdd(out.response);
-                    // insert into dotbookOutputs at the start
-                    // limit number responses in cell
+
+                    // Insert into dotbookOutputs at the start
+                    // Limit number responses in cell
                     let maxResponsesInCell = this.config?.numResponsesInNotebookCell;
                     if (maxResponsesInCell == undefined) {
                         maxResponsesInCell = 5;
@@ -167,7 +159,7 @@ export class NotebookKernel {
                         dotbookOutputs = dotbookOutputs.slice(0, maxResponsesInCell - 1);
                     }
                     dotbookOutputs.unshift({ response: out, metadata });
-                    outs.push(...nativeContentTypes);
+
                 }
                 outs.push(vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE));
                 await execution.clearOutput();
@@ -219,26 +211,28 @@ export class NotebookKernel {
         return target;
     }
 
-    parseAndAdd(response: Response): Array<vscode.NotebookCellOutputItem> {
-        if (response.headers) {
-            return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type')
-                .map(key => mime.extension(response.headers![key]))
-                .filter(key => key)
-                .map(extension => {
-                    response.contentType = mime.lookup(extension);
-                    if (hasInbuiltPreview.indexOf(extension) > -1) {
-                        return [
-                            vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`),
-                            vscode.NotebookCellOutputItem.text(response.body, mime.lookup(extension))
-                        ]
-                    } else {
-                        return [vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`)];
-                    }
-                })
-                .flat()
-        }
-        return [];
-    }
+    // Removed: parseAndAdd() - no longer needed since we only use dothttp Monaco renderer
+    // Native content type renderers (JSON, XML, etc.) are redundant with Monaco
+    // parseAndAdd(response: Response): Array<vscode.NotebookCellOutputItem> {
+    //     if (response.headers) {
+    //         return Object.keys(response.headers).filter(key => key.toLowerCase() === 'content-type')
+    //             .map(key => mime.extension(response.headers![key]))
+    //             .filter(key => key)
+    //             .map(extension => {
+    //                 response.contentType = mime.lookup(extension);
+    //                 if (hasInbuiltPreview.indexOf(extension) > -1) {
+    //                     return [
+    //                         vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`),
+    //                         vscode.NotebookCellOutputItem.text(response.body, mime.lookup(extension))
+    //                     ]
+    //                 } else {
+    //                     return [vscode.NotebookCellOutputItem.text(response.body, `text/x-${extension}`)];
+    //                 }
+    //             })
+    //             .flat()
+    //     }
+    //     return [];
+    // }
 
     async generateCurl(cell: vscode.NotebookCell) {
         return this._doExecution(cell, true)
