@@ -44,7 +44,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     fetcedCount: number = 0;
 
     private readonly dateFormat = "yyyy-mm-dd";
-    private readonly historyItemFormat = "hh:MM";
+    private readonly historyItemFormat = "hh:MM:ss TT";
 
     constructor() {
         this.map.set('recent', []);
@@ -59,10 +59,12 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
     }
 
     recentChanged(history: HistoryItem) {
+        console.log(`HistoryTree recentChanged: url=${history.url}, time=${history.time}`);
         if (!this.map.has('recent')) {
             this.map.set('recent', []);
         }
         this.map.get('recent')!.unshift(history);
+        console.log(`HistoryTree recentChanged: 'recent' now has ${this.map.get('recent')!.length} items`);
         this.emitter.fire(null)
     }
 
@@ -91,29 +93,121 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
             } else {
                 iconType = historyItemicons.STATUS_ISSUE;
             }
-            const hourAndMinutes = dateFormat(item.time, this.historyItemFormat);
+
+            // Format like Postman: "GET https://api.example.com  200 OK  12:30:45 PM"
+            const time = dateFormat(item.time, this.historyItemFormat);
+            const method = this.extractMethod(item.http);
+            const urlPath = this.formatUrl(item.url);
+            const statusText = this.getStatusText(item.status_code);
+
             const tree = {
-                label: transform(`${item.url ? new URL(item.url).hostname : ""} ${path.basename(item.filename)} #${item.target} `, { bold: true }) + hourAndMinutes,
+                label: `${method} ${urlPath}`,
+                description: `${item.status_code} ${statusText} · ${time}`,
                 command: command,
                 iconPath: iconType,
-                tooltip: `${item.status_code} ${item.url ?? ''}`,
+                tooltip: `${method} ${item.url}\nStatus: ${item.status_code} ${statusText}\nFile: ${path.basename(item.filename)}\nTarget: #${item.target}\nTime: ${time}`,
+                contextValue: 'historyItem',
             } as TreeItem;
             return tree;
         } else {
             return {
-                label: element.label,
+                label: this.formatDateLabel(element.label),
                 collapsibleState: TreeItemCollapsibleState.Collapsed,
             }
+        }
+    }
+
+    private extractMethod(http: string): string {
+        const match = http.match(/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|TRACE|CONNECT)/i);
+        return match ? match[1].toUpperCase() : 'GET';
+    }
+
+    private formatUrl(url: string): string {
+        try {
+            const urlObj = new URL(url);
+            const path = urlObj.pathname + urlObj.search;
+            const fullPath = urlObj.hostname + path;
+
+            // Truncate if too long, but always include hostname
+            if (fullPath.length > 60) {
+                // Keep hostname and truncate path
+                const remainingLength = 57 - urlObj.hostname.length;
+                if (remainingLength > 10) {
+                    return urlObj.hostname + path.substring(0, remainingLength) + '...';
+                } else {
+                    // If hostname itself is long, truncate the whole thing
+                    return fullPath.substring(0, 57) + '...';
+                }
+            }
+            return fullPath;
+        } catch {
+            return url.length > 60 ? url.substring(0, 57) + '...' : url;
+        }
+    }
+
+    private getStatusText(code: number): string {
+        const statusTexts: { [key: number]: string } = {
+            200: 'OK', 201: 'Created', 204: 'No Content',
+            301: 'Moved', 302: 'Found', 304: 'Not Modified',
+            400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found',
+            500: 'Server Error', 502: 'Bad Gateway', 503: 'Unavailable'
+        };
+        return statusTexts[code] || '';
+    }
+
+    private formatDateLabel(label: string): string {
+        if (label === 'recent') {
+            return 'Today';
+        }
+
+        try {
+            const date = new Date(label);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            const dateStr = dateFormat(date, this.dateFormat);
+            const todayStr = dateFormat(today, this.dateFormat);
+            const yesterdayStr = dateFormat(yesterday, this.dateFormat);
+
+            if (dateStr === todayStr) {
+                return 'Today';
+            } else if (dateStr === yesterdayStr) {
+                return 'Yesterday';
+            } else {
+                // Show as "Monday, Jan 15" or "Jan 15, 2025" if different year
+                const isSameYear = date.getFullYear() === today.getFullYear();
+                return dateFormat(date, isSameYear ? 'dddd, mmm d' : 'mmm d, yyyy');
+            }
+        } catch {
+            return label;
         }
     }
     async getChildren(element?: HistoryTreeItem): Promise<HistoryTreeItem[]> {
         if (!element) {
             await this.fetchMore(20);
             const childs = []
-            for (const label of this.map.keys()) {
-                childs.push({ type: TreeType.date, label: label });
+
+            console.log(`HistoryTree: map keys = ${Array.from(this.map.keys()).join(', ')}`);
+            console.log(`HistoryTree: map entries = ${JSON.stringify(Array.from(this.map.entries()).map(([k, v]) => [k, v.length]))}`);
+
+            // Sort dates: recent (today) first, then yesterday, then chronological
+            const sortedLabels = Array.from(this.map.keys()).sort((a, b) => {
+                if (a === 'recent') return -1;
+                if (b === 'recent') return 1;
+                if (a === 'yesterday') return -1;
+                if (b === 'yesterday') return 1;
+                return b.localeCompare(a); // Reverse chronological for dates
+            });
+
+            for (const label of sortedLabels) {
+                const items = this.map.get(label)!;
+                if (items.length > 0) {
+                    childs.push({ type: TreeType.date, label: label });
+                }
             }
             childs.push({ type: TreeType.more, label: 'more' })
+            console.log(`HistoryTree: returning ${childs.length} children`);
             return childs
         } else if (element.type === TreeType.date || element.type === TreeType.recent) {
             const data = this.map.get(element.label)!.map(item => ({ item, type: TreeType.item, label: "" }));
@@ -130,22 +224,101 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
 
 
     private async fetchMore(loadCount = 100) {
+        console.log(`HistoryTree fetchMore: skip=${this.fetcedCount}, limit=${loadCount}`);
         const historyItems = await this.historyService.fetchMore(this.fetcedCount, loadCount);
+        console.log(`HistoryTree fetchMore: received ${historyItems.length} items`);
         this.fetcedCount += historyItems.length;
-        const recent = dateFormat(new Date(), this.dateFormat);
-        historyItems
-            .forEach(item => {
-                var label = dateFormat(item.time, this.dateFormat);
-                if (label === recent) {
-                    label = "recent";
-                }
-                if (this.map.has(label)) {
-                    this.map.get(label)!.push(item)
-                } else {
-                    this.map.set(label, [item]);
-                }
-                return ({ item, type: TreeType.item });
+
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const todayStr = dateFormat(today, this.dateFormat);
+        const yesterdayStr = dateFormat(yesterday, this.dateFormat);
+
+        console.log(`HistoryTree: todayStr=${todayStr}, yesterdayStr=${yesterdayStr}`);
+
+        historyItems.forEach(item => {
+            const itemDateStr = dateFormat(item.time, this.dateFormat);
+            let label = itemDateStr;
+
+            console.log(`HistoryTree: item time=${item.time}, itemDateStr=${itemDateStr}`);
+
+            if (itemDateStr === todayStr) {
+                label = "recent"; // Will be displayed as "Today"
+            } else if (itemDateStr === yesterdayStr) {
+                label = "yesterday";
+            }
+
+            if (this.map.has(label)) {
+                this.map.get(label)!.push(item)
+            } else {
+                this.map.set(label, [item]);
+            }
+        });
+    }
+
+    public async showResponse(element: HistoryTreeItem) {
+        if (element.type === TreeType.item && element.item) {
+            const item = element.item;
+            if (!item.response_body) {
+                vscode.window.showInformationMessage('No response body saved for this request');
+                return;
+            }
+
+            // Create a new untitled document to show the response
+            const headers = item.response_headers ? JSON.parse(item.response_headers) : {};
+            const contentType = headers['content-type'] || headers['Content-Type'] || '';
+
+            let language = 'plaintext';
+            if (contentType.includes('json')) {
+                language = 'json';
+            } else if (contentType.includes('html')) {
+                language = 'html';
+            } else if (contentType.includes('xml')) {
+                language = 'xml';
+            } else if (contentType.includes('javascript')) {
+                language = 'javascript';
+            }
+
+            // Format response with headers
+            const headerLines = Object.entries(headers)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n');
+
+            const fullResponse = `HTTP/1.1 ${item.status_code}\n${headerLines}\n\n${item.response_body}`;
+
+            const doc = await vscode.workspace.openTextDocument({
+                content: fullResponse,
+                language: language
             });
+            await vscode.window.showTextDocument(doc, { preview: true });
+        }
+    }
+
+    public async exportSelectedItems(elements: HistoryTreeItem[]) {
+        // Filter to only history items
+        const historyItems = elements
+            .filter(el => el.type === TreeType.item && el.item)
+            .map(el => el.item!);
+
+        if (historyItems.length === 0) {
+            vscode.window.showInformationMessage('No items selected to export');
+            return;
+        }
+
+        const cells = historyItems.map(item => ({
+            "kind": vscode.NotebookCellKind.Code,
+            "language": Constants.LANG_CODE,
+            "value": item.http,
+            "outputs": []
+        }));
+
+        await showInLocalFolder(
+            vscode.Uri.file(`history-export-${historyItems.length}-items`),
+            dump(cells),
+            ".hnbk"
+        );
     }
 
     public async exportHistory() {
@@ -161,7 +334,7 @@ export class HistoryTreeProvider implements TreeDataProvider<HistoryTreeItem> {
                 headers.push({
                     "kind": vscode.NotebookCellKind.Markup,
                     "language": "markdown",
-                    "value": `### ${workspace} 
+                    "value": `### ${workspace}
 ${items.length} requests`,
                     "outputs": []
                 });

@@ -8,6 +8,8 @@ export interface HistoryItem {
     target: string;
     _id?: number;
     workspace?: string;
+    response_body?: string;
+    response_headers?: string; // JSON stringified headers
 }
 
 

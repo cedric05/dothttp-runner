@@ -219,3 +219,96 @@ button.tab[active] {
 .monaco-editor .monaco-scrollable-element > .scrollbar {
     background-color: var(--theme-background);
 }
+
+/* Test Result Table Improvements */
+.test-summary {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--vscode-editorWidget-background);
+    border: 1px solid var(--notebook-inactive-focused-cell-border-color);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.test-summary-pass {
+    color: #4caf50;
+}
+
+.test-summary-fail {
+    color: #f44336;
+}
+
+.test-summary-total {
+    color: var(--vscode-editor-foreground);
+    opacity: 0.8;
+}
+
+.test-result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.test-result-table thead th {
+    background-color: var(--vscode-editorWidget-background);
+    padding: 10px;
+    border-bottom: 2px solid var(--notebook-inactive-focused-cell-border-color);
+    position: sticky;
+    top: 0;
+}
+
+.test-result-table tbody tr {
+    border-bottom: 1px solid var(--notebook-inactive-focused-cell-border-color);
+}
+
+.test-result-table tbody tr:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.test-result-table td {
+    padding: 8px 10px;
+}
+
+.test-fail-row {
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.test-fail-row:hover {
+    background-color: rgba(244, 67, 54, 0.15) !important;
+}
+
+.test-name-col {
+    font-family: var(--vscode-editor-font-family, 'Menlo', 'Monaco', 'Courier New', monospace);
+    font-size: 0.95em;
+}
+
+/* Improved general table styling */
+table {
+    border-spacing: 0;
+}
+
+table thead {
+    position: sticky;
+    top: 0;
+    background-color: var(--theme-background);
+}
+
+table tbody tr:nth-child(even) {
+    background-color: var(--vscode-editorWidget-background);
+    opacity: 0.5;
+}
+
+/* Keep only the selected button style for the existing compare functionality */
+.nextbutton-selected {
+    background: var(--vscode-button-background);
+    border: 1px solid var(--vscode-button-border);
+    padding: 10px 10px 10px 10px;
+    color: var(--vscode-button-foreground);
+    font-weight: 500;
+}
+
+.nextbutton-selected:hover {
+    background: var(--vscode-button-hoverBackground);
+    color: var(--vscode-button-foreground);
+}

@@ -62,7 +62,7 @@ export const MultiResponse: FunctionComponent<{ multiResponse: [HttpResponseAndM
         } else {
             setIndexList([...indexList, index]);
             if (indexList.length === 1) {
-                // open comparision view
+                // open comparison view
                 // instead of sending indexes, send the whole response
                 context.postMessage!(
                     {
@@ -193,11 +193,11 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
     let theme = darkMode ? "monokai-sublime" : "googlecode"
     let mode = filenameExtension ?? "json";
 
-    // let testPass = 0;
-    // let testFail = 0;
+    let testPass = 0;
+    let testFail = 0;
     const testResult = script_result?.tests?.
         map(key => {
-            // if (key.success) testPass++; else testFail++;
+            if (key.success) testPass++; else testFail++;
             return ([key.name, key.success ? "✅" : "❌", key.result || key.error]);
         });
 
@@ -208,20 +208,16 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
 
     const redirectHistoryTab: CountAndExistence = arrayAndCount(history)
 
-    /*
-    // show success and failure accordingly
-    // commented out, as it is not looking good. upon more user exp, it may change
-    if (testResultTab.exists) {
-        if (testPass == 0) {
-            testResultTab.count = `-${testFail}`
-        }
-        else if (testFail == 0) {
-            testResultTab.count = `+${testPass}`
+    // show success and failure counts
+    if (testResultTab.exists && script_result?.tests) {
+        if (testFail == 0) {
+            testResultTab.count = `✅ ${testPass}`
+        } else if (testPass == 0) {
+            testResultTab.count = `❌ ${testFail}`
         } else {
-            testResultTab.count = `+${testPass},-${testFail}`
+            testResultTab.count = `✅ ${testPass} ❌ ${testFail}`
         }
     }
-    */
 
     const outputPropTab = arrayAndCount(Object.keys(script_result?.properties ?? {}));
     return <div>
@@ -251,7 +247,7 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
         </div>
         {/* <AceWrap data={responseBody} mode="text" active={activeIndex === TabType.RawResponse} theme={theme}></AceWrap> */}
         <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
-        <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} />
+        <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} isTestResult={true} />
         <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
             <strong><span class='key'>Script Log:</span></strong>
             <br />
@@ -349,21 +345,42 @@ const AceWrap: FunctionComponent<{ data: string, active: boolean, theme: string,
     }
 };
 
-const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> | undefined, columns: Array<string> }> = ({ active, data, columns }) => {
-    if (data && data!.length > 0)
+const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> | undefined, columns: Array<string>, isTestResult?: boolean }> = ({ active, data, columns, isTestResult }) => {
+    if (data && data!.length > 0) {
+        // Calculate pass/fail counts for test results
+        let passCount = 0;
+        let failCount = 0;
+        if (isTestResult) {
+            data.forEach(row => {
+                if (row[1] === "✅") passCount++;
+                else if (row[1] === "❌") failCount++;
+            });
+        }
+
         return <div class='tab-content' hidden={!active}>
-            <table>
-                <tr>
-                    {columns.map(key => <th class="key column"><b>{key}</b></th>)}
-                </tr>
-                {data.map(row => <tr>
-                    {row.map(d => <td class="key column">
-                        {d}
-                    </td>)}
-                </tr>)}
+            {isTestResult && (
+                <div class='test-summary'>
+                    <span class='test-summary-pass'>✅ Passed: {passCount}</span>
+                    <span class='test-summary-fail'>❌ Failed: {failCount}</span>
+                    <span class='test-summary-total'>Total: {data.length}</span>
+                </div>
+            )}
+            <table class={isTestResult ? 'test-result-table' : ''}>
+                <thead>
+                    <tr>
+                        {columns.map(key => <th class="key column"><b>{key}</b></th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((row) => <tr class={isTestResult && row[1] === "❌" ? 'test-fail-row' : ''}>
+                        {row.map((d, colIdx) => <td class={`key column ${colIdx === 0 ? 'test-name-col' : ''}`}>
+                            {d}
+                        </td>)}
+                    </tr>)}
+                </tbody>
             </table>
         </div>;
-    else {
+    } else {
         return <div></div>
     }
 };

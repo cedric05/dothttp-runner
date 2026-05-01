@@ -189,6 +189,8 @@ export function addHistory(out: any, filename: string, options: { target: string
             time: new Date(),
             status_code: out.status as number,
             workspace: vscode.workspace.rootPath,
+            response_body: out.body as string,
+            response_headers: JSON.stringify(out.headers || {}),
         };
         ApplicationServices.get().getHistoryService()?.addNew(
             history);
