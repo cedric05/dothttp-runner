@@ -3,7 +3,7 @@ import { HttpTargetDef } from '../../../web/types/lang-parse';
 import { ApplicationServices } from '../../../web/services/global';
 import DotHttpEditorView from '../../../views/editor';
 import { cacheAndGetTarget, showEditor } from '../run';
-import HTTPSnippet = require("httpsnippet");
+import { HTTPSnippet } from "httpsnippet";
 import { QuickPickItem } from 'vscode';
 
 export const LANG_GEN_TARGETS: Array<QuickPickItem & { options?: Array<string>, filext?: string, description?: string }> = [
@@ -73,7 +73,7 @@ export async function generateLangFromOptions(
             if (!pickImpl) pickImpl = pickLanguage.options[0];
         }
         // TODO Each language has sub options
-        const langSpec = snippet.convert(pickLanguage.label!, pickImpl, {
+        const langSpec = snippet.convert(pickLanguage.label! as any, pickImpl as any, {
             indent: '\t'
         });
         if (langSpec) {

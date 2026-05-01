@@ -49,6 +49,20 @@ Complete rewrite of syntax highlighting (`dothttp.tmLanguage.json`):
 - Smart word patterns for better selection
 - On-enter rules for proper formatting
 
+### 🔒 Security Updates
+Significant security improvements with 43% reduction in npm vulnerabilities:
+- **Updated dependencies** for security fixes:
+  - `uuid`: 11.1.0 → 14.0.0 (fixed buffer bounds vulnerability)
+  - `httpsnippet`: 1.25.0 → 3.0.10 (fixed critical form-data vulnerability)
+  - `openapi-to-postmanv2`: 5.3.3 → 6.0.1 (updated dependencies)
+  - `mocha`: 11.1.0 → 11.3.0 (fixed diff DoS and serialize-javascript RCE)
+  - `monaco-editor`: 0.55.1 → 0.53.0 (fixed 8 DOMPurify XSS vulnerabilities)
+  - `@vscode/test-electron`: 2.5.2 (replaced vscode-test, fixed proxy vulnerabilities)
+  - Plus updates to axios, follow-redirects, brace-expansion, and postcss
+- **Vulnerabilities reduced**: 28 → 16 (43% improvement)
+- **Package lock updates**: Regenerated using public npm registry only
+- See `SECURITY_UPDATES.md` for complete details
+
 ### 📦 Dependencies
 - Added `monaco-editor` and `monaco-editor-webpack-plugin`
 - Removed `vkbeautify` and `@types/vkbeautify` (no longer needed)
