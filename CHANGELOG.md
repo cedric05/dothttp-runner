@@ -3,6 +3,40 @@
 ## Known issues
 - notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
 
+## 1.0.67
+Complete history overhaul with SQLite migration, response storage,
+
+### 🗄️ SQLite Migration
+- **Migrated from TingoDB to Node.js built-in SQLite** (`node:sqlite`)
+  - Native SQLite implementation - no external dependencies
+  - Better performance with prepared statements and indexes
+  - Smaller bundle size: 10 MB → 8.3 MB (17% reduction)
+  - Future-proof: part of Node.js core (22.5+)
+
+### 💾 Response Storage
+- **Save full responses** with each request in history
+  - Response body and headers stored in SQLite
+  - Automatic content-type detection for viewing
+  - Enables future response comparison features
+
+### 🎨 Redesigned History View
+Postman-style history panel with better organization:
+- **Smart date grouping**:
+  - "Today" for current day requests
+  - "Yesterday" for yesterday's requests
+  - Friendly dates like "Monday, Jan 15" for recent items
+  - Full dates "Jan 15, 2025" for older items
+- **Cleaner display**:
+  - `METHOD hostname.com/path` as main label
+  - Status and time in description: "200 OK · 12:30:45 PM"
+  - Always shows hostname to distinguish between servers
+  - Better tooltip with full request details
+- **Proper sorting**: Today → Yesterday → older dates (reverse chronological)
+
+### 📦 Dependencies
+- **Removed**: `tingodb`, `mongodb` (11 packages total)
+- **Updated**: VS Code engine requirement `^1.75.0` → `^1.86.0`
+
 ## 1.0.66
 Major notebook renderer improvements with Monaco editor integration and enhanced TextMate grammar.
 

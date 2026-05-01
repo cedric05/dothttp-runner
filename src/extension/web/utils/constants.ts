@@ -39,6 +39,8 @@ export enum Constants {
 	RUN_TARGET_CODE_LENS = "dothttp.command.text.run",
 	REVEAL_HISTORY_VIEW = "dothttp.command.openVariableView",
 	EXPORT_HISTORY = "dothttp.command.exporthistory",
+	SHOW_HISTORY_RESPONSE = "dothttp.command.showhistoryresponse",
+	EXPORT_SELECTED_HISTORY = "dothttp.command.exportselectedhistory",
 
 	HTTPBOOK_SAVE_AS_HTTP = "dothttp.command.notebook.tohttpfile",
 

@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.66",
+	"version": "1.0.67",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -10,7 +10,7 @@
 	},
 	"icon": "rocket.png",
 	"engines": {
-		"vscode": "^1.75.0"
+		"vscode": "^1.86.0"
 	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/cedric05"
@@ -187,6 +187,22 @@
 				"command": "dothttp.command.exporthistory",
 				"title": "Export history to notebook",
 				"shortTitle": "Export history",
+				"icon": "$(export)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.showhistoryresponse",
+				"title": "Show Response",
+				"shortTitle": "Show Response",
+				"icon": "$(eye)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
+				"command": "dothttp.command.exportselectedhistory",
+				"title": "Export Selected to Notebook",
+				"shortTitle": "Export Selected",
 				"icon": "$(export)",
 				"category": "Dothttp",
 				"enablement": "dothttpRunMode == full"
@@ -808,6 +824,16 @@
 			],
 			"view/item/context": [
 				{
+					"command": "dothttp.command.showhistoryresponse",
+					"when": "view == dothttpHistory && viewItem == historyItem",
+					"group": "inline"
+				},
+				{
+					"command": "dothttp.command.exportselectedhistory",
+					"when": "view == dothttpHistory && viewItem == historyItem",
+					"group": "export"
+				},
+				{
 					"command": "dothttpEnvView.enableenv",
 					"when": "view == dothttpEnvView && viewItem == environment",
 					"group": "inline"
@@ -1091,7 +1117,6 @@
 		"mocha": "^11.3.0",
 		"monaco-editor": "^0.53.0",
 		"monaco-editor-webpack-plugin": "^7.1.1",
-		"mongodb": "^3.6.5",
 		"os-browserify": "^0.3.0",
 		"path-browserify": "^1.0.1",
 		"preact": "^10.25.4",
@@ -1120,7 +1145,6 @@
 		"shell-quote": "^1.8.2",
 		"swagger-to-har2": "^1.0.4",
 		"temp": "^0.9.4",
-		"tingodb": "^0.6.1",
 		"tmp-promise": "^3.0.3",
 		"url": "^0.11.4",
 		"util": "^0.12.5",

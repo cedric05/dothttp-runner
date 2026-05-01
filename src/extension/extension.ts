@@ -25,7 +25,7 @@ import { ApplicationServices } from './web/services/global';
 import { FileState, VersionInfo } from './web/services/state';
 import { LocalStorageService } from './web/services/storage';
 import { UrlStorageService } from './web/services/url';
-import { TingoHistoryService } from './native/services/tingohelpers';
+import { SqliteHistoryService } from './native/services/sqlitehelpers';
 import DotHttpEditorView from './views/editor';
 import { HistoryTreeProvider } from './views/historytree';
 import { EnvTree, EnvTreeItem, PropertyTree } from './views/tree';
@@ -52,9 +52,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	const propertyTree = new PropertyTree();
 	const symbolProvider = new DothttpNameSymbolProvider();
 	const urlStoreService = new UrlStorageService(storageService);
-	const historyService = new TingoHistoryService(path.join(context.globalStorageUri.fsPath, 'db'), urlStoreService,
-		//historyEmitter
-	);
+
+	// Initialize SQLite history service
+	const historyService = new SqliteHistoryService(context.globalStorageUri.fsPath, urlStoreService);
 	const clientHandler = new ClientHandler();
 	const clientHandler2 = new ClientHandler2();
 	const dothttpEditorView = new DotHttpEditorView();
@@ -285,6 +285,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.EXPORT_HISTORY, () => {
 			historyTreeProvider.exportHistory()
 		}),
+		vscode.commands.registerCommand(Constants.SHOW_HISTORY_RESPONSE, (item: any) => {
+			historyTreeProvider.showResponse(item)
+		}),
+		vscode.commands.registerCommand(Constants.EXPORT_SELECTED_HISTORY, (...items: any[]) => {
+			historyTreeProvider.exportSelectedItems(items)
+		}),
 
 
 		vscode.languages.registerCompletionItemProvider(Constants.LANG_CODE, new ExtendHttpCompletionProvider()),
@@ -336,5 +342,12 @@ export function deactivate(_context: vscode.ExtensionContext): undefined {
 	const appServices = ApplicationServices.get();
 	appServices.getClientHandler()?.close();
 	appServices.getClientHandler2()?.close();
+
+	// Close SQLite database connection
+	const historyService = appServices.getHistoryService();
+	if (historyService && 'close' in historyService) {
+		(historyService as SqliteHistoryService).close();
+	}
+
 	return;
 }
