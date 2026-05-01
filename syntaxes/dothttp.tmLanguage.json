@@ -9,418 +9,1092 @@
     "scopeName": "source.dothttp-vscode",
     "patterns": [
         {
-            "begin": "\\bvar\\b",
-            "end": "(?=;|\\n|$)",
-            "name": "meta.variable.declaration.custom",
+            "include": "#comments"
+        },
+        {
+            "include": "#import-statement"
+        },
+        {
+            "include": "#variable-declaration"
+        },
+        {
+            "include": "#http-request"
+        },
+        {
+            "include": "#test-script"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#http-methods"
+        },
+        {
+            "include": "#decorators"
+        },
+        {
+            "include": "#template-variable"
+        },
+        {
+            "include": "#string"
+        },
+        {
+            "include": "#number"
+        },
+        {
+            "include": "#constants"
+        }
+    ],
+    "repository": {
+        "comments": {
             "patterns": [
                 {
-                    "match": "\\bvar\\b",
-                    "name": "keyword.declaration.custom"
+                    "name": "comment.line.number-sign.dothttp",
+                    "match": "#.*$"
                 },
                 {
-                    "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b",
-                    "name": "variable.name.custom"
+                    "name": "comment.line.double-slash.dothttp",
+                    "match": "//.*$"
                 },
+                {
+                    "name": "comment.block.dothttp",
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.begin.dothttp"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.end.dothttp"
+                        }
+                    }
+                }
+            ]
+        },
+        "import-statement": {
+            "name": "meta.import.dothttp",
+            "begin": "\\b(import)\\b",
+            "end": ";",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.import.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.terminator.statement.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#string"
+                }
+            ]
+        },
+        "variable-declaration": {
+            "name": "meta.variable.declaration.dothttp",
+            "begin": "\\b(var)\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+            "end": ";",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.var.dothttp"
+                },
+                "2": {
+                    "name": "variable.other.declaration.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.terminator.statement.dothttp"
+                }
+            },
+            "patterns": [
                 {
                     "match": "=",
-                    "name": "keyword.operator.assignment.custom"
+                    "name": "keyword.operator.assignment.dothttp"
                 },
                 {
-                    "begin": "\\{",
-                    "end": "\\}",
-                    "name": "http.request.body.javascript"
+                    "include": "#function-call"
                 },
                 {
-                    "begin": "\"",
-                    "end": "\"",
-                    "name": "string.quoted.double.custom",
+                    "include": "#interpolated-string"
+                },
+                {
+                    "include": "#array-index"
+                },
+                {
+                    "include": "#constants"
+                },
+                {
+                    "include": "#number"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#template-variable"
+                },
+                {
+                    "include": "#object"
+                }
+            ]
+        },
+        "http-request": {
+            "patterns": [
+                {
+                    "include": "#request-name"
+                },
+                {
+                    "include": "#request-modifiers"
+                },
+                {
+                    "include": "#request-line"
+                },
+                {
+                    "include": "#authentication"
+                },
+                {
+                    "include": "#certificate"
+                },
+                {
+                    "include": "#headers"
+                },
+                {
+                    "include": "#query-parameters"
+                },
+                {
+                    "include": "#request-body"
+                },
+                {
+                    "include": "#output-redirect"
+                }
+            ]
+        },
+        "request-name": {
+            "name": "meta.request.name.dothttp",
+            "begin": "(@name)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "entity.name.function.decorator.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "match": ":",
+                    "name": "punctuation.separator.colon.dothttp"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "name": "entity.name.tag.dothttp",
+                    "match": "[a-zA-Z_][a-zA-Z0-9_]*"
+                }
+            ]
+        },
+        "request-modifiers": {
+            "patterns": [
+                {
+                    "name": "entity.name.function.decorator.dothttp",
+                    "match": "@(clear|insecure|no_parent_script)\\b"
+                }
+            ]
+        },
+        "request-line": {
+            "name": "meta.http.request.line.dothttp",
+            "begin": "(?:(-X)\\s+)?(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT|COPY|LINK|UNLINK|PURGE|LOCK|UNLOCK|PROPFIND|VIEW|MKCOL|MOVE|PROPPATCH|REPORT|SEARCH|curl)\\s+",
+            "end": "(?=\\s*$)|(?=\\s+(basicauth|digestauth|ntlmauth|hawkauth|awsauth|azurespcert|azurespsecret|azuredevice|azurecli|certificate|p12|header|query|\\?|&|json|data|urlencoded|text|files|form|multipart|fileinput|<|output|>>|> {%))",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.curl-flag.dothttp"
+                },
+                "2": {
+                    "name": "keyword.other.http-method.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#url"
+                }
+            ]
+        },
+        "url": {
+            "patterns": [
+                {
+                    "name": "string.other.link.dothttp",
+                    "match": "(https?://[^\\s\"'<>\\[\\]{}|\\\\^`]+|/[^\\s\"'<>\\[\\]{}|\\\\^`]*)"
+                },
+                {
+                    "include": "#template-variable"
+                },
+                {
+                    "include": "#string"
+                }
+            ]
+        },
+        "authentication": {
+            "patterns": [
+                {
+                    "name": "meta.authentication.basic.dothttp",
+                    "begin": "\\b(basicauth)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
                     "patterns": [
                         {
-                            "begin": "\\$\\{",
-                            "end": "\\}",
-                            "name": "string.interpolated.custom",
-                            "patterns": [
-                                {
-                                    "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b",
-                                    "name": "variable.interpolation.custom"
-                                }
-                            ]
+                            "include": "#auth-parameters"
                         }
                     ]
                 },
                 {
-                    "match": "\\b\\d+\\.\\d+\\b",
-                    "name": "constant.numeric.float.custom"
-                },
-                {
-                    "match": "\\b\\d+\\b",
-                    "name": "constant.numeric.integer.custom"
-                },
-                {
-                    "match": "\\b(true|false)\\b",
-                    "name": "constant.language.boolean.custom"
-                },
-                {
-                    "begin": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\s*\\(",
+                    "name": "meta.authentication.digest.dothttp",
+                    "begin": "\\b(digestauth)\\s*\\(",
                     "end": "\\)",
-                    "name": "meta.function-call.custom",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
                     "patterns": [
                         {
-                            "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b",
-                            "name": "variable.parameter.custom"
+                            "include": "#auth-parameters"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.authentication.ntlm.dothttp",
+                    "begin": "\\b(ntlmauth)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#auth-parameters"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.authentication.hawk.dothttp",
+                    "begin": "\\b(hawkauth)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#auth-parameters"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.authentication.aws.dothttp",
+                    "begin": "\\b(awsauth)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#auth-parameters"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.authentication.azure.dothttp",
+                    "begin": "\\b(azurespcert|azurespsecret|azuredevice|azurecli)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.auth.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#auth-parameters"
                         }
                     ]
                 }
             ]
         },
-        {
-            "begin": "^\\s*>\\s{1}{%?\\s*",
-            "name": "http.request.body.script",
-            "end": "^\\s*%} (python)?\\s*",
+        "auth-parameters": {
+            "patterns": [
+                {
+                    "name": "variable.parameter.dothttp",
+                    "match": "\\b(username|password|id|key|algorithm|access_id|secret_key|service|region|session_token|tenant_id|client_id|client_secret|certificate_path|scope)\\b"
+                },
+                {
+                    "match": "=",
+                    "name": "keyword.operator.assignment.dothttp"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.comma.dothttp"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#template-variable"
+                }
+            ]
+        },
+        "certificate": {
+            "patterns": [
+                {
+                    "name": "meta.certificate.dothttp",
+                    "begin": "\\b(certificate|p12)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.certificate.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "variable.parameter.dothttp",
+                            "match": "\\b(cert|key|file|password)\\b"
+                        },
+                        {
+                            "match": "=",
+                            "name": "keyword.operator.assignment.dothttp"
+                        },
+                        {
+                            "match": ",",
+                            "name": "punctuation.separator.comma.dothttp"
+                        },
+                        {
+                            "include": "#string"
+                        },
+                        {
+                            "include": "#template-variable"
+                        }
+                    ]
+                }
+            ]
+        },
+        "headers": {
+            "patterns": [
+                {
+                    "name": "meta.header.function-style.dothttp",
+                    "begin": "\\b(header)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.header.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#function-arguments"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.header.curl-style.dothttp",
+                    "begin": "(-H|--header)\\s+",
+                    "end": "$|(?=\\\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.curl-flag.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#header-line"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.header.colon-style.dothttp",
+                    "match": "^\\s*([a-zA-Z][a-zA-Z0-9-]*)\\s*(:)\\s*(.*)$",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.tag.http-header.dothttp"
+                        },
+                        "2": {
+                            "name": "punctuation.separator.key-value.dothttp"
+                        },
+                        "3": {
+                            "name": "string.unquoted.header-value.dothttp",
+                            "patterns": [
+                                {
+                                    "include": "#template-variable"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "header-line": {
+            "patterns": [
+                {
+                    "name": "entity.name.tag.http-header.dothttp",
+                    "match": "[a-zA-Z][a-zA-Z0-9-]*(?=:)"
+                },
+                {
+                    "name": "punctuation.separator.key-value.dothttp",
+                    "match": ":"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#template-variable"
+                }
+            ]
+        },
+        "query-parameters": {
+            "patterns": [
+                {
+                    "name": "meta.query.function-style.dothttp",
+                    "begin": "\\b(query)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.query.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#function-arguments"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.query.shorthand.dothttp",
+                    "begin": "(\\?|&)\\s*",
+                    "end": "(?=\\s*$)|(?=\\s+(header|query|\\?|&|json|data|urlencoded|text|files|form|multipart|fileinput|<|output|>>|> {%))",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.operator.query.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "\\(",
+                            "name": "punctuation.section.parens.begin.dothttp"
+                        },
+                        {
+                            "match": "\\)",
+                            "name": "punctuation.section.parens.end.dothttp"
+                        },
+                        {
+                            "match": "[:,=]",
+                            "name": "punctuation.separator.key-value.dothttp"
+                        },
+                        {
+                            "match": ",",
+                            "name": "punctuation.separator.comma.dothttp"
+                        },
+                        {
+                            "include": "#string"
+                        },
+                        {
+                            "include": "#template-variable"
+                        }
+                    ]
+                }
+            ]
+        },
+        "request-body": {
+            "patterns": [
+                {
+                    "name": "meta.body.json.dothttp",
+                    "begin": "\\b(json)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.body.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#json-content"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.data.dothttp",
+                    "begin": "\\b(data|urlencoded|text)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.body.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#body-content"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.multipart.dothttp",
+                    "begin": "\\b(files|form|multipart)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.body.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#file-parameters"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.file-input.dothttp",
+                    "begin": "\\b(fileinput)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.body.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#function-arguments"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.file-redirect.dothttp",
+                    "begin": "<",
+                    "end": "(?=\\s*$)|(?=;)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword.operator.redirect.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": ";",
+                            "name": "punctuation.separator.semicolon.dothttp"
+                        },
+                        {
+                            "include": "#string"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.curl-style.dothttp",
+                    "begin": "(-d|--data)\\s+",
+                    "end": "(?=\\s*$)|(?=\\s+(header|query|\\?|&|output|>>|> {%))",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.curl-flag.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#string"
+                        },
+                        {
+                            "include": "#triple-quote-string"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.body.inline-json.dothttp",
+                    "begin": "^\\s*(?=\\{|\\[)",
+                    "end": "(?=^\\s*$|^\\s*###|^\\s*> {%)",
+                    "patterns": [
+                        {
+                            "include": "source.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        "file-parameters": {
+            "patterns": [
+                {
+                    "match": "\\(",
+                    "name": "punctuation.section.parens.begin.dothttp"
+                },
+                {
+                    "match": "\\)",
+                    "name": "punctuation.section.parens.end.dothttp"
+                },
+                {
+                    "match": "[<:;]",
+                    "name": "punctuation.separator.dothttp"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.comma.dothttp"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#triple-quote-string"
+                },
+                {
+                    "include": "#template-variable"
+                }
+            ]
+        },
+        "output-redirect": {
+            "patterns": [
+                {
+                    "name": "meta.output.function-style.dothttp",
+                    "begin": "\\b(output)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "support.function.output.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#string"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.output.redirect.dothttp",
+                    "begin": ">>",
+                    "end": "(?=\\s*$)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword.operator.redirect.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#string"
+                        }
+                    ]
+                }
+            ]
+        },
+        "test-script": {
+            "name": "meta.test-script.dothttp",
+            "begin": ">\\s*\\{%",
+            "end": "%\\}\\s*(python|javascript)?",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.script.begin.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.script.end.dothttp"
+                },
+                "1": {
+                    "name": "entity.name.type.language.dothttp"
+                }
+            },
             "patterns": [
                 {
                     "include": "source.python"
                 }
             ]
         },
-        {
-            "begin": "\\s*(?=(\\[|{[^{]))",
-            "name": "http.request.body.json",
-            "end": "^\\s*(\\#{3,}.*?)?\\s*$",
-            "endCaptures": {
-                "0": {
-                    "name": "comment.line.sharp.http"
-                }
-            },
-            "patterns": [
-                {
-                    "include": "source.javascript"
-                }
-            ]
-        },
-        {
-            "include": "#comment"
-        },
-        {
-            "include": "#number"
-        },
-        {
-            "include": "#language_keyword"
-        },
-        {
-            "include": "#language_operation"
-        },
-        {
-            "include": "#regular_expression"
-        },
-        {
-            "include": "#variables"
-        },
-        {
-            "include": "#string-quoted-single-multiline"
-        },
-        {
-            "include": "#string-quoted-double-multiline"
-        },
-        {
-            "include": "#object"
-        },
-        {
-            "include": "#string"
-        }
-    ],
-    "repository": {
-        "comment": {
-            "patterns": [
-                {
-                    "match": "#.*",
-                    "name": "comment.line"
-                },
-                {
-                    "match": "//.*",
-                    "name": "comment.line"
-                },
-                {
-                    "name": "comment.block",
-                    "begin": "/\\*",
-                    "end": "\\*/"
-                }
-            ]
-        },
-        "variables": {
-            "begin": "{{\\s*(\\w+)\\s*=\\s*(\\w*)\\s*?",
-            "end": "}}",
-            "name": "variable.parameter",
-            "beginCaptures": {
-                "0": {
-                    "name": "variable.name"
-                },
-                "1": {
-                    "name": "constant"
-                }
-            }
-        },
-        "json": {
-            "begin": "((json)|(data))[\\s]*(",
-            "end": ")",
-            "name": "entity.name.class",
+        "json-content": {
             "patterns": [
                 {
                     "include": "#object"
+                },
+                {
+                    "include": "#array"
+                },
+                {
+                    "include": "#constants"
+                },
+                {
+                    "include": "#number"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#template-variable"
                 }
             ]
         },
-        "name": {
-            "begin": "@name\\(",
+        "body-content": {
+            "patterns": [
+                {
+                    "include": "#object"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#triple-quote-string"
+                },
+                {
+                    "include": "#template-variable"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.comma.dothttp"
+                }
+            ]
+        },
+        "function-arguments": {
+            "patterns": [
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.comma.dothttp"
+                },
+                {
+                    "match": "=",
+                    "name": "keyword.operator.assignment.dothttp"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#template-variable"
+                }
+            ]
+        },
+        "object": {
+            "name": "meta.structure.dictionary.json.dothttp",
+            "begin": "\\{",
+            "end": "\\}",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.begin.json.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.end.json.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#object-member"
+                }
+            ]
+        },
+        "object-member": {
+            "patterns": [
+                {
+                    "name": "meta.structure.dictionary.key.json.dothttp",
+                    "begin": "(?:([\"'])([^\"']+)\\1|([a-zA-Z_][a-zA-Z0-9_]*))\\s*(:)",
+                    "end": "(?=[,}])|(?=\\n\\s*[})])",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.begin.json.dothttp"
+                        },
+                        "2": {
+                            "name": "support.type.property-name.json.dothttp"
+                        },
+                        "3": {
+                            "name": "support.type.property-name.json.dothttp"
+                        },
+                        "4": {
+                            "name": "punctuation.separator.dictionary.key-value.json.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#json-content"
+                        }
+                    ]
+                },
+                {
+                    "include": "#template-variable"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.dictionary.pair.json.dothttp"
+                },
+                {
+                    "include": "#comments"
+                }
+            ]
+        },
+        "array": {
+            "name": "meta.structure.array.json.dothttp",
+            "begin": "\\[",
+            "end": "\\]",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.begin.json.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.end.json.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#json-content"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.array.json.dothttp"
+                }
+            ]
+        },
+        "function-call": {
+            "name": "meta.function-call.dothttp",
+            "begin": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",
             "end": "\\)",
-            "name": "entity.name.method",
+            "beginCaptures": {
+                "1": {
+                    "name": "entity.name.function.dothttp"
+                }
+            },
             "patterns": [
                 {
-                    "begin": "\"",
-                    "end": "\"",
-                    "name": "support.type.property-name"
+                    "include": "#number"
                 },
                 {
-                    "begin": "'",
-                    "end": "'",
-                    "name": "support.type.property-name"
+                    "include": "#string"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.comma.dothttp"
                 }
             ]
         },
-        "url": {
-            "begin": "(GET|POST|DELETE|PATCH|OPTIONS|CONNECT|PUT|HEAD|TRACE)\\s*",
+        "array-index": {
+            "name": "meta.array.index.dothttp",
+            "begin": "([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\[",
+            "end": "\\]",
             "beginCaptures": {
-                "0": {
-                    "name": "variable.other.enummember"
-                }
-            },
-            "end": ".*",
-            "endCaptures": {
-                "0": {
-                    "name": "markup.bold"
-                }
-            }
-        },
-        "header": {
-            "begin": "(\\w*|\\\".*\\\"|'.*')\\s*[:]",
-            "end": "(\\w*|\\\".*\\\")",
-            "beginCaptures": {
-                "0": {
-                    "name": "support.type.property-name"
-                },
                 "1": {
-                    "name": "keyword"
+                    "name": "variable.other.dothttp"
                 }
             },
-            "endCaptures": {
-                "0": {
-                    "name": "support.property-value"
-                }
-            },
-            "name": "dothttp.header"
-        },
-        "query": {
-            "begin": "(\\?)\\s*(\\w*|\\\".*\\\"|'.*')\\s*[,=:]",
-            "end": "(\\w*|\\\".*\\\")",
-            "beginCaptures": {
-                "0": {
-                    "name": "support.type.property-name.json"
-                },
-                "1": {
-                    "name": "keyword"
-                }
-            },
-            "endCaptures": {
-                "0": {
-                    "name": "support.property-value"
-                }
-            },
-            "name": "dothttp.query"
-        },
-        "varstring": {
             "patterns": [
                 {
-                    "name": "string.quoted.double",
-                    "begin": "\\{\\{",
-                    "end": "\\}\\}"
+                    "include": "#number"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "name": "variable.other.property.dothttp",
+                    "match": "[a-zA-Z_][a-zA-Z0-9_]*"
+                }
+            ]
+        },
+        "interpolated-string": {
+            "name": "string.interpolated.dothttp",
+            "begin": "\\$\"",
+            "end": "\"",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.begin.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.end.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "name": "constant.character.escape.dothttp",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        "template-variable": {
+            "name": "variable.other.template.dothttp",
+            "begin": "\\{\\{",
+            "end": "\\}\\}",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.template-expression.begin.dothttp"
+                }
+            },
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.template-expression.end.dothttp"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "=",
+                    "name": "keyword.operator.assignment.dothttp"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "name": "variable.other.readwrite.dothttp",
+                    "match": "[a-zA-Z_$,:][a-zA-Z0-9_$,:]*"
                 }
             ]
         },
         "string": {
             "patterns": [
                 {
-                    "name": "string.quoted.single",
-                    "begin": "'",
-                    "end": "'"
+                    "name": "string.quoted.double.dothttp",
+                    "begin": "\"",
+                    "end": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.dothttp"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.dothttp",
+                            "match": "\\\\."
+                        },
+                        {
+                            "include": "#template-variable"
+                        }
+                    ]
                 },
                 {
-                    "name": "string.quoted.double",
-                    "begin": "\"",
-                    "end": "\""
+                    "name": "string.quoted.single.dothttp",
+                    "begin": "'",
+                    "end": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.dothttp"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.dothttp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.dothttp",
+                            "match": "\\\\."
+                        },
+                        {
+                            "include": "#template-variable"
+                        }
+                    ]
                 }
             ]
         },
-        "string-quoted-single-multiline": {
-            "begin": "'''",
-            "end": "'''",
-            "name": "string.quoted.triple",
-            "patterns": []
-        },
-        "string-quoted-double-multiline": {
-            "begin": "\"\"\"",
-            "end": "\"\"\"",
-            "name": "string.quoted.triple",
-            "patterns": []
+        "triple-quote-string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.triple.double.dothttp",
+                    "begin": "\"\"\"",
+                    "end": "\"\"\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.dothttp"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.dothttp"
+                        }
+                    }
+                },
+                {
+                    "name": "string.quoted.triple.single.dothttp",
+                    "begin": "'''",
+                    "end": "'''",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.dothttp"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.dothttp"
+                        }
+                    }
+                }
+            ]
         },
         "number": {
             "patterns": [
                 {
-                    "match": "\\b[0-9]+\\b\\.{0,1}",
-                    "name": "constant.numeric"
+                    "name": "constant.numeric.float.dothttp",
+                    "match": "\\b\\d+\\.\\d+\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.dothttp",
+                    "match": "\\b\\d+\\b"
                 }
             ]
         },
-        "language_keyword": {
+        "constants": {
             "patterns": [
                 {
-                    "match": "json",
-                    "name": "keyword.other"
+                    "name": "constant.language.null.dothttp",
+                    "match": "\\bnull\\b"
                 },
                 {
-                    "match": "header",
-                    "name": "support.class"
+                    "name": "constant.language.boolean.true.dothttp",
+                    "match": "\\btrue\\b"
                 },
                 {
-                    "match": "\\(",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "\\,",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "\\)",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "\\:",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "basicauth",
-                    "name": "support.class"
-                },
-                {
-                    "match": "query",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "\\=",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "data",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "urlencoded",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "text",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "fileinput",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "insecure",
-                    "name": "keyword.control"
-                },
-                {
-                    "match": "clear",
-                    "name": "keyword.control"
-                },
-                {
-                    "match": "certificate",
-                    "name": "keyword.operator"
-                },
-                {
-                    "match": "p12",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "cert",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "password",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "digestauth",
-                    "name": "keyword.operator"
-                },
-                {
-                    "match": "basicauth",
-                    "name": "keyword.operator"
-                },
-                {
-                    "match": "file",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "key",
-                    "name": "keyword.other"
-                },
-                {
-                    "include": "#varstring"
-                },
-                {
-                    "match": "files",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "form",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "multipart",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "output",
-                    "name": "keyword.other"
-                },
-                {
-                    "match": "null",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "true",
-                    "name": "constant.language"
-                },
-                {
-                    "match": "false",
-                    "name": "constant.language"
-                },
-                {
-                    "include": "#name"
-                },
-                {
-                    "include": "#url"
-                },
-                {
-                    "include": "#query"
+                    "name": "constant.language.boolean.false.dothttp",
+                    "match": "\\bfalse\\b"
                 }
             ]
         },
-        "language_operation": {
-            "patterns": []
+        "http-methods": {
+            "name": "keyword.other.http-method.dothttp",
+            "match": "\\b(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT|COPY|LINK|UNLINK|PURGE|LOCK|UNLOCK|PROPFIND|VIEW|MKCOL|MOVE|PROPPATCH|REPORT|SEARCH)\\b"
         },
-        "regular_expression": {
-            "patterns": []
+        "decorators": {
+            "name": "entity.name.function.decorator.dothttp",
+            "match": "@(name|clear|insecure|no_parent_script)\\b"
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "support.function.dothttp",
+                    "match": "\\b(json|data|urlencoded|text|files|form|multipart|fileinput|output|header|query)\\b"
+                },
+                {
+                    "name": "support.function.auth.dothttp",
+                    "match": "\\b(basicauth|digestauth|ntlmauth|hawkauth|awsauth|azurespcert|azurespsecret|azuredevice|azurecli)\\b"
+                },
+                {
+                    "name": "support.function.certificate.dothttp",
+                    "match": "\\b(certificate|p12)\\b"
+                },
+                {
+                    "name": "variable.parameter.dothttp",
+                    "match": "\\b(username|password|id|key|algorithm|access_id|secret_key|service|region|session_token|tenant_id|client_id|client_secret|certificate_path|scope|cert|file|type|name|path|value)\\b(?=\\s*[=:])"
+                },
+                {
+                    "name": "keyword.other.curl.dothttp",
+                    "match": "\\b(curl|-X|-H|--header|-d|--data)\\b"
+                },
+                {
+                    "name": "storage.type.var.dothttp",
+                    "match": "\\bvar\\b"
+                },
+                {
+                    "name": "keyword.control.import.dothttp",
+                    "match": "\\bimport\\b"
+                }
+            ]
         }
     }
 }

@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.65",
+	"version": "1.0.66",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -944,6 +944,63 @@
 						"type": "number",
 						"default": 5,
 						"description": "Number of responses to show in notebook"
+					},
+					"dothttp.conf.notebook.theme": {
+						"type": "string",
+						"enum": [
+							"auto",
+							"vs",
+							"vs-dark",
+							"hc-black",
+							"hc-light"
+						],
+						"enumDescriptions": [
+							"Automatically match VS Code theme",
+							"Light theme (Visual Studio)",
+							"Dark theme (Visual Studio Dark)",
+							"High contrast dark theme",
+							"High contrast light theme"
+						],
+						"default": "auto",
+						"description": "Monaco editor theme for notebook output renderer"
+					},
+					"dothttp.conf.notebook.fontSize": {
+						"type": "number",
+						"default": 13,
+						"minimum": 8,
+						"maximum": 24,
+						"description": "Font size for Monaco editor in notebook output (8-24)"
+					},
+					"dothttp.conf.notebook.fontFamily": {
+						"type": "string",
+						"default": "Menlo, Monaco, 'Courier New', monospace",
+						"description": "Font family for Monaco editor in notebook output"
+					},
+					"dothttp.conf.notebook.lineNumbers": {
+						"type": "string",
+						"enum": [
+							"on",
+							"off",
+							"relative"
+						],
+						"default": "on",
+						"description": "Show line numbers in Monaco editor"
+					},
+					"dothttp.conf.notebook.minimap": {
+						"type": "boolean",
+						"default": false,
+						"description": "Show minimap in Monaco editor"
+					},
+					"dothttp.conf.notebook.wordWrap": {
+						"type": "string",
+						"enum": [
+							"off",
+							"on",
+							"wordWrapColumn",
+							"bounded"
+						],
+						"default": "off",
+						"description": "Word wrap setting for Monaco editor"
 					}
 				},
 				"label": "dothttp",
@@ -1006,6 +1063,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.27.4",
 		"@stoplight/json-schema-sampler": "0.3.0",
 		"@types/dateformat": "^5.0.2",
 		"@types/glob": "^9.0.0",
@@ -1021,17 +1079,17 @@
 		"@types/semver": "^7.5.8",
 		"@types/temp": "^0.9.4",
 		"@types/uuid": "^10.0.0",
-		"@types/vkbeautify": "^0.99.4",
+		"@types/vscode": "^1.63.0",
 		"@types/vscode-notebook-renderer": "1.72.3",
 		"@types/whatwg-url": "^8.2.0",
 		"@types/yauzl": "^2.10.3",
 		"@vscode/codicons": "0.0.36",
-		"@babel/core": "^7.27.4",
 		"css-loader": "^7.1.2",
-		"dot-preact-highlight": "^2.0.0",
 		"glob": "^11.0.3",
 		"http-status-codes": "^2.3.0",
 		"mocha": "^11.1.0",
+		"monaco-editor": "^0.55.1",
+		"monaco-editor-webpack-plugin": "^7.1.1",
 		"mongodb": "^3.6.5",
 		"os-browserify": "^0.3.0",
 		"path-browserify": "^1.0.1",
@@ -1042,10 +1100,8 @@
 		"svg-inline-loader": "^0.8.2",
 		"ts-loader": "^9.5.2",
 		"typescript": "^5.7",
-		"vkbeautify": "^0.99.3",
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.102.1",
-		"@types/vscode": "^1.63.0",
 		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {

@@ -1,0 +1,41 @@
+{
+  "// DotHTTP Notebook Renderer Settings": "",
+  "// Copy these to your settings.json and customize": "",
+
+  "// Theme Selection": "",
+  "dothttp.conf.notebook.theme": "auto",
+  "// Options: 'auto', 'vs', 'vs-dark', 'hc-black', 'hc-light'",
+
+  "// Font Settings": "",
+  "dothttp.conf.notebook.fontSize": 13,
+  "// Range: 8-24, Default: 13",
+
+  "dothttp.conf.notebook.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+  "// Examples: 'Fira Code', 'JetBrains Mono', 'SF Mono', 'Consolas'",
+
+  "// Display Settings": "",
+  "dothttp.conf.notebook.lineNumbers": "on",
+  "// Options: 'on', 'off', 'relative'",
+
+  "dothttp.conf.notebook.minimap": false,
+  "// Show minimap (code overview) on the right side",
+
+  "dothttp.conf.notebook.wordWrap": "off",
+  "// Options: 'off', 'on', 'wordWrapColumn', 'bounded'",
+
+  "// Preset Configurations": "",
+  "// Uncomment one of these to use a preset": "",
+
+  "// Presentation Mode (large text, no line numbers)": "",
+  "// \"dothttp.conf.notebook.fontSize\": 18,": "",
+  "// \"dothttp.conf.notebook.lineNumbers\": \"off\",": "",
+  "// \"dothttp.conf.notebook.wordWrap\": \"on\"": "",
+
+  "// Compact Mode (small text with minimap)": "",
+  "// \"dothttp.conf.notebook.fontSize\": 11,": "",
+  "// \"dothttp.conf.notebook.minimap\": true": "",
+
+  "// High Contrast (accessibility)": "",
+  "// \"dothttp.conf.notebook.theme\": \"hc-black\",": "",
+  "// \"dothttp.conf.notebook.fontSize\": 16": ""
+}
