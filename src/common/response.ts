@@ -27,6 +27,7 @@ export interface DothttpExecuteResponse {
     method: Method;
     filenameExtension?: string,
     headers: Headers;
+    request_headers?: Headers;
     body: string;
     status: number;
     url: string;
