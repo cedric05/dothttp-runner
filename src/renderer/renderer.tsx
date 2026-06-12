@@ -201,7 +201,8 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
             return ([key.name, key.success ? "✅" : "❌", key.result || key.error]);
         });
 
-    const headerTab = arrayAndCount(Object.keys(headers ?? {}));
+    const requestHeaders = props.request_headers;
+    const headerTab = arrayAndCount(Object.keys({ ...(requestHeaders ?? {}), ...(headers ?? {}) }));
     const testResultTab = arrayAndCount(script_result?.tests);
     testResultTab.exists = testResultTab.exists || Boolean(script_result?.stdout) || Boolean(script_result?.error);
     const responseTab: CountAndExistence = { exists: true, count: output_file ? 1 : 0 }
@@ -246,7 +247,7 @@ export const Response: FunctionComponent<{ out: Readonly<HttpResponseAndMetadata
             <RequestHistory redirectHistory={redirectHistory}></RequestHistory>
         </div>
         {/* <AceWrap data={responseBody} mode="text" active={activeIndex === TabType.RawResponse} theme={theme}></AceWrap> */}
-        <TableTab data={objectToDataGridRows(headers)} columns={["Header", "Value"]} active={headerTab.exists && activeIndex === TabType.Headers} />
+        <HeadersPanel requestHeaders={requestHeaders} responseHeaders={headers} active={headerTab.exists && activeIndex === TabType.Headers} />
         <TableTab data={testResult} columns={["Test Name", "Success", "Result"]} active={(testResultTab.exists && activeIndex === TabType.TestResult)} isTestResult={true} />
         <div class='tab-content' hidden={!(testResultTab.exists && activeIndex === TabType.TestResult)} >
             <strong><span class='key'>Script Log:</span></strong>
@@ -385,6 +386,50 @@ const TableTab: FunctionComponent<{ active: boolean, data: Array<Array<string>> 
     }
 };
 
+
+const HeadersTable: FunctionComponent<{ headers: Record<string, string> | undefined }> = ({ headers }) => {
+    const rows = Object.entries(headers ?? {});
+    if (rows.length === 0) {
+        return <div class='headers-empty'>None</div>;
+    }
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th class="key column"><b>Header</b></th>
+                    <th class="key column"><b>Value</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows.map(([k, v]) => (
+                    <tr>
+                        <td class="key column">{k}</td>
+                        <td class="key column">{v}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+};
+
+const HeadersPanel: FunctionComponent<{
+    requestHeaders: Record<string, string> | undefined;
+    responseHeaders: Record<string, string> | undefined;
+    active: boolean;
+}> = ({ requestHeaders, responseHeaders, active }) => {
+    return (
+        <div class='tab-content headers-panel' hidden={!active}>
+            <div class='headers-column'>
+                <div class='headers-title'>Request Headers</div>
+                <HeadersTable headers={requestHeaders} />
+            </div>
+            <div class='headers-column'>
+                <div class='headers-title'>Response Headers</div>
+                <HeadersTable headers={responseHeaders} />
+            </div>
+        </div>
+    );
+};
 
 const HistoryItem: FunctionComponent<{ history: DothttpRedirectHistory }> = ({ history }) => {
     const [expand, setExpand] = useState(true);

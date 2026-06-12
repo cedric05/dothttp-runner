@@ -312,3 +312,31 @@ table tbody tr:nth-child(even) {
     background: var(--vscode-button-hoverBackground);
     color: var(--vscode-button-foreground);
 }
+
+/* Side-by-side headers panel */
+.headers-panel {
+    display: flex;
+    gap: 16px;
+}
+
+.headers-column {
+    flex: 1;
+    min-width: 0;
+}
+
+.headers-title {
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    padding: 6px 0 6px 2px;
+    border-bottom: 2px solid var(--notebook-inactive-focused-cell-border-color);
+    margin-bottom: 4px;
+}
+
+.headers-empty {
+    opacity: 0.5;
+    font-style: italic;
+    padding: 6px 2px;
+}
