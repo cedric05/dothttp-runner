@@ -44,7 +44,7 @@ def main(args):
                     "linux_amd64": f"{base}/dotextensions-{dotextensions_version}-linux-amd64.zip",
                     "linux_arm64": f"{base}/dotextensions-{dotextensions_version}-linux-arm64.zip",
                     "windows_x86": f"{base}/dotextensions-{dotextensions_version}-windows-x86.zip",
-                    "windows_amd64": f"{base}/dotextensions-{dotextensions_version}-windows-amd64.zip",
+                    "windows_amd64": f"{base}/dotextensions-{dotextensions_version}-windows-x86.zip",
                     "windows_arm64": f"{base}/dotextensions-{dotextensions_version}-windows-arm64.zip",
                     "darwin_arm64": f"{base}/dotextensions-{dotextensions_version}-darwin-arm64.zip",
                     "darwin_amd64": f"{base}/dotextensions-{dotextensions_version}-darwin-amd64.zip",
