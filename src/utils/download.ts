@@ -11,13 +11,12 @@ import path = require('node:path');
 
 export interface version {
     downloadUrls: {
-        linux?: string,
-        linux_arm64: string,
         linux_amd64: string,
-        windows?: string,
-        darwin: string,
-        darwin_arm64?: string
-        darwin_amd64?: string
+        linux_arm64: string,
+        windows_x86: string,
+        windows_arm64: string,
+        darwin_arm64: string,
+        darwin_amd64: string,
     }
     version: string,
     versionNotes?: string,
@@ -108,28 +107,26 @@ export async function getVersion(useUnStable: boolean): Promise<version> {
 export function fetchPlatformDownloadurl(accepted: version, platform: NodeJS.Platform, arch: NodeJS.Architecture){
     switch (platform) {
         case "win32":
-            return accepted.downloadUrls.windows;
-        case "linux":
-            {
-                switch (arch) {
-                    case "arm64":
-                        return accepted.downloadUrls.linux_arm64;
-                    case "x64":
-                        return accepted.downloadUrls.linux_amd64 ?? accepted.downloadUrls.linux;
-                    default:
-                        throw new Error('un supported platform')
-                }
-            }
-        case "darwin":{
             switch (arch) {
                 case "arm64":
-                    return accepted.downloadUrls.darwin_arm64 ?? accepted.downloadUrls.darwin;
-                case "x64":
-                    return accepted.downloadUrls.darwin_amd64 ?? accepted.downloadUrls.darwin;
+                    return accepted.downloadUrls.windows_arm64;
                 default:
-                    throw new Error('un supported platform')
+                    return accepted.downloadUrls.windows_x86;
             }
-        }
+        case "linux":
+            switch (arch) {
+                case "arm64":
+                    return accepted.downloadUrls.linux_arm64;
+                default:
+                    return accepted.downloadUrls.linux_amd64;
+            }
+        case "darwin":
+            switch (arch) {
+                case "arm64":
+                    return accepted.downloadUrls.darwin_arm64;
+                default:
+                    return accepted.downloadUrls.darwin_amd64;
+            }
         default:
             throw new Error('un supported platform')
     }
