@@ -417,16 +417,19 @@ const HeadersPanel: FunctionComponent<{
     responseHeaders: Record<string, string> | undefined;
     active: boolean;
 }> = ({ requestHeaders, responseHeaders, active }) => {
+    const hasRequestHeaders = Object.keys(requestHeaders ?? {}).length > 0;
     return (
         <div class='tab-content headers-panel' hidden={!active}>
-            <div class='headers-column'>
-                <div class='headers-title'>Request Headers</div>
-                <HeadersTable headers={requestHeaders} />
-            </div>
-            <div class='headers-column'>
+            <div class='headers-section'>
                 <div class='headers-title'>Response Headers</div>
                 <HeadersTable headers={responseHeaders} />
             </div>
+            {hasRequestHeaders && (
+                <div class='headers-section'>
+                    <div class='headers-title'>Request Headers</div>
+                    <HeadersTable headers={requestHeaders} />
+                </div>
+            )}
         </div>
     );
 };

@@ -40,16 +40,50 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
         "cli",
         getCliWithExtension(),
     ).fsPath;
-    for (const [lookupLocation, assumedPath] of Object.entries({ configureddothttpPath, extensionWithPath: cliWithExtension, workspacedothttPath, defaultPath: defaultExePath })) {
-        console.log(`checking ${lookupLocation}: ${assumedPath}`);
-        if (assumedPath && fs.existsSync(assumedPath)) {
-            console.log(`working ${lookupLocation}: ${assumedPath}`);
-            if (lookupLocation === "extensionWithPath"){
-                return { path: assumedPath, type: RunType.binary_from_extension }
-            } else {
-                return { path: assumedPath, type: RunType.binary }
-            }
-        }
+
+    // Priority 1: explicit user config.
+    if (configureddothttpPath && fs.existsSync(configureddothttpPath)) {
+        console.log(`using configured dothttp path: ${configureddothttpPath}`);
+        return { path: configureddothttpPath, type: RunType.binary };
+    }
+
+    // Priority 2: pick the newest among extension-bundled, workspace, and globally downloaded binaries.
+    // Binary layout is <root>/cli/<binary> with version.json at <root>/cli/version.json,
+    // so readInstalledVersion expects the <root> dir (one level above the cli/ subdir).
+    type Candidate = { path: string; version: string | undefined; type: RunType };
+    const candidates: Candidate[] = [];
+
+    if (fs.existsSync(cliWithExtension)) {
+        candidates.push({
+            path: cliWithExtension,
+            version: readInstalledVersion(path.dirname(path.dirname(cliWithExtension)))?.version,
+            type: RunType.binary_from_extension,
+        });
+    }
+    if (workspacedothttPath && fs.existsSync(workspacedothttPath)) {
+        candidates.push({
+            path: workspacedothttPath,
+            version: readInstalledVersion(path.dirname(path.dirname(workspacedothttPath)))?.version,
+            type: RunType.binary,
+        });
+    }
+    if (fs.existsSync(defaultExePath)) {
+        candidates.push({
+            path: defaultExePath,
+            version: readInstalledVersion(downloadLocation)?.version,
+            type: RunType.binary,
+        });
+    }
+
+    if (candidates.length > 0) {
+        // Versioned candidates are ranked by semver; those without version.json keep their
+        // insertion order (extension-bundled first) and lose to any versioned candidate.
+        const versioned = candidates.filter(c => c.version);
+        const best = versioned.length > 0
+            ? versioned.reduce((a, b) => compareCliVersions(a.version, b.version) >= 0 ? a : b)
+            : candidates[0];
+        console.log(`selected cli ${best.path} version ${best.version}`);
+        return { version: best.version, path: best.path, type: best.type };
     }
     console.log('no installation found, will download and install');
     try {
@@ -73,6 +107,39 @@ export async function getLaunchArgs(context: ExtensionContext): Promise<ClientLa
     context.globalState.update("dothttp.downloadContentCompleted", true);
     context.workspaceState.update('dothttp.conf.path', defaultExePath);
     return { version: acceptableVersion.version, path: defaultExePath, type: RunType.binary }
+}
+
+// Compares two cli version strings using Python PEP 440 format (e.g. "0.0.44a33").
+// Converts to semver pre-release notation ("0.0.44-a.33") so semver handles comparison natively.
+// Returns positive if a > b, negative if a < b, 0 if equal.
+function compareCliVersions(a: string | undefined, b: string | undefined): number {
+    const toSemver = (v: string | undefined) =>
+        semver.coerce(v?.replace(/(\d)(a|b|rc)(\d)/, '$1-$2.$3')) ?? new semver.SemVer('0.0.0');
+    return semver.compare(toSemver(a), toSemver(b));
+}
+
+export interface InstalledVersionInfo {
+    version: string;
+    dothttp_req: string;
+    python: string;
+    pyinstaller: string;
+    platform: string;
+    runner_os: string;
+    runner_arch: string;
+    build_id: string;
+    build_number: string;
+    commit: string;
+    source: string;
+}
+
+export function readInstalledVersion(downloadLocation: string): InstalledVersionInfo | undefined {
+    const versionFile = path.join(downloadLocation, 'cli', 'version.json');
+    try {
+        const raw = fs.readFileSync(versionFile, 'utf8');
+        return JSON.parse(raw) as InstalledVersionInfo;
+    } catch {
+        return undefined;
+    }
 }
 
 function getExePath(downloadLocation: string) {

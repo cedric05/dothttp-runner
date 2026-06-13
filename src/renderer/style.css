@@ -313,15 +313,25 @@ table tbody tr:nth-child(even) {
     color: var(--vscode-button-foreground);
 }
 
-/* Side-by-side headers panel */
+/* Top/bottom stacked headers panel */
 .headers-panel {
     display: flex;
+    flex-direction: column;
     gap: 16px;
 }
 
-.headers-column {
-    flex: 1;
-    min-width: 0;
+.headers-section {
+    width: 100%;
+}
+
+.headers-section table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.headers-section td {
+    word-break: break-all;
+    overflow-wrap: anywhere;
 }
 
 .headers-title {
