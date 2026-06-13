@@ -14,6 +14,7 @@ export interface version {
         linux_amd64: string,
         linux_arm64: string,
         windows_x86: string,
+        windows_amd64: string,
         windows_arm64: string,
         darwin_arm64: string,
         darwin_amd64: string,
@@ -110,6 +111,8 @@ export function fetchPlatformDownloadurl(accepted: version, platform: NodeJS.Pla
             switch (arch) {
                 case "arm64":
                     return accepted.downloadUrls.windows_arm64;
+                case "x64":
+                    return accepted.downloadUrls.windows_amd64;
                 default:
                     return accepted.downloadUrls.windows_x86;
             }
