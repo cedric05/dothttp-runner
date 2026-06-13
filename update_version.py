@@ -36,16 +36,21 @@ def main(args):
             version_present_in_availableversions = True
             break
     if not version_present_in_availableversions:
+        base = f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}"
         data["availableversions"].append(
             {
                 "downloadUrls": {
-                    "linux_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-arm64.zip",
-                    "linux_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
-                    "linux": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-linux-amd64.zip",
-                    "windows": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-x86-windows.zip",
-                    "darwin": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
-                    "darwin_arm64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin-arm.zip",
-                    "darwin_amd64": f"https://github.com/cedric05/dotextensions-build/releases/download/v-{dotextensions_version}/dotextensions-{dotextensions_version}-darwin.zip",
+                    # new normalized keys
+                    "linux_amd64": f"{base}/dotextensions-{dotextensions_version}-linux-amd64.zip",
+                    "linux_arm64": f"{base}/dotextensions-{dotextensions_version}-linux-arm64.zip",
+                    "windows_x86": f"{base}/dotextensions-{dotextensions_version}-windows-x86.zip",
+                    "windows_arm64": f"{base}/dotextensions-{dotextensions_version}-windows-arm64.zip",
+                    "darwin_arm64": f"{base}/dotextensions-{dotextensions_version}-darwin-arm64.zip",
+                    "darwin_amd64": f"{base}/dotextensions-{dotextensions_version}-darwin-amd64.zip",
+                    # legacy keys kept for older extension versions
+                    "linux": f"{base}/dotextensions-{dotextensions_version}-linux-amd64.zip",
+                    "windows": f"{base}/dotextensions-{dotextensions_version}-windows-x86.zip",
+                    "darwin": f"{base}/dotextensions-{dotextensions_version}-darwin-amd64.zip",
                 },
                 "latest": not args.no_latest,
                 "stable": not args.no_stable,
