@@ -18,7 +18,9 @@ on:
       dothttp_extensions_min_version:
         description: 'min dothttp version'
         required: false
-
+permissions:
+  id-token: write
+  contents: read
 env:
   python_version: 3.8
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
@@ -26,11 +28,12 @@ env:
   dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
   dothttp_extensions_min_version: ${{ github.event.inputs.dothttp_extensions_min_version }}
   storage_account_name: 'cedric05artifacts'
-  AZURE_CLI_VERSION: '2.0.80'
 
 jobs:
   Update-version:
     runs-on: ubuntu-latest
+    environment:
+      name: prod
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,9 +73,11 @@ jobs:
       - name: Push changes
         run: git push origin VERSION
       - name: Update in Azure blob storage
-        uses: azure/CLI@v1
+        uses: azure/login@8c334a195cbb38e46038007b304988d888bf676a
         with:
-          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           inlineScript: |
             # upload file to azure blob storage
             az storage blob upload --account-name ${{ env.storage_account_name }} --account-key ${{ secrets.AZURE_STORAGE_KEY }} --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
