@@ -20,7 +20,7 @@ on:
         required: false
 permissions:
   id-token: write
-  contents: read
+  contents: write
 env:
   python_version: 3.8
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
