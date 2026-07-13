@@ -22,7 +22,7 @@ permissions:
   id-token: write
   contents: read
 env:
-  python_version: 3.8
+  python_version: 3.13
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
   alpha: ${{ github.event.inputs.alpha }}
   dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
@@ -44,7 +44,7 @@ jobs:
       - name: Switch to branch
         run: git checkout VERSION
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.python_version }}
       - name: Update version
@@ -73,7 +73,9 @@ jobs:
       - name: Push changes
         run: git push origin VERSION
       - name: Update in Azure blob storage
-        uses: azure/login@8c334a195cbb38e46038007b304988d888bf676a
+        uses: azure/login@v3
+      - name: Update in Azure blob storage
+        uses: azure/cli@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
