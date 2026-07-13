@@ -23,7 +23,7 @@ permissions:
   id-token: write
   contents: write
 env:
-  python_version: 3.12
+  python_version: 3.13
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
   alpha: ${{ github.event.inputs.alpha }}
   dothttp_runner_version: ${{ github.event.inputs.dothttp_runner_version }}
@@ -45,7 +45,7 @@ jobs:
       - name: Switch to branch
         run: git checkout VERSION
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.python_version }}
       - name: Update version
@@ -70,11 +70,19 @@ jobs:
           git config --local user.email "kesavarapu.siva@gmail.com"
           git config --local user.name "cedric05"
           git add .
-          git commit -m "Update version to ${{ env.dotextensions_version }}-alpha.${{ env.alpha }}, dothttp-runner version ${{ env.dothttp_runner_version }}"
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit. Skipping."
+          else
+            git add .
+            git commit -m "Update version to ${{ env.dotextensions_version }}-alpha.${{ env.alpha }}, dothttp-runner version ${{ env.dothttp_runner_version }}"
+            git push
+          fi
       - name: Push changes
         run: git push origin VERSION
+      - name: Update in Azure login storage
+        uses: azure/login@v3
       - name: Update in Azure blob storage
-        uses: azure/login@8c334a195cbb38e46038007b304988d888bf676a
+        uses: azure/cli@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
