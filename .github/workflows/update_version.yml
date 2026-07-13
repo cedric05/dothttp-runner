@@ -7,20 +7,21 @@ on:
       dotextensions_version:
         description: 'dotextensions version (for 0.0.43-alpha.1, `0.0.43` is dotextensions_version)'
         required: true
-        default: '0.0.43'
+        default: '0.0.44'
       alpha:
         description: 'alpha version (for 0.0.43-alpha.1 `1` is alpha version)'
         required: false
-        default: ''
+        default: '34'
       dothttp_runner_version:
         description: 'dothttp-runner version (semver like 1.0.10)'
         required: true
+        default: 1.0.72
       dothttp_extensions_min_version:
         description: 'min dothttp version'
         required: false
 permissions:
   id-token: write
-  contents: read
+  contents: write
 env:
   python_version: 3.13
   dotextensions_version: ${{ github.event.inputs.dotextensions_version }}
