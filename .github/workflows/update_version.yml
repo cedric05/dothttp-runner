@@ -37,7 +37,7 @@ jobs:
       name: prod
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Git Fetch
         run: |
           git fetch --all
@@ -45,7 +45,7 @@ jobs:
       - name: Switch to branch
         run: git checkout VERSION
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.python_version }}
       - name: Update version
@@ -80,17 +80,17 @@ jobs:
       - name: Push changes
         run: git push origin VERSION
       - name: Update in Azure login storage
-        uses: azure/login@v3
+        uses: azure/login@v3.0.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Update in Azure blob storage
-        uses: azure/cli@v2
+        uses: azure/cli@v3.0.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           inlineScript: |
             # upload file to azure blob storage
-            az storage blob upload --account-name ${{ env.storage_account_name }} --account-key ${{ secrets.AZURE_STORAGE_KEY }} --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
+            az storage blob upload --account-name "${{ env.storage_account_name }}" --auth-mode login --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
