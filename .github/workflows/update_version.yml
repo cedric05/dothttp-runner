@@ -95,6 +95,12 @@ jobs:
             echo "Azure account context:"
             az account show --output json
             echo ""
+            echo "Principal identity details:"
+            echo "User name: $(az account show --query user.name -o tsv)"
+            echo "Tenant ID: $(az account show --query tenantId -o tsv)"
+            echo "Subscription ID: $(az account show --query id -o tsv)"
+            echo "Subscription name: $(az account show --query name -o tsv)"
+            echo ""
             echo "Storage upload target:"
             az storage container show --account-name "${{ env.storage_account_name }}" --name 'github-artifacts' --auth-mode login --output json
             echo ""
