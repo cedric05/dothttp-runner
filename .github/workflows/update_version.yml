@@ -98,5 +98,8 @@ jobs:
             echo "Storage upload target:"
             az storage container show --account-name "${{ env.storage_account_name }}" --name 'github-artifacts' --auth-mode login --output json
             echo ""
+            echo "Checking role assignments for current identity:"
+            az role assignment list --assignee "$(az account show --query user.name -o tsv)" --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$(az resource list --resource-type Microsoft.Storage/storageAccounts --query "[?name=='${{ env.storage_account_name }}'].resourceGroup | [0]" -o tsv)" --output json
+            echo ""
             echo "Uploading version artifact..."
             az storage blob upload --account-name "${{ env.storage_account_name }}" --auth-mode login --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
