@@ -88,6 +88,9 @@ jobs:
       - name: Update in Azure blob storage
         uses: azure/cli@v2
         with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           inlineScript: |
             # upload file to azure blob storage
             az storage blob upload --account-name ${{ env.storage_account_name }} --account-key ${{ secrets.AZURE_STORAGE_KEY }} --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
