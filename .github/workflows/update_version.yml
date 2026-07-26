@@ -92,5 +92,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           inlineScript: |
-            # upload file to azure blob storage
-            az storage blob upload --account-name "${{ env.storage_account_name }}" --auth-mode login --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json
+            echo "Azure account context:"
+            az account show --output json
+            echo "Uploading version artifact..."
+            az storage blob upload --account-name "${{ env.storage_account_name }}" --auth-mode login --container-name 'github-artifacts' --name 'dothttp-runner-version/version.json' --file version.json --overwrite
