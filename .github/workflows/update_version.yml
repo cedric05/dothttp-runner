@@ -81,6 +81,10 @@ jobs:
         run: git push origin VERSION
       - name: Update in Azure login storage
         uses: azure/login@v3.0.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Update in Azure blob storage
         uses: azure/cli@v3.0.0
         with:
