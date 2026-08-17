@@ -12,6 +12,9 @@ on:
       - dev
       - main
 
+permissions:
+  id-token: write
+  contents: read  
 env:
   node_version: 24.x
 
