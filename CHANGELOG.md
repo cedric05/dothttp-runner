@@ -1,7 +1,13 @@
 # Change Log
 
 ## Known issues
-- notebook search with `m` or `y` in key won't work, as vscode configured default shortcut `m` to change cell to markdown and is annoying. [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) `m` and `y` shortcuts for clean experience.
+- Notebook search shortcuts using `m` or `y` may conflict with VS Code's default keyboard bindings for switching cells to Markdown. To avoid this, you can [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) the default `m` and `y` shortcuts for a cleaner experience.
+
+## 1.0.76
+- Added `@enable_trust_store` to use the operating system trust store for SSL certificate validation.
+- Added `trust('<root-ca-cert>')` for scenarios that require a custom certificate authority.
+- These options support secure certificate validation without relying on `@insecure`, while preserving the ability to work with trusted or custom CA bundles.
+- Updated dependencies and maintenance updates.
 
 
 ## 1.0.73
