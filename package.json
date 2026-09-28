@@ -1105,7 +1105,7 @@
 		"@types/semver": "^7.8.0",
 		"@types/temp": "^0.9.4",
 		"@types/uuid": "^11.0.0",
-		"@types/vscode": "^1.63.0",
+		"@types/vscode": "^1.138.0",
 		"@types/vscode-notebook-renderer": "1.72.4",
 		"@types/whatwg-url": "^8.2.0",
 		"@types/yauzl": "^2.10.3",
