@@ -102,7 +102,10 @@ const rendererConfig = {
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: 'renderer.js',
-		libraryTarget: 'module',
+		library: {
+			type: 'module',
+			export: 'activate',
+		},
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.css', '.js', '.jsx']

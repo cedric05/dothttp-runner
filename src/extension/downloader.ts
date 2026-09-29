@@ -178,7 +178,7 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                 await downloadDothttpWithProgress(downloadLocation, url!);
                 const originalLocation = path.join(globalStorageDir, 'cli');
                 ApplicationServices.get().getClientHandler()?.close();
-                fs.rmdirSync(originalLocation, { recursive: true });
+                fs.rmSync(originalLocation, { recursive: true });
                 fs.renameSync(downloadLocation, originalLocation)
                 const location = getExePath(path.join(originalLocation, 'cli'));
                 if (platform() !== 'win32') {

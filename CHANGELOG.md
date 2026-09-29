@@ -3,6 +3,17 @@
 ## Known issues
 - Notebook search shortcuts using `m` or `y` may conflict with VS Code's default keyboard bindings for switching cells to Markdown. To avoid this, you can [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) the default `m` and `y` shortcuts for a cleaner experience.
 
+## 1.0.77
+chore: update dependencies and improve code quality
+
+- Bump version to 1.0.77 in package.json
+- Update @types/node to ^v26.6.2 and @types/vscode to ^1.138.0
+- Upgrade monaco-editor to ^0.57.0 and openapi-to-postmanv2 to ^6.3.3
+- Remove deprecated swagger-to-har2 import and related code
+- Refactor downloader.ts to use fs.rmSync instead of fs.rmdirSync
+- Modify import.ts to remove swagger2 references and adjust import logic
+- Update tsconfig.json to use ESNext module and Bundler resolution
+
 ## 1.0.76
 - Added `@enable_trust_store` to use the operating system trust store for SSL certificate validation.
 - Added `trust('<root-ca-cert>')` for scenarios that require a custom certificate authority.
