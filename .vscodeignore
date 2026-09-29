@@ -16,3 +16,4 @@ demo.gif
 .idea
 eslint.js
 *.webm
+node_modules/

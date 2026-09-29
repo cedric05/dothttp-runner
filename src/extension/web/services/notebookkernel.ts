@@ -65,6 +65,109 @@ export class NotebookKernel {
         await this._doExecution(cell);
     }
 
+    /** Reads the dotbook responses already stored in a cell's outputs. */
+    private readExistingOutputs(cell: vscode.NotebookCell): any[] {
+        let dotbookOutputs: any[] = [];
+        for (let output of cell.outputs) {
+            for (let item of output.items) {
+                if (item.mime === Constants.NOTEBOOK_MIME_TYPE) {
+                    const decodedData = this.decoder.decode(item.data);
+                    const httpResponseWithMetadata = JSON.parse(decodedData)
+                    if (Array.isArray(httpResponseWithMetadata)) {
+                        dotbookOutputs = httpResponseWithMetadata
+                    } else {
+                        dotbookOutputs.push(httpResponseWithMetadata)
+                    }
+                    break;
+                } else if (item.mime === "application/vnd.code.notebook.stderr") {
+                    /// history is deleted because of error and history is stored in metadata with key `history`
+                    dotbookOutputs = output.metadata?.history ?? [];
+                }
+            }
+        }
+        return dotbookOutputs;
+    }
+
+    /**
+     * Runs only the test script of a cell against its most recently captured
+     * response, without issuing a new HTTP request. Requires the cell to have
+     * been executed at least once (so a response is available to test against).
+     */
+    public async runTestOnly(cell: vscode.NotebookCell): Promise<void> {
+        const execution = this._controller.createNotebookCellExecution(cell);
+        execution.executionOrder = ++this._executionOrder;
+        execution.token.onCancellationRequested(() => execution.end(false, Date.now()));
+        const start = Date.now();
+        execution.start(start);
+
+        const { uri } = cell.document;
+        const cellNo = parseInt(uri.fragment.substring(2));
+        const httpDef = cell.document.getText();
+        const contexts = cell.notebook
+            .getCells()
+            .filter(c => c.kind == vscode.NotebookCellKind.Code)
+            .map(c => c.document.getText());
+        const target: string = await this._getTarget(uri, cellNo, httpDef);
+
+        const dotbookOutputs = this.readExistingOutputs(cell);
+        const latest: DothttpExecuteResponse | undefined = dotbookOutputs[0]?.response;
+        if (!latest || !latest.response) {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    vscode.NotebookCellOutputItem.stderr(
+                        "No captured response found for this cell. Execute the request first, then run tests.")
+                ])
+            ]);
+            execution.end(false, Date.now());
+            return;
+        }
+
+        let isOk = false;
+        try {
+            // rebuild the captured response in the shape the server expects
+            const capturedResponse = {
+                ...latest.response,
+                request_headers: latest.request_headers,
+                history: latest.history,
+            };
+            const out = await this.runTest(httpDef, cell, { filename: uri, target, contexts, response: capturedResponse });
+            if (out?.script_result) {
+                if (out.script_result.properties) {
+                    this.treeprovider?.addProperties(cell.document.uri, out.script_result.properties);
+                }
+                // update the latest response's test results in place and re-render
+                latest.script_result = out.script_result;
+            }
+            await execution.clearOutput();
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    vscode.NotebookCellOutputItem.json(dotbookOutputs, Constants.NOTEBOOK_MIME_TYPE)
+                ])
+            ]);
+            isOk = out?.script_result?.compiled ?? true;
+        } catch (error) {
+            execution.replaceOutput([
+                new vscode.NotebookCellOutput([
+                    // @ts-ignore
+                    vscode.NotebookCellOutputItem.stderr(`Failed to run tests. error: ${error}`)
+                ])
+            ]);
+        }
+        execution.end(isOk, Date.now());
+    }
+
+    async runTest(httpDef: string, cell: vscode.NotebookCell, options: { filename: vscode.Uri, target: string, contexts: string[], response: object, properties?: {} }): Promise<DothttpExecuteResponse | undefined> {
+        return await this.client?.executeTest({
+            content: httpDef,
+            uri: cell.document.uri,
+            env: this.fileStateService?.getEnv(options.filename) ?? [],
+            propertyFile: this.fileStateService?.getEnvFile(),
+            noCookie: this.config?.noCookies,
+            curl: false,
+            ...options,
+        });
+    }
+
     private async _doExecution(cell: vscode.NotebookCell, curl = false): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         execution.executionOrder = ++this._executionOrder;
@@ -87,24 +190,7 @@ export class NotebookKernel {
         let isOk = false;
 
         // previous execution outputs
-        var dotbookOutputs = []
-        for (let output of cell.outputs) {
-            for (let item of output.items) {
-                if (item.mime === Constants.NOTEBOOK_MIME_TYPE) {
-                    const decodedData = this.decoder.decode(item.data);
-                    const httpResponseWithMetadata = JSON.parse(decodedData)
-                    if (Array.isArray(httpResponseWithMetadata)) {
-                        dotbookOutputs = httpResponseWithMetadata
-                    } else {
-                        dotbookOutputs.push(httpResponseWithMetadata)
-                    }
-                    break;
-                } else if (item.mime === "application/vnd.code.notebook.stderr") {
-                    /// history is deleted because of error and history is stored in metadata with key `history`
-                    dotbookOutputs = output.metadata?.history ?? [];
-                }
-            }
-        }
+        var dotbookOutputs = this.readExistingOutputs(cell)
 
         try {
             const out = await this.getResponse(httpDef, cell, { filename: uri, target, curl, contexts }) as DothttpExecuteResponse;

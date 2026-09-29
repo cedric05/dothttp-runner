@@ -2,7 +2,7 @@
 	"name": "dothttp-code",
 	"displayName": "Dothttp",
 	"description": "A Http Client for sending to and receiving from http endpoints (dothttp)",
-	"version": "1.0.77",
+	"version": "1.0.78",
 	"license": "Apache-2.0",
 	"publisher": "shivaprasanth",
 	"repository": {
@@ -463,6 +463,13 @@
 				"category": "Dothttp"
 			},
 			{
+				"command": "dothttp.command.notebook.runtest",
+				"title": "Run Tests (against last response)",
+				"icon": "$(beaker)",
+				"category": "Dothttp",
+				"enablement": "dothttpRunMode == full"
+			},
+			{
 				"command": "dothttp.command.env.to_properties",
 				"title": "Convert Environment to Properties",
 				"icon": "$(gear)",
@@ -504,6 +511,10 @@
 				},
 				{
 					"command": "dothttp.command.notebook.runmultiple",
+					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
+				},
+				{
+					"command": "dothttp.command.notebook.runtest",
 					"when": "dothttpRunMode == full && notebookType == 'dothttp-book'"
 				}
 			],

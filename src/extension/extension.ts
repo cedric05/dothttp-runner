@@ -187,6 +187,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_GEN_PROGRAM, async (cell) =>
 			notebookKernel.generateProgrammingLang(cell)
 		),
+		vscode.commands.registerCommand(Constants.NOTEBOOK_CELL_RUN_TEST, async (cell) =>
+			notebookKernel.runTestOnly(cell)
+		),
 		vscode.commands.registerCommand(Constants.REVEAL_HISTORY_VIEW, () => {
 			vscode.commands.executeCommand('dothttpHistory.focus');
 		}),

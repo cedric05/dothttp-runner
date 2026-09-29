@@ -157,6 +157,16 @@ export class ProNotebookKernel extends NotebookKernel {
         addHistory(out, options.filename + "-notebook-cell.http", { target: options.target });
         return out
     }
+
+    async runTest(httpDef: string, cell: vscode.NotebookCell, options: { filename: vscode.Uri, target: string, contexts: string[], response: object, properties?: {} }): Promise<DothttpExecuteResponse | undefined> {
+        var properties = {}
+        try {
+            properties = DotHttpEditorView.getEnabledProperties(cell.document.uri) ?? {};
+        } catch (error) {
+            console.log(`error is ${error}`);
+        }
+        return super.runTest(httpDef, cell, { ...options, properties });
+    }
 }
 
 async function createEditor(compareItem: CompareBodyItem) {
