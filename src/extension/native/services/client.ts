@@ -16,6 +16,8 @@ export class ClientHandler {
 
     static FILE_EXECUTE_COMMAND = "/file/execute";
     static CONTENT_EXECUTE_COMMAND = "/content/execute";
+    static FILE_TEST_COMMAND = "/file/test";
+    static CONTENT_TEST_COMMAND = "/content/test";
     static GET_FILE_TARGETS_COMMAND = "/file/names";
     static CONTENT_TARGETS_COMMAND = "/content/names";
     static IMPORT_POSTMAN_COMMAND = "/import/postman";

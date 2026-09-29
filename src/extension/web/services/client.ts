@@ -58,6 +58,31 @@ export class ClientHandler2 {
         return addFileNameExtension(out);
     }
 
+    /**
+     * Runs only the test script of a dothttp definition against a
+     * previously-captured response (`options.response`), without issuing a
+     * new HTTP request. Mirrors `execute`, but targets the /file/test and
+     * /content/test server commands.
+     */
+    async executeTest(options: ExecuteFileOptions & { response: object }): Promise<DothttpExecuteResponse> {
+        if (options.content || !this.cli?.isSupportsNative()) {
+            if (!options.content) {
+                options.content = await this.fileData(options.uri)
+            };
+            return await this.cli?.request(ClientHandler.CONTENT_TEST_COMMAND, {
+                file: options.uri.fsPath,
+                'property-file': options.propertyFile?.fsPath ?? null,
+                ...options
+            })
+        } else {
+            return await this.cli?.request(ClientHandler.FILE_TEST_COMMAND, {
+                file: options.uri.fsPath,
+                'property-file': options.propertyFile?.fsPath ?? null,
+                ...options,
+            })
+        }
+    }
+
     async documentSymbols(uri: vscode.Uri, content?: string, source?: string): Promise<DotTttpSymbol> {
         if (this.cli?.isSupportsNative() || content) {
             if (!content) {

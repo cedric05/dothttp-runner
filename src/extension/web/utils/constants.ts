@@ -47,6 +47,7 @@ export enum Constants {
 	NOTEBOOK_CELL_GEN_CURL = "dothttp.command.notebook.gencurl",
 	NOTEBOOK_CELL_GEN_PROGRAM = "dothttp.command.notebook.prog",
 	NOTEBOOK_EXECUTE_MULTIPLE_TIMES = "dothttp.command.notebook.runmultiple",
+	NOTEBOOK_CELL_RUN_TEST = "dothttp.command.notebook.runtest",
 
 	HTTP_AS_HTTPBOOK = "dothttp.command.openAsHttpBook",
 	NEW_NOTEBOOK_COMMAND = "dothttp.command.newHttpBook",
