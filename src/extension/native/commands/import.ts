@@ -2,8 +2,6 @@ import axios from 'axios';
 import { promises as fs } from 'fs';
 import { load as loadYaml } from "js-yaml";
 import * as querystring from 'querystring';
-// @ts-expect-error
-import { swagger2har } from 'swagger-to-har2';
 import * as temp from 'temp';
 import * as vscode from 'vscode';
 import { ApplicationServices } from '../../web/services/global';
@@ -23,7 +21,6 @@ const curl2Postman = require('curl-to-postmanv2/src/lib');
 enum ImportOptions {
     postman = 'postman',
     postman_workspace = "postman_workspace",
-    swagger2 = 'swagger2',
     swagger3 = 'swagger3',
     // swagger = "swagger",
     curl = 'curl',
@@ -41,7 +38,6 @@ const IMPORTOPTION_MESSAGES: {
 } = {
     "file": {
         'postman': "Postman Collection (Have <Filename>.Postman_collection.Json File?)",
-        "swagger2": "Swagger Schema (Have <Swagger Schema 2>.<Yaml/Json> File?)",
         "swagger3": "Swagger3/OpenAPI Schema (Have <Swagger3/OpenAPI Schema>.<Yaml/Json> File?)",
         'curl': "Reads Curl Statement From File (Preferred)",
         "curlv2": "Reads Curl Statement From File (Preferred)",
@@ -49,7 +45,6 @@ const IMPORTOPTION_MESSAGES: {
     },
     "link": {
         'postman': "Postman Collection Link",
-        "swagger2": "Swagger2 Schema (Json/Yaml) Link",
         "swagger3": "Swagger3/OpenApi Schema (Json/Yaml) Link",
         'curl': "Paste Curl Statement In Input Box",
         "curlv2": "Paste Curl Statement In Input Box",
@@ -191,7 +186,6 @@ export async function importRequests() {
     const pickType = (await vscode.window.showQuickPick([
         { "picktype": ImportOptions.postman, description: "Import using Public collection url/file shared by some one else", "label": "Postman Individual Collection" },
         { "picktype": ImportOptions.postman_workspace, description: "Import by connecting to postman account via postman apis", label: "Postman Self Account" },
-        { "picktype": ImportOptions.swagger2, label: "Swagger(v2)", description: "is a specification and framework for describing REST APIs" },
         { "picktype": ImportOptions.swagger3, label: "Swagger(v3)/OpenAPI", description: "is a specification and framework for describing REST APIs" },
         { "picktype": ImportOptions.har, label: "Har", description: "Har is http archive, easy way to Capture Web session traffic info: https://support.google.com/admanager/answer/10358597?hl=en" },
         { "picktype": ImportOptions.curlv2, label: "CurlV2" },
@@ -257,7 +251,7 @@ export async function importRequests() {
                 });
             } else if (linkOrFileType === 'file') {
                 const filters: { [ram: string]: any; } = {};
-                if (pickType === ImportOptions.swagger2 || pickType === ImportOptions.swagger3) {
+                if (pickType === ImportOptions.swagger3) {
                     filters.Swagger = ["json", "yaml", "yml"];
                 } else if (pickType === ImportOptions.har) {
                     filters.har = ["har", "har.json", "json"];
@@ -284,7 +278,7 @@ export async function importRequests() {
         if (directory) {
             if (pickType === ImportOptions.postman) {
                 await postmanFromCollectionFile(directory, filenameToimport, isNotebookImport, pickType);
-            } else if (pickType === ImportOptions.swagger2 || pickType === ImportOptions.swagger3 || pickType === ImportOptions.har) {
+            } else if (pickType === ImportOptions.swagger3 || pickType === ImportOptions.har) {
                 try {
                     const swaggerInStr = await getFileOrLink(linkOrFile, filenameToimport);
                     const result = await importSwagger(swaggerInStr, filenameToimport, directory,
@@ -365,16 +359,7 @@ async function importSwagger(data: any, filename: string, directory: vscode.Uri,
     // check if swagger, load har
     // if har, just use it
     let harFormat = [];
-    if (picktype === ImportOptions.swagger2) {
-        let _libFormat = swagger2har(hardata);
-        const libFormat: Array<{ har: any; }> = _libFormat;
-        if (!(libFormat && libFormat.length > 0)) {
-            throw new Error("swagger file had problem or not able to import");
-        }
-        for (var har of libFormat) {
-            harFormat.push(har.har);
-        }
-    } else if (picktype === ImportOptions.swagger3) {
+    if (picktype === ImportOptions.swagger3) {
         const result: any = await convertOpenApitoPostman({ 'type': 'json', data: hardata }, {} as any);
         await postmanFromCollectionFile(directory, null, isNotebooK, picktype, result.output[0]['data']);
         return {
