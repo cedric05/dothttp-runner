@@ -185,7 +185,6 @@ export async function updateDothttpIfAvailable(globalStorageDir: string) {
                     fs.chmodSync(location, 0o755);
                 }
             }
-            ApplicationServices.get().getVersionInfo()!.setVersionDothttpInfo(versionData.version);
             vscode.window.showInformationMessage('dothttp upgrade completed')
             vscode.commands.executeCommand(Constants.RESTART_CLI_COMMAND);
         }

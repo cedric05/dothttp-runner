@@ -27,6 +27,7 @@ export class ClientHandler {
     static FILE_RESOLVE_COMMAND = "/file/resolve";
     static HAR_IMPORT_COMMAND = "/export/har2http";
     static POSTMAN_EXPORT_COMMAND = "/export/http2postman";
+    static VERSION_METHOD = "/version";
 
 
     setCli(cli: ICommandClient) {
