@@ -1,3 +1,4 @@
+import { DothttpVersion, DothttpVersionResponse } from '../types/misc';
 import { IFileState, FileInfo, IProperties } from '../types/properties';
 import { LocalStorageService } from './storage';
 import { Uri } from 'vscode';
@@ -6,15 +7,25 @@ import * as vscode from 'vscode';
 export class VersionInfo {
     storage: LocalStorageService;
     private static readonly versionKey = 'dotthtp-req';
+    statusBarItem: vscode.StatusBarItem;
+    dothttpCliVersion: DothttpVersion | undefined;
 
-    constructor(storage: LocalStorageService) {
+    constructor(storage: LocalStorageService, statusBarItem: vscode.StatusBarItem) {
         this.storage = storage;
+        this.statusBarItem = statusBarItem;
     }
-    setVersionDothttpInfo(version: string) {
-        this.storage.setValue(VersionInfo.versionKey, version);
+    setVersionDothttpInfo(cliVersionResponse: DothttpVersionResponse) {
+        this.dothttpCliVersion = new DothttpVersion(cliVersionResponse);
+        this.storage.setValue(VersionInfo.versionKey, this.dothttpCliVersion.getVersion());
+        this.statusBarItem.text = this.dothttpCliVersion.getVersionString()
+        this.statusBarItem.show()
     }
     getVersionDothttpInfo() {
         return this.storage.getValue(VersionInfo.versionKey, '0.0.8');
+    }
+
+    getStatusBar(): vscode.StatusBarItem {
+        return this.statusBarItem
     }
 }
 

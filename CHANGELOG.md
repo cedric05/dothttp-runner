@@ -3,6 +3,9 @@
 ## Known issues
 - Notebook search shortcuts using `m` or `y` may conflict with VS Code's default keyboard bindings for switching cells to Markdown. To avoid this, you can [remove](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-editor) the default `m` and `y` shortcuts for a cleaner experience.
 
+## 1.0.79
+Shows dothttp cli version for better debugging
+
 ## 1.0.78
 Support running just the tests if required.
 

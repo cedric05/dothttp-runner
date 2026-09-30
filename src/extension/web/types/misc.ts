@@ -13,6 +13,46 @@ export interface DothttpRunOptions {
 }
 
 
+export interface DothttpVersionResponse {
+    version: string,
+    os?: string,
+    arch?: string,
+}
+
+export interface DothttpVersionResponse {
+    version: string;
+    os?: string;
+    arch?: string;
+}
+
+export class DothttpVersion implements DothttpVersionResponse {
+    version: string;
+    os: string;
+    arch: string;
+
+    constructor(data: DothttpVersionResponse) {
+        this.version = data.version;
+        this.os = data.os ?? "unknown";
+        this.arch = data.arch ?? "unknown";
+    }
+
+    getVersion(): string {
+        return this.version;
+    }
+
+    getOs(): string {
+        return this.os;
+    }
+
+    getArch(): string {
+        return this.arch;
+    }
+
+    getVersionString(): string {
+        return `dotextensions-${this.version}-${this.os}-${this.arch})`;
+    }
+}
+
 
 export enum DothttpTypes {
     NAME = "name",

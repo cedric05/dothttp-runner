@@ -35,6 +35,7 @@ import { executeMultipleTimes, ProNotebookKernel } from './native/services/noteb
 import * as fs from 'fs'
 import { VscodeOutputChannelWrapper } from './native/services/languageservers/channelWrapper';
 import { openDothttpInRemote, SimpleFsProvider } from './native/services/fsprovider';
+
 const path = require('path');
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -44,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	} else {
 		vscode.commands.executeCommand('setContext', Constants.EXTENSION_RUN_MODE, "full");
 	}
-
+	const versionStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	await fs.promises.mkdir(context.globalStorageUri.fsPath, { recursive: true });
 	const storageService = new LocalStorageService(context.workspaceState);
 	const globalStorageService = new LocalStorageService(context.globalState);
@@ -76,6 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.registerFileSystemProvider('dothttpfs', fileSystemProvider, { isCaseSensitive: true })
 	);
+	context.subscriptions.push(versionStatusBar);
 
 	const appServices = new ApplicationBuilder()
 		.setStorageService(storageService)
@@ -90,7 +92,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		.setDotHttpEditorView(dothttpEditorView)
 		.setDiagnostics(diagnostics)
 		.setDothttpSymbolProvier(symbolProvider)
-		.setVersionInfo(new VersionInfo(globalStorageService))
+		.setVersionInfo(new VersionInfo(globalStorageService, versionStatusBar))
 		.setConfig(configInstance)
 		.setContext(context)
 		.setNotebookkernel(notebookKernel)
@@ -329,16 +331,19 @@ async function bootStrap(app: ApplicationServices) {
 	console.log(`launch args are ${JSON.stringify(clientLaunchArguments)}`)
 	let cli = launchParams.type == RunType.http ? new HttpClient(Configuration.agent) : new StdoutClient(clientLaunchArguments);
 	cli.start();
-	app.getClientHandler2()?.setCli(cli);
+	const clientHandler2 = app.getClientHandler2();
 	app.getClientHandler()?.setCli(cli);
 
-	if (launchParams.version) {
-		app.getVersionInfo()?.setVersionDothttpInfo(launchParams.version);
-	} else {
-		if (launchParams.type != RunType.binary_from_extension) {
-			updateDothttpIfAvailable(context.globalStorageUri.fsPath);
-		}
+	// set accurate version
+	clientHandler2?.setCli(cli);
+	const version = await clientHandler2?.getVersion();
+
+	if (version) {
+		app.getVersionInfo()?.setVersionDothttpInfo(version);
 	}
+
+	updateDothttpIfAvailable(context.globalStorageUri.fsPath);
+
 }
 
 export function deactivate(_context: vscode.ExtensionContext): undefined {

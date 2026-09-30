@@ -3,6 +3,7 @@ import { HttpFileTargetsDef } from '../types/lang-parse';
 import { ICommandClient, DotTttpSymbol, TypeResult, ImportHarResult } from '../types/types';
 import * as vscode from 'vscode';
 import { ExecuteFileOptions, ClientHandler, addFileNameExtension } from '../../native/services/client';
+import { DothttpVersionResponse } from '../types/misc';
 
 var mime = require('mime-types');
 
@@ -81,6 +82,10 @@ export class ClientHandler2 {
                 ...options,
             })
         }
+    }
+
+    async getVersion(): Promise<DothttpVersionResponse> {
+            return await this.cli?.request(ClientHandler.VERSION_METHOD, {})
     }
 
     async documentSymbols(uri: vscode.Uri, content?: string, source?: string): Promise<DotTttpSymbol> {
