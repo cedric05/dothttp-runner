@@ -49,7 +49,7 @@ export class DothttpVersion implements DothttpVersionResponse {
     }
 
     getVersionString(): string {
-        return `dotextensions-${this.version}-${this.os}-${this.arch})`;
+        return `dotextensions-${this.version}-${this.os}-${this.arch}`;
     }
 }
 
