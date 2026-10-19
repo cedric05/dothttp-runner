@@ -1159,7 +1159,7 @@
 		"util": "^0.12.5",
 		"uuid": "^14.0.0",
 		"vscode-uri": "^3.2.0",
-		"whatwg-url": "17.1.2",
+		"whatwg-url": "17.3.0",
 		"yauzl": "^3.2.0"
 	},
 	"overrides": {
