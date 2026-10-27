@@ -1150,7 +1150,7 @@
 		"json-stringify-safe": "^5.0.0",
 		"jsonc-parser": "^3.3.1",
 		"mime-types": "^3.0.1",
-		"openapi-to-postmanv2": "^6.4.0",
+		"openapi-to-postmanv2": "^6.4.1",
 		"semver": "^7.7.1",
 		"shell-quote": "1.11.0",
 		"temp": "^0.9.4",
